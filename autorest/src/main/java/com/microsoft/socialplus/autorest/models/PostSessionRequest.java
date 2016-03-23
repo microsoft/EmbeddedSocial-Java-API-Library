@@ -1,6 +1,7 @@
 /**
  * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under
  * the MIT License. See LICENSE in the project root for license information.
+ * This file was generated using AutoRest.
  */
 
 package com.microsoft.socialplus.autorest.models;
@@ -13,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class PostSessionRequest {
     /**
      * Gets or sets identity provider type. Possible values include:
-     * 'Facebook', 'Microsoft', 'Google', 'Twitter'.
+     * 'Facebook', 'Microsoft', 'Google', 'Twitter', 'Beihai'.
      */
     @JsonProperty(required = true)
     private IdentityProvider identityProvider;

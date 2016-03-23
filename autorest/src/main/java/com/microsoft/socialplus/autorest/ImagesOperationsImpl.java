@@ -1,6 +1,7 @@
 /**
  * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under
  * the MIT License. See LICENSE in the project root for license information.
+ * This file was generated using AutoRest.
  */
 
 package com.microsoft.socialplus.autorest;
@@ -53,7 +54,7 @@ public final class ImagesOperationsImpl implements ImagesOperations {
      * used by Retrofit to perform actually REST calls.
      */
     interface ImagesService {
-        @Headers("Content-Type: image")
+        @Headers("Content-Type: image/gif")
         @POST("v0.2/images/{imageType}")
         Call<ResponseBody> postImage(@Path("imageType") String imageType, @Header("Authorization") String authorization, @Body InputStream image);
 

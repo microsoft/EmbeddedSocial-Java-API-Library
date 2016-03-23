@@ -14,7 +14,7 @@
       "url": "http://research.microsoft.com"
     },
     "x-ms-code-generation-settings": {
-      "header": "Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information."
+      "header": "Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License. See LICENSE in the project root for license information. This file was generated using AutoRest."
     }
   },
   "host": "localhost:1324",
@@ -531,7 +531,9 @@
         "description": "<para>Images will be resized. To access a resized image, append the 1 character size identifier to the blobHandle that is returned.</para>\r\n<para>d = 25 pixels wide</para>\r\n<para>h = 50 pixels wide</para>\r\n<para>l = 100 pixels wide</para>\r\n<para>p = 250 pixels wide</para>\r\n<para>t = 500 pixels wide</para>\r\n<para>x = 1000 pixels wide</para>\r\n<para>ImageType.UserPhoto supports d,h,l,p,t,x</para>\r\n<para>ImageType.ContentBlob supports d,h,l,p,t,x</para>\r\n<para>ImageType.AppIcon supports l</para>\r\n<para>All resized images will maintain their aspect ratio. Any orientation specified in the EXIF headers will be honored.</para>",
         "operationId": "Images_PostImage",
         "consumes": [
-          "image"
+          "image/gif",
+          "image/jpeg",
+          "image/png"
         ],
         "produces": [
           "application/json",
@@ -602,7 +604,9 @@
         "operationId": "Images_GetImage",
         "consumes": [],
         "produces": [
-          "image"
+          "image/gif",
+          "image/jpeg",
+          "image/png"
         ],
         "parameters": [
           {
@@ -2479,7 +2483,8 @@
               "Facebook",
               "Microsoft",
               "Google",
-              "Twitter"
+              "Twitter",
+              "Beihai"
             ],
             "x-ms-enum": {
               "name": "identityProvider"
@@ -4189,7 +4194,7 @@
         "tags": [
           "Users"
         ],
-        "summary": "Create a new user",
+        "summary": "Create a new user using the following flow:\r\n                1. Validate and parse the identity provider access token to construct an identity provider user\r\n                2. If identity provider user present in linked account table, read user profile for this specific application from user profile table\r\n                3.    If user profile exists, return user conflict\r\n                4.    Otherwise, it means that the user does not have a profile for this particular application. Create one.\r\n                5. Otherwise, the identity provider user is not present. Create the user, and its user profile.\r\n                6. Generate session token, and return\r\n            The purpose of steps 2-4 is to ensure that if the user has already registered with us using the same identity provider\r\n            but for a different SocialPlus application, we reuse his user-handle and just resume to create a new profile for this specific \r\n            SocialPlus application. The end result is that we know it is the same user in both apps.",
         "operationId": "Users_PostUser",
         "consumes": [
           "application/json",
@@ -4824,7 +4829,8 @@
               "Facebook",
               "Microsoft",
               "Google",
-              "Twitter"
+              "Twitter",
+              "Beihai"
             ],
             "x-ms-enum": {
               "name": "identityProvider"
@@ -5865,7 +5871,8 @@
             "Facebook",
             "Microsoft",
             "Google",
-            "Twitter"
+            "Twitter",
+            "Beihai"
           ],
           "type": "string",
           "x-ms-enum": {
@@ -6076,7 +6083,8 @@
             "Facebook",
             "Microsoft",
             "Google",
-            "Twitter"
+            "Twitter",
+            "Beihai"
           ],
           "type": "string",
           "x-ms-enum": {
@@ -6330,7 +6338,8 @@
             "Facebook",
             "Microsoft",
             "Google",
-            "Twitter"
+            "Twitter",
+            "Beihai"
           ],
           "type": "string",
           "x-ms-enum": {
@@ -6361,7 +6370,8 @@
             "Facebook",
             "Microsoft",
             "Google",
-            "Twitter"
+            "Twitter",
+            "Beihai"
           ],
           "type": "string",
           "x-ms-enum": {
