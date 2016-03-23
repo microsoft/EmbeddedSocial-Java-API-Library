@@ -1,6 +1,7 @@
 /**
  * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under
  * the MIT License. See LICENSE in the project root for license information.
+ * This file was generated using AutoRest.
  */
 
 package com.microsoft.socialplus.autorest.models;
@@ -22,7 +23,10 @@ public enum IdentityProvider {
     GOOGLE("Google"),
 
     /** Enum value Twitter. */
-    TWITTER("Twitter");
+    TWITTER("Twitter"),
+
+    /** Enum value Beihai. */
+    BEIHAI("Beihai");
 
     /** The actual serialized value for a IdentityProvider instance. */
     private String value;
