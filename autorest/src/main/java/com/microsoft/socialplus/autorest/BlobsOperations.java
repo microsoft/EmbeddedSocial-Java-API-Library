@@ -30,7 +30,7 @@ public interface BlobsOperations {
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the PostBlobResponse object wrapped in {@link ServiceResponse} if successful.
      */
-    ServiceResponse<PostBlobResponse> postBlob(String authorization, InputStream blob) throws ServiceException, IOException, IllegalArgumentException;
+    ServiceResponse<PostBlobResponse> postBlob(String authorization, byte[] blob) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
      * Upload a blob.
@@ -42,7 +42,7 @@ public interface BlobsOperations {
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
-    ServiceCall postBlobAsync(String authorization, InputStream blob, final ServiceCallback<PostBlobResponse> serviceCallback) throws IllegalArgumentException;
+    ServiceCall postBlobAsync(String authorization, byte[] blob, final ServiceCallback<PostBlobResponse> serviceCallback) throws IllegalArgumentException;
 
     /**
      * Get blob.

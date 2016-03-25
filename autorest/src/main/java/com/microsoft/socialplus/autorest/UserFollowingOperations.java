@@ -23,6 +23,28 @@ public interface UserFollowingOperations {
      *
      * @param userHandle User handle
      * @param authorization Authenication (must begin with string "Bearer ")
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseUserCompactView object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<FeedResponseUserCompactView> getFollowing(String userHandle, String authorization) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Get following users of a user.
+     *
+     * @param userHandle User handle
+     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getFollowingAsync(String userHandle, String authorization, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException;
+    /**
+     * Get following users of a user.
+     *
+     * @param userHandle User handle
+     * @param authorization Authenication (must begin with string "Bearer ")
      * @param cursor Current read cursor
      * @param limit Number of items to return
      * @throws ServiceException exception thrown from REST call

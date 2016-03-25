@@ -59,6 +59,50 @@ public final class BuildsOperationsImpl implements BuildsOperations {
      * The build information for this service.
      * This API is meant to be called by humans for debugging.
      *
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @return the BuildsCurrentResponse object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<BuildsCurrentResponse> getBuildsCurrent() throws ServiceException, IOException {
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getBuildsCurrent(appkey, authorization);
+        return getBuildsCurrentDelegate(call.execute());
+    }
+
+    /**
+     * The build information for this service.
+     * This API is meant to be called by humans for debugging.
+     *
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getBuildsCurrentAsync(final ServiceCallback<BuildsCurrentResponse> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getBuildsCurrent(appkey, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<BuildsCurrentResponse>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getBuildsCurrentDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * The build information for this service.
+     * This API is meant to be called by humans for debugging.
+     *
      * @param appkey App Key Authentication
      * @param authorization Authenication (must begin with string "Bearer ")
      * @throws ServiceException exception thrown from REST call

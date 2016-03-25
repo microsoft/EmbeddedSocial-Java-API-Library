@@ -23,6 +23,26 @@ public interface SessionsOperations {
      * Create a new session (sign in).
      *
      * @param request Post session request
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the PostSessionResponse object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<PostSessionResponse> postSession(PostSessionRequest request) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Create a new session (sign in).
+     *
+     * @param request Post session request
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall postSessionAsync(PostSessionRequest request, final ServiceCallback<PostSessionResponse> serviceCallback) throws IllegalArgumentException;
+    /**
+     * Create a new session (sign in).
+     *
+     * @param request Post session request
      * @param appkey App Key Authentication
      * @param authorization Authenication (must begin with string "Bearer ")
      * @throws ServiceException exception thrown from REST call

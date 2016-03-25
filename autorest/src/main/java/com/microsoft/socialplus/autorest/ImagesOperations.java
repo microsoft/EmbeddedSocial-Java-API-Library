@@ -42,7 +42,7 @@ public interface ImagesOperations {
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the PostImageResponse object wrapped in {@link ServiceResponse} if successful.
      */
-    ServiceResponse<PostImageResponse> postImage(ImageType imageType, String authorization, InputStream image) throws ServiceException, IOException, IllegalArgumentException;
+    ServiceResponse<PostImageResponse> postImage(ImageType imageType, String authorization, byte[] image) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
      * Upload a new image.
@@ -65,8 +65,28 @@ public interface ImagesOperations {
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
-    ServiceCall postImageAsync(ImageType imageType, String authorization, InputStream image, final ServiceCallback<PostImageResponse> serviceCallback) throws IllegalArgumentException;
+    ServiceCall postImageAsync(ImageType imageType, String authorization, byte[] image, final ServiceCallback<PostImageResponse> serviceCallback) throws IllegalArgumentException;
 
+    /**
+     * Get image.
+     *
+     * @param blobHandle Blob handle
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the InputStream object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<InputStream> getImage(String blobHandle) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Get image.
+     *
+     * @param blobHandle Blob handle
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getImageAsync(String blobHandle, final ServiceCallback<InputStream> serviceCallback) throws IllegalArgumentException;
     /**
      * Get image.
      *

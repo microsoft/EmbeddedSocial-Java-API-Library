@@ -67,6 +67,60 @@ public final class SessionsOperationsImpl implements SessionsOperations {
      * Create a new session (sign in).
      *
      * @param request Post session request
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the PostSessionResponse object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<PostSessionResponse> postSession(PostSessionRequest request) throws ServiceException, IOException, IllegalArgumentException {
+        if (request == null) {
+            throw new IllegalArgumentException("Parameter request is required and cannot be null.");
+        }
+        Validator.validate(request);
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.postSession(request, appkey, authorization);
+        return postSessionDelegate(call.execute());
+    }
+
+    /**
+     * Create a new session (sign in).
+     *
+     * @param request Post session request
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall postSessionAsync(PostSessionRequest request, final ServiceCallback<PostSessionResponse> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (request == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter request is required and cannot be null."));
+            return null;
+        }
+        Validator.validate(request, serviceCallback);
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.postSession(request, appkey, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<PostSessionResponse>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(postSessionDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Create a new session (sign in).
+     *
+     * @param request Post session request
      * @param appkey App Key Authentication
      * @param authorization Authenication (must begin with string "Bearer ")
      * @throws ServiceException exception thrown from REST call

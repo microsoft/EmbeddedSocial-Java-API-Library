@@ -22,6 +22,26 @@ public interface MyTopicsOperations {
      * Get my topics sorted by creation time.
      *
      * @param authorization Authenication (must begin with string "Bearer ")
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<FeedResponseTopicView> getTopics(String authorization) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Get my topics sorted by creation time.
+     *
+     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getTopicsAsync(String authorization, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException;
+    /**
+     * Get my topics sorted by creation time.
+     *
+     * @param authorization Authenication (must begin with string "Bearer ")
      * @param cursor Current read cursor
      * @param limit Number of items to return
      * @throws ServiceException exception thrown from REST call
@@ -43,6 +63,26 @@ public interface MyTopicsOperations {
      */
     ServiceCall getTopicsAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException;
 
+    /**
+     * Get my topics sorted by popularity.
+     *
+     * @param authorization Authenication (must begin with string "Bearer ")
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<FeedResponseTopicView> getPopularTopics(String authorization) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Get my topics sorted by popularity.
+     *
+     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getPopularTopicsAsync(String authorization, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException;
     /**
      * Get my topics sorted by popularity.
      *

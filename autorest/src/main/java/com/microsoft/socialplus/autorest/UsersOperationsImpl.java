@@ -105,7 +105,79 @@ public final class UsersOperationsImpl implements UsersOperations {
      *                 5. Otherwise, the identity provider user is not present. Create the user, and its user profile.
      *                 6. Generate session token, and return
      *             The purpose of steps 2-4 is to ensure that if the user has already registered with us using the same identity provider
-     *             but for a different SocialPlus application, we reuse his user-handle and just resume to create a new profile for this specific 
+     *             but for a different SocialPlus application, we reuse his user-handle and just resume to create a new profile for this specific
+     *             SocialPlus application. The end result is that we know it is the same user in both apps.
+     *
+     * @param request Post user request
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the PostUserResponse object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<PostUserResponse> postUser(PostUserRequest request) throws ServiceException, IOException, IllegalArgumentException {
+        if (request == null) {
+            throw new IllegalArgumentException("Parameter request is required and cannot be null.");
+        }
+        Validator.validate(request);
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.postUser(request, appkey, authorization);
+        return postUserDelegate(call.execute());
+    }
+
+    /**
+     * Create a new user using the following flow:
+     *                 1. Validate and parse the identity provider access token to construct an identity provider user
+     *                 2. If identity provider user present in linked account table, read user profile for this specific application from user profile table
+     *                 3.    If user profile exists, return user conflict
+     *                 4.    Otherwise, it means that the user does not have a profile for this particular application. Create one.
+     *                 5. Otherwise, the identity provider user is not present. Create the user, and its user profile.
+     *                 6. Generate session token, and return
+     *             The purpose of steps 2-4 is to ensure that if the user has already registered with us using the same identity provider
+     *             but for a different SocialPlus application, we reuse his user-handle and just resume to create a new profile for this specific
+     *             SocialPlus application. The end result is that we know it is the same user in both apps.
+     *
+     * @param request Post user request
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall postUserAsync(PostUserRequest request, final ServiceCallback<PostUserResponse> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (request == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter request is required and cannot be null."));
+            return null;
+        }
+        Validator.validate(request, serviceCallback);
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.postUser(request, appkey, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<PostUserResponse>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(postUserDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Create a new user using the following flow:
+     *                 1. Validate and parse the identity provider access token to construct an identity provider user
+     *                 2. If identity provider user present in linked account table, read user profile for this specific application from user profile table
+     *                 3.    If user profile exists, return user conflict
+     *                 4.    Otherwise, it means that the user does not have a profile for this particular application. Create one.
+     *                 5. Otherwise, the identity provider user is not present. Create the user, and its user profile.
+     *                 6. Generate session token, and return
+     *             The purpose of steps 2-4 is to ensure that if the user has already registered with us using the same identity provider
+     *             but for a different SocialPlus application, we reuse his user-handle and just resume to create a new profile for this specific
      *             SocialPlus application. The end result is that we know it is the same user in both apps.
      *
      * @param request Post user request
@@ -134,7 +206,7 @@ public final class UsersOperationsImpl implements UsersOperations {
      *                 5. Otherwise, the identity provider user is not present. Create the user, and its user profile.
      *                 6. Generate session token, and return
      *             The purpose of steps 2-4 is to ensure that if the user has already registered with us using the same identity provider
-     *             but for a different SocialPlus application, we reuse his user-handle and just resume to create a new profile for this specific 
+     *             but for a different SocialPlus application, we reuse his user-handle and just resume to create a new profile for this specific
      *             SocialPlus application. The end result is that we know it is the same user in both apps.
      *
      * @param request Post user request
@@ -500,6 +572,58 @@ public final class UsersOperationsImpl implements UsersOperations {
      * Get user profile.
      *
      * @param userHandle User handle
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the UserProfileView object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<UserProfileView> getUser(String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (userHandle == null) {
+            throw new IllegalArgumentException("Parameter userHandle is required and cannot be null.");
+        }
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getUser(userHandle, appkey, authorization);
+        return getUserDelegate(call.execute());
+    }
+
+    /**
+     * Get user profile.
+     *
+     * @param userHandle User handle
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getUserAsync(String userHandle, final ServiceCallback<UserProfileView> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (userHandle == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter userHandle is required and cannot be null."));
+            return null;
+        }
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getUser(userHandle, appkey, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<UserProfileView>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getUserDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Get user profile.
+     *
+     * @param userHandle User handle
      * @param appkey App Key Authentication
      * @param authorization Authenication (must begin with string "Bearer ")
      * @throws ServiceException exception thrown from REST call
@@ -556,6 +680,52 @@ public final class UsersOperationsImpl implements UsersOperations {
                 .register(404, new TypeToken<Void>() { }.getType())
                 .register(500, new TypeToken<Void>() { }.getType())
                 .build(response);
+    }
+
+    /**
+     * Get popular users.
+     *
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @return the FeedResponseUserProfileView object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<FeedResponseUserProfileView> getPopularUsers() throws ServiceException, IOException {
+        final Integer cursor = null;
+        final Integer limit = null;
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getPopularUsers(cursor, limit, appkey, authorization);
+        return getPopularUsersDelegate(call.execute());
+    }
+
+    /**
+     * Get popular users.
+     *
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getPopularUsersAsync(final ServiceCallback<FeedResponseUserProfileView> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        final Integer cursor = null;
+        final Integer limit = null;
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getPopularUsers(cursor, limit, appkey, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<FeedResponseUserProfileView>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getPopularUsersDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
     }
 
     /**

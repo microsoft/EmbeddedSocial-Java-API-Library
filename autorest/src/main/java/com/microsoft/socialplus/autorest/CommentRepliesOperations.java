@@ -25,6 +25,28 @@ public interface CommentRepliesOperations {
      *
      * @param commentHandle Comment handle
      * @param authorization Authenication (must begin with string "Bearer ")
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseReplyView object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<FeedResponseReplyView> getReplies(String commentHandle, String authorization) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Get replies for a comment.
+     *
+     * @param commentHandle Comment handle
+     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getRepliesAsync(String commentHandle, String authorization, final ServiceCallback<FeedResponseReplyView> serviceCallback) throws IllegalArgumentException;
+    /**
+     * Get replies for a comment.
+     *
+     * @param commentHandle Comment handle
+     * @param authorization Authenication (must begin with string "Bearer ")
      * @param cursor Current read cursor
      * @param limit Number of items to return
      * @throws ServiceException exception thrown from REST call

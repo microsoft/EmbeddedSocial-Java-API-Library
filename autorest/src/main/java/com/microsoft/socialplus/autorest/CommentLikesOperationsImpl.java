@@ -71,6 +71,62 @@ public final class CommentLikesOperationsImpl implements CommentLikesOperations 
      * Get likes for comment.
      *
      * @param commentHandle Comment handle
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseUserCompactView object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<FeedResponseUserCompactView> getLikes(String commentHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (commentHandle == null) {
+            throw new IllegalArgumentException("Parameter commentHandle is required and cannot be null.");
+        }
+        final String cursor = null;
+        final Integer limit = null;
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getLikes(commentHandle, cursor, limit, appkey, authorization);
+        return getLikesDelegate(call.execute());
+    }
+
+    /**
+     * Get likes for comment.
+     *
+     * @param commentHandle Comment handle
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getLikesAsync(String commentHandle, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (commentHandle == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter commentHandle is required and cannot be null."));
+            return null;
+        }
+        final String cursor = null;
+        final Integer limit = null;
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getLikes(commentHandle, cursor, limit, appkey, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<FeedResponseUserCompactView>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getLikesDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Get likes for comment.
+     *
+     * @param commentHandle Comment handle
      * @param cursor Current read cursor
      * @param limit Number of items to return
      * @param appkey App Key Authentication

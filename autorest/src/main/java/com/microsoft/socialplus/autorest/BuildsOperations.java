@@ -22,6 +22,25 @@ public interface BuildsOperations {
      * The build information for this service.
      * This API is meant to be called by humans for debugging.
      *
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @return the BuildsCurrentResponse object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<BuildsCurrentResponse> getBuildsCurrent() throws ServiceException, IOException;
+
+    /**
+     * The build information for this service.
+     * This API is meant to be called by humans for debugging.
+     *
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getBuildsCurrentAsync(final ServiceCallback<BuildsCurrentResponse> serviceCallback) throws IllegalArgumentException;
+    /**
+     * The build information for this service.
+     * This API is meant to be called by humans for debugging.
+     *
      * @param appkey App Key Authentication
      * @param authorization Authenication (must begin with string "Bearer ")
      * @throws ServiceException exception thrown from REST call

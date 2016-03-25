@@ -71,6 +71,67 @@ public final class TopicCommentsOperationsImpl implements TopicCommentsOperation
      *
      * @param topicHandle Topic handle
      * @param authorization Authenication (must begin with string "Bearer ")
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseCommentView object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<FeedResponseCommentView> getTopicComments(String topicHandle, String authorization) throws ServiceException, IOException, IllegalArgumentException {
+        if (topicHandle == null) {
+            throw new IllegalArgumentException("Parameter topicHandle is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        final String cursor = null;
+        final Integer limit = null;
+        Call<ResponseBody> call = service.getTopicComments(topicHandle, cursor, limit, authorization);
+        return getTopicCommentsDelegate(call.execute());
+    }
+
+    /**
+     * Get comments for a topic.
+     *
+     * @param topicHandle Topic handle
+     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getTopicCommentsAsync(String topicHandle, String authorization, final ServiceCallback<FeedResponseCommentView> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (topicHandle == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter topicHandle is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        final String cursor = null;
+        final Integer limit = null;
+        Call<ResponseBody> call = service.getTopicComments(topicHandle, cursor, limit, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<FeedResponseCommentView>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getTopicCommentsDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Get comments for a topic.
+     *
+     * @param topicHandle Topic handle
+     * @param authorization Authenication (must begin with string "Bearer ")
      * @param cursor Current read cursor
      * @param limit Number of items to return
      * @throws ServiceException exception thrown from REST call

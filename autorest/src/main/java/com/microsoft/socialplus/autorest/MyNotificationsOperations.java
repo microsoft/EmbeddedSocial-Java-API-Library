@@ -47,6 +47,26 @@ public interface MyNotificationsOperations {
      * Get notifications.
      *
      * @param authorization Authenication (must begin with string "Bearer ")
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseActivityView object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<FeedResponseActivityView> getNotifications(String authorization) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Get notifications.
+     *
+     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getNotificationsAsync(String authorization, final ServiceCallback<FeedResponseActivityView> serviceCallback) throws IllegalArgumentException;
+    /**
+     * Get notifications.
+     *
+     * @param authorization Authenication (must begin with string "Bearer ")
      * @param cursor Current read cursor
      * @param limit Number of items to return
      * @throws ServiceException exception thrown from REST call

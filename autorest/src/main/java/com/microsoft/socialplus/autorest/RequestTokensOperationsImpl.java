@@ -61,6 +61,58 @@ public final class RequestTokensOperationsImpl implements RequestTokensOperation
      * Get request token.
      *
      * @param identityProvider Identity provider type. Possible values include: 'Facebook', 'Microsoft', 'Google', 'Twitter', 'Beihai'
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the GetRequestTokenResponse object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<GetRequestTokenResponse> getRequestToken(IdentityProvider identityProvider) throws ServiceException, IOException, IllegalArgumentException {
+        if (identityProvider == null) {
+            throw new IllegalArgumentException("Parameter identityProvider is required and cannot be null.");
+        }
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getRequestToken(this.client.getMapperAdapter().serializeRaw(identityProvider), appkey, authorization);
+        return getRequestTokenDelegate(call.execute());
+    }
+
+    /**
+     * Get request token.
+     *
+     * @param identityProvider Identity provider type. Possible values include: 'Facebook', 'Microsoft', 'Google', 'Twitter', 'Beihai'
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getRequestTokenAsync(IdentityProvider identityProvider, final ServiceCallback<GetRequestTokenResponse> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (identityProvider == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter identityProvider is required and cannot be null."));
+            return null;
+        }
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getRequestToken(this.client.getMapperAdapter().serializeRaw(identityProvider), appkey, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<GetRequestTokenResponse>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getRequestTokenDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Get request token.
+     *
+     * @param identityProvider Identity provider type. Possible values include: 'Facebook', 'Microsoft', 'Google', 'Twitter', 'Beihai'
      * @param appkey App Key Authentication
      * @param authorization Authenication (must begin with string "Bearer ")
      * @throws ServiceException exception thrown from REST call

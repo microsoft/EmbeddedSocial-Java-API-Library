@@ -22,6 +22,26 @@ public interface UserTopicsOperations {
      * Get user topics sorted by creation time.
      *
      * @param userHandle User handle
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<FeedResponseTopicView> getTopics(String userHandle) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Get user topics sorted by creation time.
+     *
+     * @param userHandle User handle
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getTopicsAsync(String userHandle, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException;
+    /**
+     * Get user topics sorted by creation time.
+     *
+     * @param userHandle User handle
      * @param cursor Current read cursor
      * @param limit Number of items to return
      * @param appkey App Key Authentication
@@ -47,6 +67,26 @@ public interface UserTopicsOperations {
      */
     ServiceCall getTopicsAsync(String userHandle, String cursor, Integer limit, String appkey, String authorization, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException;
 
+    /**
+     * Get user topics sorted by popularity.
+     *
+     * @param userHandle User handle
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<FeedResponseTopicView> getPopularTopics(String userHandle) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Get user topics sorted by popularity.
+     *
+     * @param userHandle User handle
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getPopularTopicsAsync(String userHandle, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException;
     /**
      * Get user topics sorted by popularity.
      *

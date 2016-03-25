@@ -16,6 +16,8 @@ import com.microsoft.rest.ServiceResponseCallback;
 import com.microsoft.socialplus.autorest.models.PostBlobResponse;
 import java.io.InputStream;
 import java.io.IOException;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -24,6 +26,7 @@ import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.Path;
 import retrofit2.http.POST;
+import retrofit2.http.Streaming;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
@@ -55,10 +58,11 @@ public final class BlobsOperationsImpl implements BlobsOperations {
     interface BlobsService {
         @Headers("Content-Type: application/octet-stream")
         @POST("v0.2/blobs")
-        Call<ResponseBody> postBlob(@Header("Authorization") String authorization, @Body InputStream blob);
+        Call<ResponseBody> postBlob(@Header("Authorization") String authorization, @Body RequestBody blob);
 
         @Headers("Content-Type: application/json; charset=utf-8")
         @GET("v0.2/blobs/{blobHandle}")
+        @Streaming
         Call<ResponseBody> getBlob(@Path("blobHandle") String blobHandle, @Header("Authorization") String authorization);
 
     }
@@ -74,14 +78,14 @@ public final class BlobsOperationsImpl implements BlobsOperations {
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the PostBlobResponse object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<PostBlobResponse> postBlob(String authorization, InputStream blob) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<PostBlobResponse> postBlob(String authorization, byte[] blob) throws ServiceException, IOException, IllegalArgumentException {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         if (blob == null) {
             throw new IllegalArgumentException("Parameter blob is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.postBlob(authorization, blob);
+        Call<ResponseBody> call = service.postBlob(authorization, RequestBody.create(MediaType.parse("application/octet-stream"), blob));
         return postBlobDelegate(call.execute());
     }
 
@@ -95,7 +99,7 @@ public final class BlobsOperationsImpl implements BlobsOperations {
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall postBlobAsync(String authorization, InputStream blob, final ServiceCallback<PostBlobResponse> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall postBlobAsync(String authorization, byte[] blob, final ServiceCallback<PostBlobResponse> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -107,7 +111,7 @@ public final class BlobsOperationsImpl implements BlobsOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter blob is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.postBlob(authorization, blob);
+        Call<ResponseBody> call = service.postBlob(authorization, RequestBody.create(MediaType.parse("application/octet-stream"), blob));
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<PostBlobResponse>(serviceCallback) {
             @Override

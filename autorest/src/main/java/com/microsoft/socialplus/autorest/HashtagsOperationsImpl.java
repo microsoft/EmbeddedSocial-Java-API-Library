@@ -63,6 +63,48 @@ public final class HashtagsOperationsImpl implements HashtagsOperations {
     /**
      * Get trending hashtags.
      *
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @return the List&lt;String&gt; object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<List<String>> getTrendingHashtags() throws ServiceException, IOException {
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getTrendingHashtags(appkey, authorization);
+        return getTrendingHashtagsDelegate(call.execute());
+    }
+
+    /**
+     * Get trending hashtags.
+     *
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getTrendingHashtagsAsync(final ServiceCallback<List<String>> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getTrendingHashtags(appkey, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<List<String>>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getTrendingHashtagsDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Get trending hashtags.
+     *
      * @param appkey App Key Authentication
      * @param authorization Authenication (must begin with string "Bearer ")
      * @throws ServiceException exception thrown from REST call
@@ -109,6 +151,58 @@ public final class HashtagsOperationsImpl implements HashtagsOperations {
                 .register(401, new TypeToken<Void>() { }.getType())
                 .register(500, new TypeToken<Void>() { }.getType())
                 .build(response);
+    }
+
+    /**
+     * Get autocompleted hashtags.
+     *
+     * @param query Search query
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the List&lt;String&gt; object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<List<String>> getAutocompletedHashtags(String query) throws ServiceException, IOException, IllegalArgumentException {
+        if (query == null) {
+            throw new IllegalArgumentException("Parameter query is required and cannot be null.");
+        }
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getAutocompletedHashtags(query, appkey, authorization);
+        return getAutocompletedHashtagsDelegate(call.execute());
+    }
+
+    /**
+     * Get autocompleted hashtags.
+     *
+     * @param query Search query
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getAutocompletedHashtagsAsync(String query, final ServiceCallback<List<String>> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (query == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter query is required and cannot be null."));
+            return null;
+        }
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getAutocompletedHashtags(query, appkey, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<List<String>>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getAutocompletedHashtagsDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
     }
 
     /**

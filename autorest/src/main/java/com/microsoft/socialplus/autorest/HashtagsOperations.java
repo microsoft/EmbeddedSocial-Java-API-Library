@@ -21,6 +21,23 @@ public interface HashtagsOperations {
     /**
      * Get trending hashtags.
      *
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @return the List&lt;String&gt; object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<List<String>> getTrendingHashtags() throws ServiceException, IOException;
+
+    /**
+     * Get trending hashtags.
+     *
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getTrendingHashtagsAsync(final ServiceCallback<List<String>> serviceCallback) throws IllegalArgumentException;
+    /**
+     * Get trending hashtags.
+     *
      * @param appkey App Key Authentication
      * @param authorization Authenication (must begin with string "Bearer ")
      * @throws ServiceException exception thrown from REST call
@@ -40,6 +57,26 @@ public interface HashtagsOperations {
      */
     ServiceCall getTrendingHashtagsAsync(String appkey, String authorization, final ServiceCallback<List<String>> serviceCallback) throws IllegalArgumentException;
 
+    /**
+     * Get autocompleted hashtags.
+     *
+     * @param query Search query
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the List&lt;String&gt; object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<List<String>> getAutocompletedHashtags(String query) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Get autocompleted hashtags.
+     *
+     * @param query Search query
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getAutocompletedHashtagsAsync(String query, final ServiceCallback<List<String>> serviceCallback) throws IllegalArgumentException;
     /**
      * Get autocompleted hashtags.
      *
