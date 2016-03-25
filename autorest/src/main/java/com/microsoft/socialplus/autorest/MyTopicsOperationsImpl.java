@@ -64,6 +64,58 @@ public final class MyTopicsOperationsImpl implements MyTopicsOperations {
      * Get my topics sorted by creation time.
      *
      * @param authorization Authenication (must begin with string "Bearer ")
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<FeedResponseTopicView> getTopics(String authorization) throws ServiceException, IOException, IllegalArgumentException {
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        final String cursor = null;
+        final Integer limit = null;
+        Call<ResponseBody> call = service.getTopics(cursor, limit, authorization);
+        return getTopicsDelegate(call.execute());
+    }
+
+    /**
+     * Get my topics sorted by creation time.
+     *
+     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getTopicsAsync(String authorization, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        final String cursor = null;
+        final Integer limit = null;
+        Call<ResponseBody> call = service.getTopics(cursor, limit, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getTopicsDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Get my topics sorted by creation time.
+     *
+     * @param authorization Authenication (must begin with string "Bearer ")
      * @param cursor Current read cursor
      * @param limit Number of items to return
      * @throws ServiceException exception thrown from REST call
@@ -119,6 +171,58 @@ public final class MyTopicsOperationsImpl implements MyTopicsOperations {
                 .register(401, new TypeToken<Void>() { }.getType())
                 .register(500, new TypeToken<Void>() { }.getType())
                 .build(response);
+    }
+
+    /**
+     * Get my topics sorted by popularity.
+     *
+     * @param authorization Authenication (must begin with string "Bearer ")
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<FeedResponseTopicView> getPopularTopics(String authorization) throws ServiceException, IOException, IllegalArgumentException {
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        final Integer cursor = null;
+        final Integer limit = null;
+        Call<ResponseBody> call = service.getPopularTopics(cursor, limit, authorization);
+        return getPopularTopicsDelegate(call.execute());
+    }
+
+    /**
+     * Get my topics sorted by popularity.
+     *
+     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getPopularTopicsAsync(String authorization, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        final Integer cursor = null;
+        final Integer limit = null;
+        Call<ResponseBody> call = service.getPopularTopics(cursor, limit, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getPopularTopicsDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
     }
 
     /**

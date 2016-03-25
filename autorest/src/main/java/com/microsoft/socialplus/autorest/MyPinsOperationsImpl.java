@@ -74,6 +74,58 @@ public final class MyPinsOperationsImpl implements MyPinsOperations {
      * Get my pins.
      *
      * @param authorization Authenication (must begin with string "Bearer ")
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<FeedResponseTopicView> getPins(String authorization) throws ServiceException, IOException, IllegalArgumentException {
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        final String cursor = null;
+        final Integer limit = null;
+        Call<ResponseBody> call = service.getPins(cursor, limit, authorization);
+        return getPinsDelegate(call.execute());
+    }
+
+    /**
+     * Get my pins.
+     *
+     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getPinsAsync(String authorization, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        final String cursor = null;
+        final Integer limit = null;
+        Call<ResponseBody> call = service.getPins(cursor, limit, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getPinsDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Get my pins.
+     *
+     * @param authorization Authenication (must begin with string "Bearer ")
      * @param cursor Current read cursor
      * @param limit Number of items to return
      * @throws ServiceException exception thrown from REST call

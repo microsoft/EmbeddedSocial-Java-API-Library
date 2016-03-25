@@ -65,6 +65,62 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
      * Get user topics sorted by creation time.
      *
      * @param userHandle User handle
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<FeedResponseTopicView> getTopics(String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (userHandle == null) {
+            throw new IllegalArgumentException("Parameter userHandle is required and cannot be null.");
+        }
+        final String cursor = null;
+        final Integer limit = null;
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getTopics(userHandle, cursor, limit, appkey, authorization);
+        return getTopicsDelegate(call.execute());
+    }
+
+    /**
+     * Get user topics sorted by creation time.
+     *
+     * @param userHandle User handle
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getTopicsAsync(String userHandle, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (userHandle == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter userHandle is required and cannot be null."));
+            return null;
+        }
+        final String cursor = null;
+        final Integer limit = null;
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getTopics(userHandle, cursor, limit, appkey, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getTopicsDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Get user topics sorted by creation time.
+     *
+     * @param userHandle User handle
      * @param cursor Current read cursor
      * @param limit Number of items to return
      * @param appkey App Key Authentication
@@ -125,6 +181,62 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
                 .register(404, new TypeToken<Void>() { }.getType())
                 .register(500, new TypeToken<Void>() { }.getType())
                 .build(response);
+    }
+
+    /**
+     * Get user topics sorted by popularity.
+     *
+     * @param userHandle User handle
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<FeedResponseTopicView> getPopularTopics(String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (userHandle == null) {
+            throw new IllegalArgumentException("Parameter userHandle is required and cannot be null.");
+        }
+        final Integer cursor = null;
+        final Integer limit = null;
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getPopularTopics(userHandle, cursor, limit, appkey, authorization);
+        return getPopularTopicsDelegate(call.execute());
+    }
+
+    /**
+     * Get user topics sorted by popularity.
+     *
+     * @param userHandle User handle
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getPopularTopicsAsync(String userHandle, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (userHandle == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter userHandle is required and cannot be null."));
+            return null;
+        }
+        final Integer cursor = null;
+        final Integer limit = null;
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getPopularTopics(userHandle, cursor, limit, appkey, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getPopularTopicsDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
     }
 
     /**

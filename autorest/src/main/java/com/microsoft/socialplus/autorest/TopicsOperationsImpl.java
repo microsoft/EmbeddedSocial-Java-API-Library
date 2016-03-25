@@ -94,6 +94,52 @@ public final class TopicsOperationsImpl implements TopicsOperations {
     /**
      * Get recent topics.
      *
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<FeedResponseTopicView> getTopics() throws ServiceException, IOException {
+        final String cursor = null;
+        final Integer limit = null;
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization);
+        return getTopicsDelegate(call.execute());
+    }
+
+    /**
+     * Get recent topics.
+     *
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getTopicsAsync(final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        final String cursor = null;
+        final Integer limit = null;
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getTopicsDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Get recent topics.
+     *
      * @param cursor Current read cursor
      * @param limit Number of items to return
      * @param appkey App Key Authentication
@@ -213,6 +259,58 @@ public final class TopicsOperationsImpl implements TopicsOperations {
                 .register(500, new TypeToken<Void>() { }.getType())
                 .register(501, new TypeToken<Void>() { }.getType())
                 .build(response);
+    }
+
+    /**
+     * Get topic.
+     *
+     * @param topicHandle Topic handle
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the TopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<TopicView> getTopic(String topicHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (topicHandle == null) {
+            throw new IllegalArgumentException("Parameter topicHandle is required and cannot be null.");
+        }
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getTopic(topicHandle, appkey, authorization);
+        return getTopicDelegate(call.execute());
+    }
+
+    /**
+     * Get topic.
+     *
+     * @param topicHandle Topic handle
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getTopicAsync(String topicHandle, final ServiceCallback<TopicView> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (topicHandle == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter topicHandle is required and cannot be null."));
+            return null;
+        }
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getTopic(topicHandle, appkey, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<TopicView>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getTopicDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
     }
 
     /**
@@ -427,6 +525,62 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * Get popular topics today.
      *
      * @param timeRange Time range. Possible values include: 'Today', 'ThisWeek', 'ThisMonth', 'AllTime'
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<FeedResponseTopicView> getPopularTopics(TimeRange timeRange) throws ServiceException, IOException, IllegalArgumentException {
+        if (timeRange == null) {
+            throw new IllegalArgumentException("Parameter timeRange is required and cannot be null.");
+        }
+        final Integer cursor = null;
+        final Integer limit = null;
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getPopularTopics(this.client.getMapperAdapter().serializeRaw(timeRange), cursor, limit, appkey, authorization);
+        return getPopularTopicsDelegate(call.execute());
+    }
+
+    /**
+     * Get popular topics today.
+     *
+     * @param timeRange Time range. Possible values include: 'Today', 'ThisWeek', 'ThisMonth', 'AllTime'
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getPopularTopicsAsync(TimeRange timeRange, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (timeRange == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter timeRange is required and cannot be null."));
+            return null;
+        }
+        final Integer cursor = null;
+        final Integer limit = null;
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getPopularTopics(this.client.getMapperAdapter().serializeRaw(timeRange), cursor, limit, appkey, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getPopularTopicsDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Get popular topics today.
+     *
+     * @param timeRange Time range. Possible values include: 'Today', 'ThisWeek', 'ThisMonth', 'AllTime'
      * @param cursor Current read cursor
      * @param limit Number of items to return
      * @param appkey App Key Authentication
@@ -486,6 +640,52 @@ public final class TopicsOperationsImpl implements TopicsOperations {
                 .register(401, new TypeToken<Void>() { }.getType())
                 .register(500, new TypeToken<Void>() { }.getType())
                 .build(response);
+    }
+
+    /**
+     * Get featured topics.
+     *
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<FeedResponseTopicView> getFeaturedTopics() throws ServiceException, IOException {
+        final String cursor = null;
+        final Integer limit = null;
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getFeaturedTopics(cursor, limit, appkey, authorization);
+        return getFeaturedTopicsDelegate(call.execute());
+    }
+
+    /**
+     * Get featured topics.
+     *
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getFeaturedTopicsAsync(final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        final String cursor = null;
+        final Integer limit = null;
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getFeaturedTopics(cursor, limit, appkey, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getFeaturedTopicsDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
     }
 
     /**

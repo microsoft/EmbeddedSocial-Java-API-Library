@@ -22,6 +22,26 @@ public interface ReplyLikesOperations {
      * Get likes for reply.
      *
      * @param replyHandle Reply handle
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseUserCompactView object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<FeedResponseUserCompactView> getLikes(String replyHandle) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Get likes for reply.
+     *
+     * @param replyHandle Reply handle
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getLikesAsync(String replyHandle, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException;
+    /**
+     * Get likes for reply.
+     *
+     * @param replyHandle Reply handle
      * @param cursor Current read cursor
      * @param limit Number of items to return
      * @param appkey App Key Authentication

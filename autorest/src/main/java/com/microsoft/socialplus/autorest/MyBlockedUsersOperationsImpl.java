@@ -74,6 +74,58 @@ public final class MyBlockedUsersOperationsImpl implements MyBlockedUsersOperati
      * Get my blocked users.
      *
      * @param authorization Authenication (must begin with string "Bearer ")
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseUserCompactView object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<FeedResponseUserCompactView> getBlockedUsers(String authorization) throws ServiceException, IOException, IllegalArgumentException {
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        final String cursor = null;
+        final Integer limit = null;
+        Call<ResponseBody> call = service.getBlockedUsers(cursor, limit, authorization);
+        return getBlockedUsersDelegate(call.execute());
+    }
+
+    /**
+     * Get my blocked users.
+     *
+     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getBlockedUsersAsync(String authorization, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        final String cursor = null;
+        final Integer limit = null;
+        Call<ResponseBody> call = service.getBlockedUsers(cursor, limit, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<FeedResponseUserCompactView>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getBlockedUsersDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Get my blocked users.
+     *
+     * @param authorization Authenication (must begin with string "Bearer ")
      * @param cursor Current read cursor
      * @param limit Number of items to return
      * @throws ServiceException exception thrown from REST call

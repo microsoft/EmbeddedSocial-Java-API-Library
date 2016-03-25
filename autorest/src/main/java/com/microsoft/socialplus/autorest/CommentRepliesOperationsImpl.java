@@ -71,6 +71,67 @@ public final class CommentRepliesOperationsImpl implements CommentRepliesOperati
      *
      * @param commentHandle Comment handle
      * @param authorization Authenication (must begin with string "Bearer ")
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseReplyView object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<FeedResponseReplyView> getReplies(String commentHandle, String authorization) throws ServiceException, IOException, IllegalArgumentException {
+        if (commentHandle == null) {
+            throw new IllegalArgumentException("Parameter commentHandle is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        final String cursor = null;
+        final Integer limit = null;
+        Call<ResponseBody> call = service.getReplies(commentHandle, cursor, limit, authorization);
+        return getRepliesDelegate(call.execute());
+    }
+
+    /**
+     * Get replies for a comment.
+     *
+     * @param commentHandle Comment handle
+     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getRepliesAsync(String commentHandle, String authorization, final ServiceCallback<FeedResponseReplyView> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (commentHandle == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter commentHandle is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        final String cursor = null;
+        final Integer limit = null;
+        Call<ResponseBody> call = service.getReplies(commentHandle, cursor, limit, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<FeedResponseReplyView>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getRepliesDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Get replies for a comment.
+     *
+     * @param commentHandle Comment handle
+     * @param authorization Authenication (must begin with string "Bearer ")
      * @param cursor Current read cursor
      * @param limit Number of items to return
      * @throws ServiceException exception thrown from REST call

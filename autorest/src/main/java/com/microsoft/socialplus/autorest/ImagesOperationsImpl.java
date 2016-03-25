@@ -17,6 +17,8 @@ import com.microsoft.socialplus.autorest.models.ImageType;
 import com.microsoft.socialplus.autorest.models.PostImageResponse;
 import java.io.InputStream;
 import java.io.IOException;
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -25,6 +27,7 @@ import retrofit2.http.Header;
 import retrofit2.http.Headers;
 import retrofit2.http.Path;
 import retrofit2.http.POST;
+import retrofit2.http.Streaming;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
@@ -56,10 +59,11 @@ public final class ImagesOperationsImpl implements ImagesOperations {
     interface ImagesService {
         @Headers("Content-Type: image/gif")
         @POST("v0.2/images/{imageType}")
-        Call<ResponseBody> postImage(@Path("imageType") String imageType, @Header("Authorization") String authorization, @Body InputStream image);
+        Call<ResponseBody> postImage(@Path("imageType") String imageType, @Header("Authorization") String authorization, @Body RequestBody image);
 
         @Headers("Content-Type: application/json; charset=utf-8")
         @GET("v0.2/images/{blobHandle}")
+        @Streaming
         Call<ResponseBody> getImage(@Path("blobHandle") String blobHandle, @Header("appkey") String appkey, @Header("Authorization") String authorization);
 
     }
@@ -86,7 +90,7 @@ public final class ImagesOperationsImpl implements ImagesOperations {
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the PostImageResponse object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<PostImageResponse> postImage(ImageType imageType, String authorization, InputStream image) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<PostImageResponse> postImage(ImageType imageType, String authorization, byte[] image) throws ServiceException, IOException, IllegalArgumentException {
         if (imageType == null) {
             throw new IllegalArgumentException("Parameter imageType is required and cannot be null.");
         }
@@ -96,7 +100,7 @@ public final class ImagesOperationsImpl implements ImagesOperations {
         if (image == null) {
             throw new IllegalArgumentException("Parameter image is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.postImage(this.client.getMapperAdapter().serializeRaw(imageType), authorization, image);
+        Call<ResponseBody> call = service.postImage(this.client.getMapperAdapter().serializeRaw(imageType), authorization, RequestBody.create(MediaType.parse("image/gif"), image));
         return postImageDelegate(call.execute());
     }
 
@@ -121,7 +125,7 @@ public final class ImagesOperationsImpl implements ImagesOperations {
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall postImageAsync(ImageType imageType, String authorization, InputStream image, final ServiceCallback<PostImageResponse> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall postImageAsync(ImageType imageType, String authorization, byte[] image, final ServiceCallback<PostImageResponse> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -137,7 +141,7 @@ public final class ImagesOperationsImpl implements ImagesOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter image is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.postImage(this.client.getMapperAdapter().serializeRaw(imageType), authorization, image);
+        Call<ResponseBody> call = service.postImage(this.client.getMapperAdapter().serializeRaw(imageType), authorization, RequestBody.create(MediaType.parse("image/gif"), image));
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<PostImageResponse>(serviceCallback) {
             @Override
@@ -159,6 +163,58 @@ public final class ImagesOperationsImpl implements ImagesOperations {
                 .register(401, new TypeToken<Void>() { }.getType())
                 .register(500, new TypeToken<Void>() { }.getType())
                 .build(response);
+    }
+
+    /**
+     * Get image.
+     *
+     * @param blobHandle Blob handle
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the InputStream object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<InputStream> getImage(String blobHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (blobHandle == null) {
+            throw new IllegalArgumentException("Parameter blobHandle is required and cannot be null.");
+        }
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getImage(blobHandle, appkey, authorization);
+        return getImageDelegate(call.execute());
+    }
+
+    /**
+     * Get image.
+     *
+     * @param blobHandle Blob handle
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getImageAsync(String blobHandle, final ServiceCallback<InputStream> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (blobHandle == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter blobHandle is required and cannot be null."));
+            return null;
+        }
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getImage(blobHandle, appkey, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<InputStream>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getImageDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
     }
 
     /**

@@ -26,6 +26,23 @@ public interface TopicsOperations {
     /**
      * Get recent topics.
      *
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<FeedResponseTopicView> getTopics() throws ServiceException, IOException;
+
+    /**
+     * Get recent topics.
+     *
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getTopicsAsync(final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException;
+    /**
+     * Get recent topics.
+     *
      * @param cursor Current read cursor
      * @param limit Number of items to return
      * @param appkey App Key Authentication
@@ -72,6 +89,26 @@ public interface TopicsOperations {
      */
     ServiceCall postTopicAsync(PostTopicRequest request, String authorization, final ServiceCallback<PostTopicResponse> serviceCallback) throws IllegalArgumentException;
 
+    /**
+     * Get topic.
+     *
+     * @param topicHandle Topic handle
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the TopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<TopicView> getTopic(String topicHandle) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Get topic.
+     *
+     * @param topicHandle Topic handle
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getTopicAsync(String topicHandle, final ServiceCallback<TopicView> serviceCallback) throws IllegalArgumentException;
     /**
      * Get topic.
      *
@@ -149,6 +186,26 @@ public interface TopicsOperations {
      * Get popular topics today.
      *
      * @param timeRange Time range. Possible values include: 'Today', 'ThisWeek', 'ThisMonth', 'AllTime'
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<FeedResponseTopicView> getPopularTopics(TimeRange timeRange) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Get popular topics today.
+     *
+     * @param timeRange Time range. Possible values include: 'Today', 'ThisWeek', 'ThisMonth', 'AllTime'
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getPopularTopicsAsync(TimeRange timeRange, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException;
+    /**
+     * Get popular topics today.
+     *
+     * @param timeRange Time range. Possible values include: 'Today', 'ThisWeek', 'ThisMonth', 'AllTime'
      * @param cursor Current read cursor
      * @param limit Number of items to return
      * @param appkey App Key Authentication
@@ -174,6 +231,23 @@ public interface TopicsOperations {
      */
     ServiceCall getPopularTopicsAsync(TimeRange timeRange, Integer cursor, Integer limit, String appkey, String authorization, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException;
 
+    /**
+     * Get featured topics.
+     *
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<FeedResponseTopicView> getFeaturedTopics() throws ServiceException, IOException;
+
+    /**
+     * Get featured topics.
+     *
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getFeaturedTopicsAsync(final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException;
     /**
      * Get featured topics.
      *

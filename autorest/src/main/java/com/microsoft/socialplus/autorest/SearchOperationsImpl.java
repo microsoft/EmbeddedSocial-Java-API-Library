@@ -65,6 +65,62 @@ public final class SearchOperationsImpl implements SearchOperations {
      * Search topics with a query.
      *
      * @param query Search query
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<FeedResponseTopicView> getTopics(String query) throws ServiceException, IOException, IllegalArgumentException {
+        if (query == null) {
+            throw new IllegalArgumentException("Parameter query is required and cannot be null.");
+        }
+        final Integer cursor = null;
+        final Integer limit = null;
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getTopics(query, cursor, limit, appkey, authorization);
+        return getTopicsDelegate(call.execute());
+    }
+
+    /**
+     * Search topics with a query.
+     *
+     * @param query Search query
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getTopicsAsync(String query, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (query == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter query is required and cannot be null."));
+            return null;
+        }
+        final Integer cursor = null;
+        final Integer limit = null;
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getTopics(query, cursor, limit, appkey, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getTopicsDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Search topics with a query.
+     *
+     * @param query Search query
      * @param cursor Current read cursor
      * @param limit Number of items to return
      * @param appkey App Key Authentication
@@ -124,6 +180,62 @@ public final class SearchOperationsImpl implements SearchOperations {
                 .register(401, new TypeToken<Void>() { }.getType())
                 .register(500, new TypeToken<Void>() { }.getType())
                 .build(response);
+    }
+
+    /**
+     * Search users with a query.
+     *
+     * @param query Search query
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseUserCompactView object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<FeedResponseUserCompactView> getUsers(String query) throws ServiceException, IOException, IllegalArgumentException {
+        if (query == null) {
+            throw new IllegalArgumentException("Parameter query is required and cannot be null.");
+        }
+        final Integer cursor = null;
+        final Integer limit = null;
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getUsers(query, cursor, limit, appkey, authorization);
+        return getUsersDelegate(call.execute());
+    }
+
+    /**
+     * Search users with a query.
+     *
+     * @param query Search query
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getUsersAsync(String query, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (query == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter query is required and cannot be null."));
+            return null;
+        }
+        final Integer cursor = null;
+        final Integer limit = null;
+        final String appkey = null;
+        final String authorization = null;
+        Call<ResponseBody> call = service.getUsers(query, cursor, limit, appkey, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<FeedResponseUserCompactView>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getUsersDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
     }
 
     /**

@@ -54,7 +54,7 @@
             "required": true,
             "schema": {
               "format": "file",
-              "type": "object"
+              "type": "file"
             }
           }
         ],
@@ -571,7 +571,7 @@
             "required": true,
             "schema": {
               "format": "file",
-              "type": "object"
+              "type": "file"
             }
           }
         ],
@@ -4194,7 +4194,7 @@
         "tags": [
           "Users"
         ],
-        "summary": "Create a new user using the following flow:\r\n                1. Validate and parse the identity provider access token to construct an identity provider user\r\n                2. If identity provider user present in linked account table, read user profile for this specific application from user profile table\r\n                3.    If user profile exists, return user conflict\r\n                4.    Otherwise, it means that the user does not have a profile for this particular application. Create one.\r\n                5. Otherwise, the identity provider user is not present. Create the user, and its user profile.\r\n                6. Generate session token, and return\r\n            The purpose of steps 2-4 is to ensure that if the user has already registered with us using the same identity provider\r\n            but for a different SocialPlus application, we reuse his user-handle and just resume to create a new profile for this specific \r\n            SocialPlus application. The end result is that we know it is the same user in both apps.",
+        "summary": "Create a new user using the following flow:\r\n                1. Validate and parse the identity provider access token to construct an identity provider user\r\n                2. If identity provider user present in linked account table, read user profile for this specific application from user profile table\r\n                3.    If user profile exists, return user conflict\r\n                4.    Otherwise, it means that the user does not have a profile for this particular application. Create one.\r\n                5. Otherwise, the identity provider user is not present. Create the user, and its user profile.\r\n                6. Generate session token, and return\r\n            The purpose of steps 2-4 is to ensure that if the user has already registered with us using the same identity provider\r\n            but for a different SocialPlus application, we reuse his user-handle and just resume to create a new profile for this specific\r\n            SocialPlus application. The end result is that we know it is the same user in both apps.",
         "operationId": "Users_PostUser",
         "consumes": [
           "application/json",

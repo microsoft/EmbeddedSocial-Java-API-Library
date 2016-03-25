@@ -23,6 +23,26 @@ public interface SearchOperations {
      * Search topics with a query.
      *
      * @param query Search query
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<FeedResponseTopicView> getTopics(String query) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Search topics with a query.
+     *
+     * @param query Search query
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getTopicsAsync(String query, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException;
+    /**
+     * Search topics with a query.
+     *
+     * @param query Search query
      * @param cursor Current read cursor
      * @param limit Number of items to return
      * @param appkey App Key Authentication
@@ -48,6 +68,26 @@ public interface SearchOperations {
      */
     ServiceCall getTopicsAsync(String query, Integer cursor, Integer limit, String appkey, String authorization, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException;
 
+    /**
+     * Search users with a query.
+     *
+     * @param query Search query
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseUserCompactView object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<FeedResponseUserCompactView> getUsers(String query) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Search users with a query.
+     *
+     * @param query Search query
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getUsersAsync(String query, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException;
     /**
      * Search users with a query.
      *
