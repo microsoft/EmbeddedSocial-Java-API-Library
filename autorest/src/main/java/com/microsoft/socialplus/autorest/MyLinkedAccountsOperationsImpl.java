@@ -58,23 +58,25 @@ public final class MyLinkedAccountsOperationsImpl implements MyLinkedAccountsOpe
      */
     interface MyLinkedAccountsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/users/me/linked_accounts")
-        Call<ResponseBody> getLinkedAccounts(@Header("Authorization") String authorization);
+        @GET("v0.3/users/me/linked_accounts")
+        Call<ResponseBody> getLinkedAccounts(@Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.2/users/me/linked_accounts")
-        Call<ResponseBody> postLinkedAccount(@Body PostLinkedAccountRequest request, @Header("Authorization") String authorization);
+        @POST("v0.3/users/me/linked_accounts")
+        Call<ResponseBody> postLinkedAccount(@Body PostLinkedAccountRequest request, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.2/users/me/linked_accounts/{identityProvider}", method = "DELETE", hasBody = true)
-        Call<ResponseBody> deleteLinkedAccount(@Path("identityProvider") String identityProvider, @Header("Authorization") String authorization);
+        @HTTP(path = "v0.3/users/me/linked_accounts/{identityProvider}", method = "DELETE", hasBody = true)
+        Call<ResponseBody> deleteLinkedAccount(@Path("identityProvider") IdentityProvider identityProvider, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
     }
 
     /**
      * Get linked accounts.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -84,14 +86,18 @@ public final class MyLinkedAccountsOperationsImpl implements MyLinkedAccountsOpe
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getLinkedAccounts(authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getLinkedAccounts(appkey, authorization, userHandle);
         return getLinkedAccountsDelegate(call.execute());
     }
 
     /**
      * Get linked accounts.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -104,7 +110,65 @@ public final class MyLinkedAccountsOperationsImpl implements MyLinkedAccountsOpe
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getLinkedAccounts(authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getLinkedAccounts(appkey, authorization, userHandle);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<List<LinkedAccountView>>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getLinkedAccountsDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Get linked accounts.
+     *
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the List&lt;LinkedAccountView&gt; object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<List<LinkedAccountView>> getLinkedAccounts(String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.getLinkedAccounts(appkey, authorization, userHandle);
+        return getLinkedAccountsDelegate(call.execute());
+    }
+
+    /**
+     * Get linked accounts.
+     *
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getLinkedAccountsAsync(String authorization, String appkey, String userHandle, final ServiceCallback<List<LinkedAccountView>> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Call<ResponseBody> call = service.getLinkedAccounts(appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<List<LinkedAccountView>>(serviceCallback) {
             @Override
@@ -132,7 +196,9 @@ public final class MyLinkedAccountsOperationsImpl implements MyLinkedAccountsOpe
      * Create a new linked account.
      *
      * @param request Post linked account request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -146,7 +212,9 @@ public final class MyLinkedAccountsOperationsImpl implements MyLinkedAccountsOpe
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         Validator.validate(request);
-        Call<ResponseBody> call = service.postLinkedAccount(request, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.postLinkedAccount(request, appkey, authorization, userHandle);
         return postLinkedAccountDelegate(call.execute());
     }
 
@@ -154,7 +222,9 @@ public final class MyLinkedAccountsOperationsImpl implements MyLinkedAccountsOpe
      * Create a new linked account.
      *
      * @param request Post linked account request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -172,7 +242,76 @@ public final class MyLinkedAccountsOperationsImpl implements MyLinkedAccountsOpe
             return null;
         }
         Validator.validate(request, serviceCallback);
-        Call<ResponseBody> call = service.postLinkedAccount(request, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.postLinkedAccount(request, appkey, authorization, userHandle);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(postLinkedAccountDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Create a new linked account.
+     *
+     * @param request Post linked account request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the Object object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<Object> postLinkedAccount(PostLinkedAccountRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (request == null) {
+            throw new IllegalArgumentException("Parameter request is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Validator.validate(request);
+        Call<ResponseBody> call = service.postLinkedAccount(request, appkey, authorization, userHandle);
+        return postLinkedAccountDelegate(call.execute());
+    }
+
+    /**
+     * Create a new linked account.
+     *
+     * @param request Post linked account request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall postLinkedAccountAsync(PostLinkedAccountRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (request == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter request is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Validator.validate(request, serviceCallback);
+        Call<ResponseBody> call = service.postLinkedAccount(request, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
@@ -201,7 +340,9 @@ public final class MyLinkedAccountsOperationsImpl implements MyLinkedAccountsOpe
      * Delete linked account.
      *
      * @param identityProvider Identity provider type. Possible values include: 'Facebook', 'Microsoft', 'Google', 'Twitter', 'Beihai'
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -214,7 +355,9 @@ public final class MyLinkedAccountsOperationsImpl implements MyLinkedAccountsOpe
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.deleteLinkedAccount(this.client.getMapperAdapter().serializeRaw(identityProvider), authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.deleteLinkedAccount(identityProvider, appkey, authorization, userHandle);
         return deleteLinkedAccountDelegate(call.execute());
     }
 
@@ -222,7 +365,9 @@ public final class MyLinkedAccountsOperationsImpl implements MyLinkedAccountsOpe
      * Delete linked account.
      *
      * @param identityProvider Identity provider type. Possible values include: 'Facebook', 'Microsoft', 'Google', 'Twitter', 'Beihai'
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -239,7 +384,74 @@ public final class MyLinkedAccountsOperationsImpl implements MyLinkedAccountsOpe
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.deleteLinkedAccount(this.client.getMapperAdapter().serializeRaw(identityProvider), authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.deleteLinkedAccount(identityProvider, appkey, authorization, userHandle);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(deleteLinkedAccountDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Delete linked account.
+     *
+     * @param identityProvider Identity provider type. Possible values include: 'Facebook', 'Microsoft', 'Google', 'Twitter', 'Beihai'
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the Object object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<Object> deleteLinkedAccount(IdentityProvider identityProvider, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (identityProvider == null) {
+            throw new IllegalArgumentException("Parameter identityProvider is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.deleteLinkedAccount(identityProvider, appkey, authorization, userHandle);
+        return deleteLinkedAccountDelegate(call.execute());
+    }
+
+    /**
+     * Delete linked account.
+     *
+     * @param identityProvider Identity provider type. Possible values include: 'Facebook', 'Microsoft', 'Google', 'Twitter', 'Beihai'
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall deleteLinkedAccountAsync(IdentityProvider identityProvider, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (identityProvider == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter identityProvider is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Call<ResponseBody> call = service.deleteLinkedAccount(identityProvider, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override

@@ -52,12 +52,12 @@ public final class SearchOperationsImpl implements SearchOperations {
      */
     interface SearchService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/search/topics")
-        Call<ResponseBody> getTopics(@Query("query") String query, @Query("cursor") Integer cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization);
+        @GET("v0.3/search/topics")
+        Call<ResponseBody> getTopics(@Query("query") String query, @Query("cursor") Integer cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/search/users")
-        Call<ResponseBody> getUsers(@Query("query") String query, @Query("cursor") Integer cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization);
+        @GET("v0.3/search/users")
+        Call<ResponseBody> getUsers(@Query("query") String query, @Query("cursor") Integer cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
     }
 
@@ -78,7 +78,8 @@ public final class SearchOperationsImpl implements SearchOperations {
         final Integer limit = null;
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getTopics(query, cursor, limit, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getTopics(query, cursor, limit, appkey, authorization, userHandle);
         return getTopicsDelegate(call.execute());
     }
 
@@ -102,7 +103,8 @@ public final class SearchOperationsImpl implements SearchOperations {
         final Integer limit = null;
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getTopics(query, cursor, limit, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getTopics(query, cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override
@@ -123,18 +125,21 @@ public final class SearchOperationsImpl implements SearchOperations {
      * @param query Search query
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseTopicView> getTopics(String query, Integer cursor, Integer limit, String appkey, String authorization) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseTopicView> getTopics(String query, Integer cursor, Integer limit, String appkey, String authorization, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
         if (query == null) {
             throw new IllegalArgumentException("Parameter query is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getTopics(query, cursor, limit, appkey, authorization);
+        Call<ResponseBody> call = service.getTopics(query, cursor, limit, appkey, authorization, userHandle);
         return getTopicsDelegate(call.execute());
     }
 
@@ -144,13 +149,16 @@ public final class SearchOperationsImpl implements SearchOperations {
      * @param query Search query
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getTopicsAsync(String query, Integer cursor, Integer limit, String appkey, String authorization, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getTopicsAsync(String query, Integer cursor, Integer limit, String appkey, String authorization, String userHandle, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -158,7 +166,7 @@ public final class SearchOperationsImpl implements SearchOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter query is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getTopics(query, cursor, limit, appkey, authorization);
+        Call<ResponseBody> call = service.getTopics(query, cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override
@@ -199,7 +207,8 @@ public final class SearchOperationsImpl implements SearchOperations {
         final Integer limit = null;
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getUsers(query, cursor, limit, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getUsers(query, cursor, limit, appkey, authorization, userHandle);
         return getUsersDelegate(call.execute());
     }
 
@@ -223,7 +232,8 @@ public final class SearchOperationsImpl implements SearchOperations {
         final Integer limit = null;
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getUsers(query, cursor, limit, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getUsers(query, cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseUserCompactView>(serviceCallback) {
             @Override
@@ -244,18 +254,21 @@ public final class SearchOperationsImpl implements SearchOperations {
      * @param query Search query
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseUserCompactView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseUserCompactView> getUsers(String query, Integer cursor, Integer limit, String appkey, String authorization) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseUserCompactView> getUsers(String query, Integer cursor, Integer limit, String appkey, String authorization, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
         if (query == null) {
             throw new IllegalArgumentException("Parameter query is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getUsers(query, cursor, limit, appkey, authorization);
+        Call<ResponseBody> call = service.getUsers(query, cursor, limit, appkey, authorization, userHandle);
         return getUsersDelegate(call.execute());
     }
 
@@ -265,13 +278,16 @@ public final class SearchOperationsImpl implements SearchOperations {
      * @param query Search query
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getUsersAsync(String query, Integer cursor, Integer limit, String appkey, String authorization, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getUsersAsync(String query, Integer cursor, Integer limit, String appkey, String authorization, String userHandle, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -279,7 +295,7 @@ public final class SearchOperationsImpl implements SearchOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter query is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getUsers(query, cursor, limit, appkey, authorization);
+        Call<ResponseBody> call = service.getUsers(query, cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseUserCompactView>(serviceCallback) {
             @Override

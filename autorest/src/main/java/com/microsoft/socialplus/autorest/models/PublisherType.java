@@ -52,4 +52,9 @@ public enum PublisherType {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return toValue();
+    }
 }

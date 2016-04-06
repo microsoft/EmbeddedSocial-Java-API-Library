@@ -63,36 +63,36 @@ public final class UsersOperationsImpl implements UsersOperations {
      */
     interface UsersService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.2/users")
-        Call<ResponseBody> postUser(@Body PostUserRequest request, @Header("appkey") String appkey, @Header("Authorization") String authorization);
+        @POST("v0.3/users")
+        Call<ResponseBody> postUser(@Body PostUserRequest request, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/users/me")
-        Call<ResponseBody> getMyProfile(@Header("Authorization") String authorization);
+        @GET("v0.3/users/me")
+        Call<ResponseBody> getMyProfile(@Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.2/users/me", method = "DELETE", hasBody = true)
-        Call<ResponseBody> deleteUser(@Header("Authorization") String authorization);
+        @HTTP(path = "v0.3/users/me", method = "DELETE", hasBody = true)
+        Call<ResponseBody> deleteUser(@Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @PUT("v0.2/users/me/info")
-        Call<ResponseBody> putUserInfo(@Body PutUserInfoRequest request, @Header("Authorization") String authorization);
+        @PUT("v0.3/users/me/info")
+        Call<ResponseBody> putUserInfo(@Body PutUserInfoRequest request, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @PUT("v0.2/users/me/photo")
-        Call<ResponseBody> putUserPhoto(@Body PutUserPhotoRequest request, @Header("Authorization") String authorization);
+        @PUT("v0.3/users/me/photo")
+        Call<ResponseBody> putUserPhoto(@Body PutUserPhotoRequest request, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @PUT("v0.2/users/me/visibility")
-        Call<ResponseBody> putUserVisibility(@Body PutUserVisibilityRequest request, @Header("Authorization") String authorization);
+        @PUT("v0.3/users/me/visibility")
+        Call<ResponseBody> putUserVisibility(@Body PutUserVisibilityRequest request, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/users/{userHandle}")
-        Call<ResponseBody> getUser(@Path("userHandle") String userHandle, @Header("appkey") String appkey, @Header("Authorization") String authorization);
+        @GET("v0.3/users/{userHandle}")
+        Call<ResponseBody> getUser(@Path("userHandle") String userHandle, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle1);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/users/popular")
-        Call<ResponseBody> getPopularUsers(@Query("cursor") Integer cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization);
+        @GET("v0.3/users/popular")
+        Call<ResponseBody> getPopularUsers(@Query("cursor") Integer cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
     }
 
@@ -121,7 +121,8 @@ public final class UsersOperationsImpl implements UsersOperations {
         Validator.validate(request);
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.postUser(request, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.postUser(request, appkey, authorization, userHandle);
         return postUserDelegate(call.execute());
     }
 
@@ -153,7 +154,8 @@ public final class UsersOperationsImpl implements UsersOperations {
         Validator.validate(request, serviceCallback);
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.postUser(request, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.postUser(request, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<PostUserResponse>(serviceCallback) {
             @Override
@@ -181,19 +183,22 @@ public final class UsersOperationsImpl implements UsersOperations {
      *             SocialPlus application. The end result is that we know it is the same user in both apps.
      *
      * @param request Post user request
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the PostUserResponse object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<PostUserResponse> postUser(PostUserRequest request, String appkey, String authorization) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<PostUserResponse> postUser(PostUserRequest request, String appkey, String authorization, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
         if (request == null) {
             throw new IllegalArgumentException("Parameter request is required and cannot be null.");
         }
         Validator.validate(request);
-        Call<ResponseBody> call = service.postUser(request, appkey, authorization);
+        Call<ResponseBody> call = service.postUser(request, appkey, authorization, userHandle);
         return postUserDelegate(call.execute());
     }
 
@@ -210,13 +215,16 @@ public final class UsersOperationsImpl implements UsersOperations {
      *             SocialPlus application. The end result is that we know it is the same user in both apps.
      *
      * @param request Post user request
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall postUserAsync(PostUserRequest request, String appkey, String authorization, final ServiceCallback<PostUserResponse> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall postUserAsync(PostUserRequest request, String appkey, String authorization, String userHandle, final ServiceCallback<PostUserResponse> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -225,7 +233,7 @@ public final class UsersOperationsImpl implements UsersOperations {
             return null;
         }
         Validator.validate(request, serviceCallback);
-        Call<ResponseBody> call = service.postUser(request, appkey, authorization);
+        Call<ResponseBody> call = service.postUser(request, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<PostUserResponse>(serviceCallback) {
             @Override
@@ -253,7 +261,9 @@ public final class UsersOperationsImpl implements UsersOperations {
     /**
      * Get my profile.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -263,14 +273,18 @@ public final class UsersOperationsImpl implements UsersOperations {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getMyProfile(authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getMyProfile(appkey, authorization, userHandle);
         return getMyProfileDelegate(call.execute());
     }
 
     /**
      * Get my profile.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -283,7 +297,65 @@ public final class UsersOperationsImpl implements UsersOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getMyProfile(authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getMyProfile(appkey, authorization, userHandle);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<UserProfileView>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getMyProfileDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Get my profile.
+     *
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the UserProfileView object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<UserProfileView> getMyProfile(String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.getMyProfile(appkey, authorization, userHandle);
+        return getMyProfileDelegate(call.execute());
+    }
+
+    /**
+     * Get my profile.
+     *
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getMyProfileAsync(String authorization, String appkey, String userHandle, final ServiceCallback<UserProfileView> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Call<ResponseBody> call = service.getMyProfile(appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<UserProfileView>(serviceCallback) {
             @Override
@@ -310,7 +382,9 @@ public final class UsersOperationsImpl implements UsersOperations {
     /**
      * Delete user.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -320,14 +394,18 @@ public final class UsersOperationsImpl implements UsersOperations {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.deleteUser(authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.deleteUser(appkey, authorization, userHandle);
         return deleteUserDelegate(call.execute());
     }
 
     /**
      * Delete user.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -340,7 +418,65 @@ public final class UsersOperationsImpl implements UsersOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.deleteUser(authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.deleteUser(appkey, authorization, userHandle);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(deleteUserDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Delete user.
+     *
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the Object object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<Object> deleteUser(String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.deleteUser(appkey, authorization, userHandle);
+        return deleteUserDelegate(call.execute());
+    }
+
+    /**
+     * Delete user.
+     *
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall deleteUserAsync(String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Call<ResponseBody> call = service.deleteUser(appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
@@ -368,7 +504,9 @@ public final class UsersOperationsImpl implements UsersOperations {
      * Update user info.
      *
      * @param request Put user info request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -382,7 +520,9 @@ public final class UsersOperationsImpl implements UsersOperations {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         Validator.validate(request);
-        Call<ResponseBody> call = service.putUserInfo(request, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.putUserInfo(request, appkey, authorization, userHandle);
         return putUserInfoDelegate(call.execute());
     }
 
@@ -390,7 +530,9 @@ public final class UsersOperationsImpl implements UsersOperations {
      * Update user info.
      *
      * @param request Put user info request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -408,7 +550,76 @@ public final class UsersOperationsImpl implements UsersOperations {
             return null;
         }
         Validator.validate(request, serviceCallback);
-        Call<ResponseBody> call = service.putUserInfo(request, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.putUserInfo(request, appkey, authorization, userHandle);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(putUserInfoDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Update user info.
+     *
+     * @param request Put user info request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the Object object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<Object> putUserInfo(PutUserInfoRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (request == null) {
+            throw new IllegalArgumentException("Parameter request is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Validator.validate(request);
+        Call<ResponseBody> call = service.putUserInfo(request, appkey, authorization, userHandle);
+        return putUserInfoDelegate(call.execute());
+    }
+
+    /**
+     * Update user info.
+     *
+     * @param request Put user info request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall putUserInfoAsync(PutUserInfoRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (request == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter request is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Validator.validate(request, serviceCallback);
+        Call<ResponseBody> call = service.putUserInfo(request, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
@@ -436,7 +647,9 @@ public final class UsersOperationsImpl implements UsersOperations {
      * Update user photo.
      *
      * @param request Put user photo request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -450,7 +663,9 @@ public final class UsersOperationsImpl implements UsersOperations {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         Validator.validate(request);
-        Call<ResponseBody> call = service.putUserPhoto(request, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.putUserPhoto(request, appkey, authorization, userHandle);
         return putUserPhotoDelegate(call.execute());
     }
 
@@ -458,7 +673,9 @@ public final class UsersOperationsImpl implements UsersOperations {
      * Update user photo.
      *
      * @param request Put user photo request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -476,7 +693,76 @@ public final class UsersOperationsImpl implements UsersOperations {
             return null;
         }
         Validator.validate(request, serviceCallback);
-        Call<ResponseBody> call = service.putUserPhoto(request, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.putUserPhoto(request, appkey, authorization, userHandle);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(putUserPhotoDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Update user photo.
+     *
+     * @param request Put user photo request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the Object object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<Object> putUserPhoto(PutUserPhotoRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (request == null) {
+            throw new IllegalArgumentException("Parameter request is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Validator.validate(request);
+        Call<ResponseBody> call = service.putUserPhoto(request, appkey, authorization, userHandle);
+        return putUserPhotoDelegate(call.execute());
+    }
+
+    /**
+     * Update user photo.
+     *
+     * @param request Put user photo request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall putUserPhotoAsync(PutUserPhotoRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (request == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter request is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Validator.validate(request, serviceCallback);
+        Call<ResponseBody> call = service.putUserPhoto(request, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
@@ -504,7 +790,9 @@ public final class UsersOperationsImpl implements UsersOperations {
      * Update user visibility.
      *
      * @param request Put user visibility request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -518,7 +806,9 @@ public final class UsersOperationsImpl implements UsersOperations {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         Validator.validate(request);
-        Call<ResponseBody> call = service.putUserVisibility(request, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.putUserVisibility(request, appkey, authorization, userHandle);
         return putUserVisibilityDelegate(call.execute());
     }
 
@@ -526,7 +816,9 @@ public final class UsersOperationsImpl implements UsersOperations {
      * Update user visibility.
      *
      * @param request Put user visibility request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -544,7 +836,76 @@ public final class UsersOperationsImpl implements UsersOperations {
             return null;
         }
         Validator.validate(request, serviceCallback);
-        Call<ResponseBody> call = service.putUserVisibility(request, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.putUserVisibility(request, appkey, authorization, userHandle);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(putUserVisibilityDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Update user visibility.
+     *
+     * @param request Put user visibility request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the Object object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<Object> putUserVisibility(PutUserVisibilityRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (request == null) {
+            throw new IllegalArgumentException("Parameter request is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Validator.validate(request);
+        Call<ResponseBody> call = service.putUserVisibility(request, appkey, authorization, userHandle);
+        return putUserVisibilityDelegate(call.execute());
+    }
+
+    /**
+     * Update user visibility.
+     *
+     * @param request Put user visibility request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall putUserVisibilityAsync(PutUserVisibilityRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (request == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter request is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Validator.validate(request, serviceCallback);
+        Call<ResponseBody> call = service.putUserVisibility(request, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
@@ -583,7 +944,8 @@ public final class UsersOperationsImpl implements UsersOperations {
         }
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getUser(userHandle, appkey, authorization);
+        final String userHandle1 = null;
+        Call<ResponseBody> call = service.getUser(userHandle, appkey, authorization, userHandle1);
         return getUserDelegate(call.execute());
     }
 
@@ -605,7 +967,8 @@ public final class UsersOperationsImpl implements UsersOperations {
         }
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getUser(userHandle, appkey, authorization);
+        final String userHandle1 = null;
+        Call<ResponseBody> call = service.getUser(userHandle, appkey, authorization, userHandle1);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<UserProfileView>(serviceCallback) {
             @Override
@@ -624,18 +987,21 @@ public final class UsersOperationsImpl implements UsersOperations {
      * Get user profile.
      *
      * @param userHandle User handle
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle1 User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the UserProfileView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<UserProfileView> getUser(String userHandle, String appkey, String authorization) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<UserProfileView> getUser(String userHandle, String appkey, String authorization, String userHandle1) throws ServiceException, IOException, IllegalArgumentException {
         if (userHandle == null) {
             throw new IllegalArgumentException("Parameter userHandle is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getUser(userHandle, appkey, authorization);
+        Call<ResponseBody> call = service.getUser(userHandle, appkey, authorization, userHandle1);
         return getUserDelegate(call.execute());
     }
 
@@ -643,13 +1009,16 @@ public final class UsersOperationsImpl implements UsersOperations {
      * Get user profile.
      *
      * @param userHandle User handle
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle1 User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getUserAsync(String userHandle, String appkey, String authorization, final ServiceCallback<UserProfileView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getUserAsync(String userHandle, String appkey, String authorization, String userHandle1, final ServiceCallback<UserProfileView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -657,7 +1026,7 @@ public final class UsersOperationsImpl implements UsersOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter userHandle is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getUser(userHandle, appkey, authorization);
+        Call<ResponseBody> call = service.getUser(userHandle, appkey, authorization, userHandle1);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<UserProfileView>(serviceCallback) {
             @Override
@@ -694,7 +1063,8 @@ public final class UsersOperationsImpl implements UsersOperations {
         final Integer limit = null;
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getPopularUsers(cursor, limit, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getPopularUsers(cursor, limit, appkey, authorization, userHandle);
         return getPopularUsersDelegate(call.execute());
     }
 
@@ -713,7 +1083,8 @@ public final class UsersOperationsImpl implements UsersOperations {
         final Integer limit = null;
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getPopularUsers(cursor, limit, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getPopularUsers(cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseUserProfileView>(serviceCallback) {
             @Override
@@ -733,14 +1104,17 @@ public final class UsersOperationsImpl implements UsersOperations {
      *
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @return the FeedResponseUserProfileView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseUserProfileView> getPopularUsers(Integer cursor, Integer limit, String appkey, String authorization) throws ServiceException, IOException {
-        Call<ResponseBody> call = service.getPopularUsers(cursor, limit, appkey, authorization);
+    public ServiceResponse<FeedResponseUserProfileView> getPopularUsers(Integer cursor, Integer limit, String appkey, String authorization, String userHandle) throws ServiceException, IOException {
+        Call<ResponseBody> call = service.getPopularUsers(cursor, limit, appkey, authorization, userHandle);
         return getPopularUsersDelegate(call.execute());
     }
 
@@ -749,17 +1123,20 @@ public final class UsersOperationsImpl implements UsersOperations {
      *
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getPopularUsersAsync(Integer cursor, Integer limit, String appkey, String authorization, final ServiceCallback<FeedResponseUserProfileView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getPopularUsersAsync(Integer cursor, Integer limit, String appkey, String authorization, String userHandle, final ServiceCallback<FeedResponseUserProfileView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
-        Call<ResponseBody> call = service.getPopularUsers(cursor, limit, appkey, authorization);
+        Call<ResponseBody> call = service.getPopularUsers(cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseUserProfileView>(serviceCallback) {
             @Override

@@ -61,4 +61,9 @@ public enum IdentityProvider {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return toValue();
+    }
 }

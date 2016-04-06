@@ -313,7 +313,7 @@ public final class SocialPlusClientImpl extends ServiceClient implements SocialP
      * Initializes an instance of SocialPlusClient client.
      */
     public SocialPlusClientImpl() {
-        this("http://localhost:1324");
+        this("http://sp-ppe.cloudapp.net");
     }
 
     /**

@@ -62,32 +62,32 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      */
     interface TopicsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/topics")
-        Call<ResponseBody> getTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization);
+        @GET("v0.3/topics")
+        Call<ResponseBody> getTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.2/topics")
-        Call<ResponseBody> postTopic(@Body PostTopicRequest request, @Header("Authorization") String authorization);
+        @POST("v0.3/topics")
+        Call<ResponseBody> postTopic(@Body PostTopicRequest request, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/topics/{topicHandle}")
-        Call<ResponseBody> getTopic(@Path("topicHandle") String topicHandle, @Header("appkey") String appkey, @Header("Authorization") String authorization);
+        @GET("v0.3/topics/{topicHandle}")
+        Call<ResponseBody> getTopic(@Path("topicHandle") String topicHandle, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @PUT("v0.2/topics/{topicHandle}")
-        Call<ResponseBody> putTopic(@Path("topicHandle") String topicHandle, @Body PutTopicRequest request, @Header("Authorization") String authorization);
+        @PUT("v0.3/topics/{topicHandle}")
+        Call<ResponseBody> putTopic(@Path("topicHandle") String topicHandle, @Body PutTopicRequest request, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.2/topics/{topicHandle}", method = "DELETE", hasBody = true)
-        Call<ResponseBody> deleteTopic(@Path("topicHandle") String topicHandle, @Header("Authorization") String authorization);
+        @HTTP(path = "v0.3/topics/{topicHandle}", method = "DELETE", hasBody = true)
+        Call<ResponseBody> deleteTopic(@Path("topicHandle") String topicHandle, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/topics/popular/{timeRange}")
-        Call<ResponseBody> getPopularTopics(@Path("timeRange") String timeRange, @Query("cursor") Integer cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization);
+        @GET("v0.3/topics/popular/{timeRange}")
+        Call<ResponseBody> getPopularTopics(@Path("timeRange") TimeRange timeRange, @Query("cursor") Integer cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/topics/featured")
-        Call<ResponseBody> getFeaturedTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization);
+        @GET("v0.3/topics/featured")
+        Call<ResponseBody> getFeaturedTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
     }
 
@@ -103,7 +103,8 @@ public final class TopicsOperationsImpl implements TopicsOperations {
         final Integer limit = null;
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization, userHandle);
         return getTopicsDelegate(call.execute());
     }
 
@@ -122,7 +123,8 @@ public final class TopicsOperationsImpl implements TopicsOperations {
         final Integer limit = null;
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override
@@ -142,14 +144,17 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      *
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseTopicView> getTopics(String cursor, Integer limit, String appkey, String authorization) throws ServiceException, IOException {
-        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization);
+    public ServiceResponse<FeedResponseTopicView> getTopics(String cursor, Integer limit, String appkey, String authorization, String userHandle) throws ServiceException, IOException {
+        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization, userHandle);
         return getTopicsDelegate(call.execute());
     }
 
@@ -158,17 +163,20 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      *
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getTopicsAsync(String cursor, Integer limit, String appkey, String authorization, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getTopicsAsync(String cursor, Integer limit, String appkey, String authorization, String userHandle, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
-        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization);
+        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override
@@ -196,7 +204,9 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * Create a new topic.
      *
      * @param request Post topic request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -210,7 +220,9 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         Validator.validate(request);
-        Call<ResponseBody> call = service.postTopic(request, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.postTopic(request, appkey, authorization, userHandle);
         return postTopicDelegate(call.execute());
     }
 
@@ -218,7 +230,9 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * Create a new topic.
      *
      * @param request Post topic request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -236,7 +250,76 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             return null;
         }
         Validator.validate(request, serviceCallback);
-        Call<ResponseBody> call = service.postTopic(request, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.postTopic(request, appkey, authorization, userHandle);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<PostTopicResponse>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(postTopicDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Create a new topic.
+     *
+     * @param request Post topic request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the PostTopicResponse object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<PostTopicResponse> postTopic(PostTopicRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (request == null) {
+            throw new IllegalArgumentException("Parameter request is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Validator.validate(request);
+        Call<ResponseBody> call = service.postTopic(request, appkey, authorization, userHandle);
+        return postTopicDelegate(call.execute());
+    }
+
+    /**
+     * Create a new topic.
+     *
+     * @param request Post topic request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall postTopicAsync(PostTopicRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<PostTopicResponse> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (request == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter request is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Validator.validate(request, serviceCallback);
+        Call<ResponseBody> call = service.postTopic(request, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<PostTopicResponse>(serviceCallback) {
             @Override
@@ -276,7 +359,8 @@ public final class TopicsOperationsImpl implements TopicsOperations {
         }
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getTopic(topicHandle, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getTopic(topicHandle, appkey, authorization, userHandle);
         return getTopicDelegate(call.execute());
     }
 
@@ -298,7 +382,8 @@ public final class TopicsOperationsImpl implements TopicsOperations {
         }
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getTopic(topicHandle, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getTopic(topicHandle, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<TopicView>(serviceCallback) {
             @Override
@@ -317,18 +402,21 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * Get topic.
      *
      * @param topicHandle Topic handle
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the TopicView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<TopicView> getTopic(String topicHandle, String appkey, String authorization) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<TopicView> getTopic(String topicHandle, String appkey, String authorization, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
         if (topicHandle == null) {
             throw new IllegalArgumentException("Parameter topicHandle is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getTopic(topicHandle, appkey, authorization);
+        Call<ResponseBody> call = service.getTopic(topicHandle, appkey, authorization, userHandle);
         return getTopicDelegate(call.execute());
     }
 
@@ -336,13 +424,16 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * Get topic.
      *
      * @param topicHandle Topic handle
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getTopicAsync(String topicHandle, String appkey, String authorization, final ServiceCallback<TopicView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getTopicAsync(String topicHandle, String appkey, String authorization, String userHandle, final ServiceCallback<TopicView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -350,7 +441,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter topicHandle is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getTopic(topicHandle, appkey, authorization);
+        Call<ResponseBody> call = service.getTopic(topicHandle, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<TopicView>(serviceCallback) {
             @Override
@@ -380,7 +471,9 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      *
      * @param topicHandle Topic handle
      * @param request Put topic request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -397,7 +490,9 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         Validator.validate(request);
-        Call<ResponseBody> call = service.putTopic(topicHandle, request, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.putTopic(topicHandle, request, appkey, authorization, userHandle);
         return putTopicDelegate(call.execute());
     }
 
@@ -406,7 +501,9 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      *
      * @param topicHandle Topic handle
      * @param request Put topic request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -428,7 +525,85 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             return null;
         }
         Validator.validate(request, serviceCallback);
-        Call<ResponseBody> call = service.putTopic(topicHandle, request, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.putTopic(topicHandle, request, appkey, authorization, userHandle);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(putTopicDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Update topic.
+     *
+     * @param topicHandle Topic handle
+     * @param request Put topic request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the Object object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<Object> putTopic(String topicHandle, PutTopicRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (topicHandle == null) {
+            throw new IllegalArgumentException("Parameter topicHandle is required and cannot be null.");
+        }
+        if (request == null) {
+            throw new IllegalArgumentException("Parameter request is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Validator.validate(request);
+        Call<ResponseBody> call = service.putTopic(topicHandle, request, appkey, authorization, userHandle);
+        return putTopicDelegate(call.execute());
+    }
+
+    /**
+     * Update topic.
+     *
+     * @param topicHandle Topic handle
+     * @param request Put topic request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall putTopicAsync(String topicHandle, PutTopicRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (topicHandle == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter topicHandle is required and cannot be null."));
+            return null;
+        }
+        if (request == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter request is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Validator.validate(request, serviceCallback);
+        Call<ResponseBody> call = service.putTopic(topicHandle, request, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
@@ -458,7 +633,9 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * Delete topic.
      *
      * @param topicHandle Topic handle
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -471,7 +648,9 @@ public final class TopicsOperationsImpl implements TopicsOperations {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.deleteTopic(topicHandle, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.deleteTopic(topicHandle, appkey, authorization, userHandle);
         return deleteTopicDelegate(call.execute());
     }
 
@@ -479,7 +658,9 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * Delete topic.
      *
      * @param topicHandle Topic handle
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -496,7 +677,74 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.deleteTopic(topicHandle, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.deleteTopic(topicHandle, appkey, authorization, userHandle);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(deleteTopicDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Delete topic.
+     *
+     * @param topicHandle Topic handle
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the Object object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<Object> deleteTopic(String topicHandle, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (topicHandle == null) {
+            throw new IllegalArgumentException("Parameter topicHandle is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.deleteTopic(topicHandle, appkey, authorization, userHandle);
+        return deleteTopicDelegate(call.execute());
+    }
+
+    /**
+     * Delete topic.
+     *
+     * @param topicHandle Topic handle
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall deleteTopicAsync(String topicHandle, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (topicHandle == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter topicHandle is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Call<ResponseBody> call = service.deleteTopic(topicHandle, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
@@ -538,7 +786,8 @@ public final class TopicsOperationsImpl implements TopicsOperations {
         final Integer limit = null;
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getPopularTopics(this.client.getMapperAdapter().serializeRaw(timeRange), cursor, limit, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getPopularTopics(timeRange, cursor, limit, appkey, authorization, userHandle);
         return getPopularTopicsDelegate(call.execute());
     }
 
@@ -562,7 +811,8 @@ public final class TopicsOperationsImpl implements TopicsOperations {
         final Integer limit = null;
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getPopularTopics(this.client.getMapperAdapter().serializeRaw(timeRange), cursor, limit, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getPopularTopics(timeRange, cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override
@@ -583,18 +833,21 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * @param timeRange Time range. Possible values include: 'Today', 'ThisWeek', 'ThisMonth', 'AllTime'
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseTopicView> getPopularTopics(TimeRange timeRange, Integer cursor, Integer limit, String appkey, String authorization) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseTopicView> getPopularTopics(TimeRange timeRange, Integer cursor, Integer limit, String appkey, String authorization, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
         if (timeRange == null) {
             throw new IllegalArgumentException("Parameter timeRange is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getPopularTopics(this.client.getMapperAdapter().serializeRaw(timeRange), cursor, limit, appkey, authorization);
+        Call<ResponseBody> call = service.getPopularTopics(timeRange, cursor, limit, appkey, authorization, userHandle);
         return getPopularTopicsDelegate(call.execute());
     }
 
@@ -604,13 +857,16 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * @param timeRange Time range. Possible values include: 'Today', 'ThisWeek', 'ThisMonth', 'AllTime'
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getPopularTopicsAsync(TimeRange timeRange, Integer cursor, Integer limit, String appkey, String authorization, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getPopularTopicsAsync(TimeRange timeRange, Integer cursor, Integer limit, String appkey, String authorization, String userHandle, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -618,7 +874,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter timeRange is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getPopularTopics(this.client.getMapperAdapter().serializeRaw(timeRange), cursor, limit, appkey, authorization);
+        Call<ResponseBody> call = service.getPopularTopics(timeRange, cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override
@@ -654,7 +910,8 @@ public final class TopicsOperationsImpl implements TopicsOperations {
         final Integer limit = null;
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getFeaturedTopics(cursor, limit, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getFeaturedTopics(cursor, limit, appkey, authorization, userHandle);
         return getFeaturedTopicsDelegate(call.execute());
     }
 
@@ -673,7 +930,8 @@ public final class TopicsOperationsImpl implements TopicsOperations {
         final Integer limit = null;
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getFeaturedTopics(cursor, limit, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getFeaturedTopics(cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override
@@ -693,14 +951,17 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      *
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseTopicView> getFeaturedTopics(String cursor, Integer limit, String appkey, String authorization) throws ServiceException, IOException {
-        Call<ResponseBody> call = service.getFeaturedTopics(cursor, limit, appkey, authorization);
+    public ServiceResponse<FeedResponseTopicView> getFeaturedTopics(String cursor, Integer limit, String appkey, String authorization, String userHandle) throws ServiceException, IOException {
+        Call<ResponseBody> call = service.getFeaturedTopics(cursor, limit, appkey, authorization, userHandle);
         return getFeaturedTopicsDelegate(call.execute());
     }
 
@@ -709,17 +970,20 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      *
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getFeaturedTopicsAsync(String cursor, Integer limit, String appkey, String authorization, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getFeaturedTopicsAsync(String cursor, Integer limit, String appkey, String authorization, String userHandle, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
-        Call<ResponseBody> call = service.getFeaturedTopics(cursor, limit, appkey, authorization);
+        Call<ResponseBody> call = service.getFeaturedTopics(cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override

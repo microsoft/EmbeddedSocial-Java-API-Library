@@ -58,4 +58,9 @@ public enum BlobType {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return toValue();
+    }
 }
