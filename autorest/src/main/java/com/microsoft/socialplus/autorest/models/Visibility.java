@@ -52,4 +52,9 @@ public enum Visibility {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return toValue();
+    }
 }

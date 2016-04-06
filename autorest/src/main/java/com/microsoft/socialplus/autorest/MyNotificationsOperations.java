@@ -24,7 +24,9 @@ public interface MyNotificationsOperations {
      * Update notifications status.
      *
      * @param request Put notifications status request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -36,17 +38,51 @@ public interface MyNotificationsOperations {
      * Update notifications status.
      *
      * @param request Put notifications status request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
     ServiceCall putNotificationsStatusAsync(PutNotificationsStatusRequest request, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
+    /**
+     * Update notifications status.
+     *
+     * @param request Put notifications status request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the Object object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<Object> putNotificationsStatus(PutNotificationsStatusRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Update notifications status.
+     *
+     * @param request Put notifications status request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall putNotificationsStatusAsync(PutNotificationsStatusRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
 
     /**
      * Get notifications.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -57,7 +93,9 @@ public interface MyNotificationsOperations {
     /**
      * Get notifications.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
@@ -66,32 +104,42 @@ public interface MyNotificationsOperations {
     /**
      * Get notifications.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param cursor Current read cursor
      * @param limit Number of items to return
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseActivityView object wrapped in {@link ServiceResponse} if successful.
      */
-    ServiceResponse<FeedResponseActivityView> getNotifications(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException;
+    ServiceResponse<FeedResponseActivityView> getNotifications(String authorization, String cursor, Integer limit, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
      * Get notifications.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param cursor Current read cursor
      * @param limit Number of items to return
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
-    ServiceCall getNotificationsAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseActivityView> serviceCallback) throws IllegalArgumentException;
+    ServiceCall getNotificationsAsync(String authorization, String cursor, Integer limit, String appkey, String userHandle, final ServiceCallback<FeedResponseActivityView> serviceCallback) throws IllegalArgumentException;
 
     /**
      * Get unread notifications count.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -102,11 +150,41 @@ public interface MyNotificationsOperations {
     /**
      * Get unread notifications count.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
     ServiceCall getNotificationsCountAsync(String authorization, final ServiceCallback<CountResponse> serviceCallback) throws IllegalArgumentException;
+    /**
+     * Get unread notifications count.
+     *
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the CountResponse object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<CountResponse> getNotificationsCount(String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Get unread notifications count.
+     *
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getNotificationsCountAsync(String authorization, String appkey, String userHandle, final ServiceCallback<CountResponse> serviceCallback) throws IllegalArgumentException;
 
 }

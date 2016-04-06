@@ -22,7 +22,9 @@ public interface UserFollowingOperations {
      * Get following users of a user.
      *
      * @param userHandle User handle
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -34,7 +36,9 @@ public interface UserFollowingOperations {
      * Get following users of a user.
      *
      * @param userHandle User handle
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
@@ -44,27 +48,35 @@ public interface UserFollowingOperations {
      * Get following users of a user.
      *
      * @param userHandle User handle
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param cursor Current read cursor
      * @param limit Number of items to return
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle1 User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseUserCompactView object wrapped in {@link ServiceResponse} if successful.
      */
-    ServiceResponse<FeedResponseUserCompactView> getFollowing(String userHandle, String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException;
+    ServiceResponse<FeedResponseUserCompactView> getFollowing(String userHandle, String authorization, String cursor, Integer limit, String appkey, String userHandle1) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
      * Get following users of a user.
      *
      * @param userHandle User handle
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param cursor Current read cursor
      * @param limit Number of items to return
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle1 User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
-    ServiceCall getFollowingAsync(String userHandle, String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException;
+    ServiceCall getFollowingAsync(String userHandle, String authorization, String cursor, Integer limit, String appkey, String userHandle1, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException;
 
 }

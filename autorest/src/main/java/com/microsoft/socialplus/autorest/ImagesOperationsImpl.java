@@ -58,13 +58,13 @@ public final class ImagesOperationsImpl implements ImagesOperations {
      */
     interface ImagesService {
         @Headers("Content-Type: image/gif")
-        @POST("v0.2/images/{imageType}")
-        Call<ResponseBody> postImage(@Path("imageType") String imageType, @Header("Authorization") String authorization, @Body RequestBody image);
+        @POST("v0.3/images/{imageType}")
+        Call<ResponseBody> postImage(@Path("imageType") ImageType imageType, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle, @Body RequestBody image);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/images/{blobHandle}")
+        @GET("v0.3/images/{blobHandle}")
         @Streaming
-        Call<ResponseBody> getImage(@Path("blobHandle") String blobHandle, @Header("appkey") String appkey, @Header("Authorization") String authorization);
+        Call<ResponseBody> getImage(@Path("blobHandle") String blobHandle, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
     }
 
@@ -83,7 +83,9 @@ public final class ImagesOperationsImpl implements ImagesOperations {
      * &lt;para&gt;All resized images will maintain their aspect ratio. Any orientation specified in the EXIF headers will be honored.&lt;/para&gt;.
      *
      * @param imageType Image type. Possible values include: 'UserPhoto', 'ContentBlob', 'AppIcon'
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param image MIME encoded contents of the image
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
@@ -100,7 +102,10 @@ public final class ImagesOperationsImpl implements ImagesOperations {
         if (image == null) {
             throw new IllegalArgumentException("Parameter image is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.postImage(this.client.getMapperAdapter().serializeRaw(imageType), authorization, RequestBody.create(MediaType.parse("image/gif"), image));
+        final String appkey = null;
+        final String userHandle = null;
+        RequestBody imageConverted = RequestBody.create(MediaType.parse("image/gif"), image);
+        Call<ResponseBody> call = service.postImage(imageType, appkey, authorization, userHandle, imageConverted);
         return postImageDelegate(call.execute());
     }
 
@@ -119,7 +124,9 @@ public final class ImagesOperationsImpl implements ImagesOperations {
      * &lt;para&gt;All resized images will maintain their aspect ratio. Any orientation specified in the EXIF headers will be honored.&lt;/para&gt;.
      *
      * @param imageType Image type. Possible values include: 'UserPhoto', 'ContentBlob', 'AppIcon'
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param image MIME encoded contents of the image
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
@@ -141,7 +148,108 @@ public final class ImagesOperationsImpl implements ImagesOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter image is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.postImage(this.client.getMapperAdapter().serializeRaw(imageType), authorization, RequestBody.create(MediaType.parse("image/gif"), image));
+        final String appkey = null;
+        final String userHandle = null;
+        RequestBody imageConverted = RequestBody.create(MediaType.parse("image/gif"), image);
+        Call<ResponseBody> call = service.postImage(imageType, appkey, authorization, userHandle, imageConverted);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<PostImageResponse>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(postImageDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Upload a new image.
+     * &lt;para&gt;Images will be resized. To access a resized image, append the 1 character size identifier to the blobHandle that is returned.&lt;/para&gt;
+     * &lt;para&gt;d = 25 pixels wide&lt;/para&gt;
+     * &lt;para&gt;h = 50 pixels wide&lt;/para&gt;
+     * &lt;para&gt;l = 100 pixels wide&lt;/para&gt;
+     * &lt;para&gt;p = 250 pixels wide&lt;/para&gt;
+     * &lt;para&gt;t = 500 pixels wide&lt;/para&gt;
+     * &lt;para&gt;x = 1000 pixels wide&lt;/para&gt;
+     * &lt;para&gt;ImageType.UserPhoto supports d,h,l,p,t,x&lt;/para&gt;
+     * &lt;para&gt;ImageType.ContentBlob supports d,h,l,p,t,x&lt;/para&gt;
+     * &lt;para&gt;ImageType.AppIcon supports l&lt;/para&gt;
+     * &lt;para&gt;All resized images will maintain their aspect ratio. Any orientation specified in the EXIF headers will be honored.&lt;/para&gt;.
+     *
+     * @param imageType Image type. Possible values include: 'UserPhoto', 'ContentBlob', 'AppIcon'
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param image MIME encoded contents of the image
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the PostImageResponse object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<PostImageResponse> postImage(ImageType imageType, String authorization, byte[] image, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (imageType == null) {
+            throw new IllegalArgumentException("Parameter imageType is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        if (image == null) {
+            throw new IllegalArgumentException("Parameter image is required and cannot be null.");
+        }
+        RequestBody imageConverted = RequestBody.create(MediaType.parse("image/gif"), image);
+        Call<ResponseBody> call = service.postImage(imageType, appkey, authorization, userHandle, imageConverted);
+        return postImageDelegate(call.execute());
+    }
+
+    /**
+     * Upload a new image.
+     * &lt;para&gt;Images will be resized. To access a resized image, append the 1 character size identifier to the blobHandle that is returned.&lt;/para&gt;
+     * &lt;para&gt;d = 25 pixels wide&lt;/para&gt;
+     * &lt;para&gt;h = 50 pixels wide&lt;/para&gt;
+     * &lt;para&gt;l = 100 pixels wide&lt;/para&gt;
+     * &lt;para&gt;p = 250 pixels wide&lt;/para&gt;
+     * &lt;para&gt;t = 500 pixels wide&lt;/para&gt;
+     * &lt;para&gt;x = 1000 pixels wide&lt;/para&gt;
+     * &lt;para&gt;ImageType.UserPhoto supports d,h,l,p,t,x&lt;/para&gt;
+     * &lt;para&gt;ImageType.ContentBlob supports d,h,l,p,t,x&lt;/para&gt;
+     * &lt;para&gt;ImageType.AppIcon supports l&lt;/para&gt;
+     * &lt;para&gt;All resized images will maintain their aspect ratio. Any orientation specified in the EXIF headers will be honored.&lt;/para&gt;.
+     *
+     * @param imageType Image type. Possible values include: 'UserPhoto', 'ContentBlob', 'AppIcon'
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param image MIME encoded contents of the image
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall postImageAsync(ImageType imageType, String authorization, byte[] image, String appkey, String userHandle, final ServiceCallback<PostImageResponse> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (imageType == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter imageType is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        if (image == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter image is required and cannot be null."));
+            return null;
+        }
+        RequestBody imageConverted = RequestBody.create(MediaType.parse("image/gif"), image);
+        Call<ResponseBody> call = service.postImage(imageType, appkey, authorization, userHandle, imageConverted);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<PostImageResponse>(serviceCallback) {
             @Override
@@ -180,7 +288,8 @@ public final class ImagesOperationsImpl implements ImagesOperations {
         }
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getImage(blobHandle, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getImage(blobHandle, appkey, authorization, userHandle);
         return getImageDelegate(call.execute());
     }
 
@@ -202,7 +311,8 @@ public final class ImagesOperationsImpl implements ImagesOperations {
         }
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getImage(blobHandle, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getImage(blobHandle, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<InputStream>(serviceCallback) {
             @Override
@@ -221,18 +331,21 @@ public final class ImagesOperationsImpl implements ImagesOperations {
      * Get image.
      *
      * @param blobHandle Blob handle
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the InputStream object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<InputStream> getImage(String blobHandle, String appkey, String authorization) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<InputStream> getImage(String blobHandle, String appkey, String authorization, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
         if (blobHandle == null) {
             throw new IllegalArgumentException("Parameter blobHandle is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getImage(blobHandle, appkey, authorization);
+        Call<ResponseBody> call = service.getImage(blobHandle, appkey, authorization, userHandle);
         return getImageDelegate(call.execute());
     }
 
@@ -240,13 +353,16 @@ public final class ImagesOperationsImpl implements ImagesOperations {
      * Get image.
      *
      * @param blobHandle Blob handle
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getImageAsync(String blobHandle, String appkey, String authorization, final ServiceCallback<InputStream> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getImageAsync(String blobHandle, String appkey, String authorization, String userHandle, final ServiceCallback<InputStream> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -254,7 +370,7 @@ public final class ImagesOperationsImpl implements ImagesOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter blobHandle is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getImage(blobHandle, appkey, authorization);
+        Call<ResponseBody> call = service.getImage(blobHandle, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<InputStream>(serviceCallback) {
             @Override

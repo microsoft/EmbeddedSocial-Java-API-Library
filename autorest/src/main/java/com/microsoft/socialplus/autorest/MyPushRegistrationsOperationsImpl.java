@@ -55,12 +55,12 @@ public final class MyPushRegistrationsOperationsImpl implements MyPushRegistrati
      */
     interface MyPushRegistrationsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @PUT("v0.2/users/me/push_registrations/{platform}/{registrationId}")
-        Call<ResponseBody> putPushRegistration(@Path("platform") String platform, @Path("registrationId") String registrationId, @Body PutPushRegistrationRequest request, @Header("Authorization") String authorization);
+        @PUT("v0.3/users/me/push_registrations/{platform}/{registrationId}")
+        Call<ResponseBody> putPushRegistration(@Path("platform") Platform platform, @Path("registrationId") String registrationId, @Body PutPushRegistrationRequest request, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.2/users/me/push_registrations/{platform}/{registrationId}", method = "DELETE", hasBody = true)
-        Call<ResponseBody> deletePushRegistration(@Path("platform") String platform, @Path("registrationId") String registrationId, @Header("Authorization") String authorization);
+        @HTTP(path = "v0.3/users/me/push_registrations/{platform}/{registrationId}", method = "DELETE", hasBody = true)
+        Call<ResponseBody> deletePushRegistration(@Path("platform") Platform platform, @Path("registrationId") String registrationId, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
     }
 
@@ -68,12 +68,15 @@ public final class MyPushRegistrationsOperationsImpl implements MyPushRegistrati
      * Register for push notifications or update existing registration.
      *
      * @param platform Platform type. Possible values include: 'Windows', 'Android', 'IOS'
-     * @param registrationId Unique registration id provided by the mobile OS.
+     * @param registrationId Unique registration ID provided by the mobile OS.
+                 You must URL encode the registration ID.
                  For Android, this is the GCM registration ID.
                  For Windows, this is the PushNotificationChannel URI.
                  For iOS, this is the device token.
      * @param request Put push registration request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -93,7 +96,9 @@ public final class MyPushRegistrationsOperationsImpl implements MyPushRegistrati
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         Validator.validate(request);
-        Call<ResponseBody> call = service.putPushRegistration(this.client.getMapperAdapter().serializeRaw(platform), registrationId, request, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.putPushRegistration(platform, registrationId, request, appkey, authorization, userHandle);
         return putPushRegistrationDelegate(call.execute());
     }
 
@@ -101,12 +106,15 @@ public final class MyPushRegistrationsOperationsImpl implements MyPushRegistrati
      * Register for push notifications or update existing registration.
      *
      * @param platform Platform type. Possible values include: 'Windows', 'Android', 'IOS'
-     * @param registrationId Unique registration id provided by the mobile OS.
+     * @param registrationId Unique registration ID provided by the mobile OS.
+                 You must URL encode the registration ID.
                  For Android, this is the GCM registration ID.
                  For Windows, this is the PushNotificationChannel URI.
                  For iOS, this is the device token.
      * @param request Put push registration request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -132,7 +140,102 @@ public final class MyPushRegistrationsOperationsImpl implements MyPushRegistrati
             return null;
         }
         Validator.validate(request, serviceCallback);
-        Call<ResponseBody> call = service.putPushRegistration(this.client.getMapperAdapter().serializeRaw(platform), registrationId, request, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.putPushRegistration(platform, registrationId, request, appkey, authorization, userHandle);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(putPushRegistrationDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Register for push notifications or update existing registration.
+     *
+     * @param platform Platform type. Possible values include: 'Windows', 'Android', 'IOS'
+     * @param registrationId Unique registration ID provided by the mobile OS.
+                 You must URL encode the registration ID.
+                 For Android, this is the GCM registration ID.
+                 For Windows, this is the PushNotificationChannel URI.
+                 For iOS, this is the device token.
+     * @param request Put push registration request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the Object object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<Object> putPushRegistration(Platform platform, String registrationId, PutPushRegistrationRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (platform == null) {
+            throw new IllegalArgumentException("Parameter platform is required and cannot be null.");
+        }
+        if (registrationId == null) {
+            throw new IllegalArgumentException("Parameter registrationId is required and cannot be null.");
+        }
+        if (request == null) {
+            throw new IllegalArgumentException("Parameter request is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Validator.validate(request);
+        Call<ResponseBody> call = service.putPushRegistration(platform, registrationId, request, appkey, authorization, userHandle);
+        return putPushRegistrationDelegate(call.execute());
+    }
+
+    /**
+     * Register for push notifications or update existing registration.
+     *
+     * @param platform Platform type. Possible values include: 'Windows', 'Android', 'IOS'
+     * @param registrationId Unique registration ID provided by the mobile OS.
+                 You must URL encode the registration ID.
+                 For Android, this is the GCM registration ID.
+                 For Windows, this is the PushNotificationChannel URI.
+                 For iOS, this is the device token.
+     * @param request Put push registration request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall putPushRegistrationAsync(Platform platform, String registrationId, PutPushRegistrationRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (platform == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter platform is required and cannot be null."));
+            return null;
+        }
+        if (registrationId == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter registrationId is required and cannot be null."));
+            return null;
+        }
+        if (request == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter request is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Validator.validate(request, serviceCallback);
+        Call<ResponseBody> call = service.putPushRegistration(platform, registrationId, request, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
@@ -160,11 +263,14 @@ public final class MyPushRegistrationsOperationsImpl implements MyPushRegistrati
      * Unregister from push notifications.
      *
      * @param platform Platform type. Possible values include: 'Windows', 'Android', 'IOS'
-     * @param registrationId Unique registration id provided by the mobile OS.
+     * @param registrationId Unique registration ID provided by the mobile OS.
+                 You must URL encode the registration ID.
                  For Android, this is the GCM registration ID.
                  For Windows, this is the PushNotificationChannel URI.
                  For iOS, this is the device token.
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -180,7 +286,9 @@ public final class MyPushRegistrationsOperationsImpl implements MyPushRegistrati
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.deletePushRegistration(this.client.getMapperAdapter().serializeRaw(platform), registrationId, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.deletePushRegistration(platform, registrationId, appkey, authorization, userHandle);
         return deletePushRegistrationDelegate(call.execute());
     }
 
@@ -188,11 +296,14 @@ public final class MyPushRegistrationsOperationsImpl implements MyPushRegistrati
      * Unregister from push notifications.
      *
      * @param platform Platform type. Possible values include: 'Windows', 'Android', 'IOS'
-     * @param registrationId Unique registration id provided by the mobile OS.
+     * @param registrationId Unique registration ID provided by the mobile OS.
+                 You must URL encode the registration ID.
                  For Android, this is the GCM registration ID.
                  For Windows, this is the PushNotificationChannel URI.
                  For iOS, this is the device token.
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -213,7 +324,91 @@ public final class MyPushRegistrationsOperationsImpl implements MyPushRegistrati
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.deletePushRegistration(this.client.getMapperAdapter().serializeRaw(platform), registrationId, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.deletePushRegistration(platform, registrationId, appkey, authorization, userHandle);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(deletePushRegistrationDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Unregister from push notifications.
+     *
+     * @param platform Platform type. Possible values include: 'Windows', 'Android', 'IOS'
+     * @param registrationId Unique registration ID provided by the mobile OS.
+                 You must URL encode the registration ID.
+                 For Android, this is the GCM registration ID.
+                 For Windows, this is the PushNotificationChannel URI.
+                 For iOS, this is the device token.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the Object object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<Object> deletePushRegistration(Platform platform, String registrationId, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (platform == null) {
+            throw new IllegalArgumentException("Parameter platform is required and cannot be null.");
+        }
+        if (registrationId == null) {
+            throw new IllegalArgumentException("Parameter registrationId is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.deletePushRegistration(platform, registrationId, appkey, authorization, userHandle);
+        return deletePushRegistrationDelegate(call.execute());
+    }
+
+    /**
+     * Unregister from push notifications.
+     *
+     * @param platform Platform type. Possible values include: 'Windows', 'Android', 'IOS'
+     * @param registrationId Unique registration ID provided by the mobile OS.
+                 You must URL encode the registration ID.
+                 For Android, this is the GCM registration ID.
+                 For Windows, this is the PushNotificationChannel URI.
+                 For iOS, this is the device token.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall deletePushRegistrationAsync(Platform platform, String registrationId, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (platform == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter platform is required and cannot be null."));
+            return null;
+        }
+        if (registrationId == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter registrationId is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Call<ResponseBody> call = service.deletePushRegistration(platform, registrationId, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override

@@ -22,7 +22,9 @@ public interface MyPinsOperations {
     /**
      * Get my pins.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -33,7 +35,9 @@ public interface MyPinsOperations {
     /**
      * Get my pins.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
@@ -42,33 +46,43 @@ public interface MyPinsOperations {
     /**
      * Get my pins.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param cursor Current read cursor
      * @param limit Number of items to return
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
      */
-    ServiceResponse<FeedResponseTopicView> getPins(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException;
+    ServiceResponse<FeedResponseTopicView> getPins(String authorization, String cursor, Integer limit, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
      * Get my pins.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param cursor Current read cursor
      * @param limit Number of items to return
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
-    ServiceCall getPinsAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException;
+    ServiceCall getPinsAsync(String authorization, String cursor, Integer limit, String appkey, String userHandle, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException;
 
     /**
      * Pin a topic.
      *
      * @param request Post pin request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -80,18 +94,52 @@ public interface MyPinsOperations {
      * Pin a topic.
      *
      * @param request Post pin request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
     ServiceCall postPinAsync(PostPinRequest request, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
+    /**
+     * Pin a topic.
+     *
+     * @param request Post pin request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the Object object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<Object> postPin(PostPinRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Pin a topic.
+     *
+     * @param request Post pin request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall postPinAsync(PostPinRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
 
     /**
      * Unpin a topic.
      *
      * @param topicHandle Topic handle
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -103,11 +151,43 @@ public interface MyPinsOperations {
      * Unpin a topic.
      *
      * @param topicHandle Topic handle
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
     ServiceCall deletePinAsync(String topicHandle, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
+    /**
+     * Unpin a topic.
+     *
+     * @param topicHandle Topic handle
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the Object object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<Object> deletePin(String topicHandle, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Unpin a topic.
+     *
+     * @param topicHandle Topic handle
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall deletePinAsync(String topicHandle, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
 
 }

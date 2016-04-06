@@ -51,12 +51,12 @@ public final class HashtagsOperationsImpl implements HashtagsOperations {
      */
     interface HashtagsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/hashtags/trending")
-        Call<ResponseBody> getTrendingHashtags(@Header("appkey") String appkey, @Header("Authorization") String authorization);
+        @GET("v0.3/hashtags/trending")
+        Call<ResponseBody> getTrendingHashtags(@Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/hashtags/autocomplete")
-        Call<ResponseBody> getAutocompletedHashtags(@Query("query") String query, @Header("appkey") String appkey, @Header("Authorization") String authorization);
+        @GET("v0.3/hashtags/autocomplete")
+        Call<ResponseBody> getAutocompletedHashtags(@Query("query") String query, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
     }
 
@@ -70,7 +70,8 @@ public final class HashtagsOperationsImpl implements HashtagsOperations {
     public ServiceResponse<List<String>> getTrendingHashtags() throws ServiceException, IOException {
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getTrendingHashtags(appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getTrendingHashtags(appkey, authorization, userHandle);
         return getTrendingHashtagsDelegate(call.execute());
     }
 
@@ -87,7 +88,8 @@ public final class HashtagsOperationsImpl implements HashtagsOperations {
         }
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getTrendingHashtags(appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getTrendingHashtags(appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<List<String>>(serviceCallback) {
             @Override
@@ -105,31 +107,37 @@ public final class HashtagsOperationsImpl implements HashtagsOperations {
     /**
      * Get trending hashtags.
      *
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @return the List&lt;String&gt; object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<List<String>> getTrendingHashtags(String appkey, String authorization) throws ServiceException, IOException {
-        Call<ResponseBody> call = service.getTrendingHashtags(appkey, authorization);
+    public ServiceResponse<List<String>> getTrendingHashtags(String appkey, String authorization, String userHandle) throws ServiceException, IOException {
+        Call<ResponseBody> call = service.getTrendingHashtags(appkey, authorization, userHandle);
         return getTrendingHashtagsDelegate(call.execute());
     }
 
     /**
      * Get trending hashtags.
      *
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getTrendingHashtagsAsync(String appkey, String authorization, final ServiceCallback<List<String>> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getTrendingHashtagsAsync(String appkey, String authorization, String userHandle, final ServiceCallback<List<String>> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
-        Call<ResponseBody> call = service.getTrendingHashtags(appkey, authorization);
+        Call<ResponseBody> call = service.getTrendingHashtags(appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<List<String>>(serviceCallback) {
             @Override
@@ -168,7 +176,8 @@ public final class HashtagsOperationsImpl implements HashtagsOperations {
         }
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getAutocompletedHashtags(query, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getAutocompletedHashtags(query, appkey, authorization, userHandle);
         return getAutocompletedHashtagsDelegate(call.execute());
     }
 
@@ -190,7 +199,8 @@ public final class HashtagsOperationsImpl implements HashtagsOperations {
         }
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getAutocompletedHashtags(query, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getAutocompletedHashtags(query, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<List<String>>(serviceCallback) {
             @Override
@@ -209,18 +219,21 @@ public final class HashtagsOperationsImpl implements HashtagsOperations {
      * Get autocompleted hashtags.
      *
      * @param query Search query
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the List&lt;String&gt; object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<List<String>> getAutocompletedHashtags(String query, String appkey, String authorization) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<List<String>> getAutocompletedHashtags(String query, String appkey, String authorization, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
         if (query == null) {
             throw new IllegalArgumentException("Parameter query is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getAutocompletedHashtags(query, appkey, authorization);
+        Call<ResponseBody> call = service.getAutocompletedHashtags(query, appkey, authorization, userHandle);
         return getAutocompletedHashtagsDelegate(call.execute());
     }
 
@@ -228,13 +241,16 @@ public final class HashtagsOperationsImpl implements HashtagsOperations {
      * Get autocompleted hashtags.
      *
      * @param query Search query
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getAutocompletedHashtagsAsync(String query, String appkey, String authorization, final ServiceCallback<List<String>> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getAutocompletedHashtagsAsync(String query, String appkey, String authorization, String userHandle, final ServiceCallback<List<String>> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -242,7 +258,7 @@ public final class HashtagsOperationsImpl implements HashtagsOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter query is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getAutocompletedHashtags(query, appkey, authorization);
+        Call<ResponseBody> call = service.getAutocompletedHashtags(query, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<List<String>>(serviceCallback) {
             @Override

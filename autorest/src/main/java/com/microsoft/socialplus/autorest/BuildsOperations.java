@@ -41,24 +41,30 @@ public interface BuildsOperations {
      * The build information for this service.
      * This API is meant to be called by humans for debugging.
      *
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @return the BuildsCurrentResponse object wrapped in {@link ServiceResponse} if successful.
      */
-    ServiceResponse<BuildsCurrentResponse> getBuildsCurrent(String appkey, String authorization) throws ServiceException, IOException;
+    ServiceResponse<BuildsCurrentResponse> getBuildsCurrent(String appkey, String authorization, String userHandle) throws ServiceException, IOException;
 
     /**
      * The build information for this service.
      * This API is meant to be called by humans for debugging.
      *
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
-    ServiceCall getBuildsCurrentAsync(String appkey, String authorization, final ServiceCallback<BuildsCurrentResponse> serviceCallback) throws IllegalArgumentException;
+    ServiceCall getBuildsCurrentAsync(String appkey, String authorization, String userHandle, final ServiceCallback<BuildsCurrentResponse> serviceCallback) throws IllegalArgumentException;
 
 }

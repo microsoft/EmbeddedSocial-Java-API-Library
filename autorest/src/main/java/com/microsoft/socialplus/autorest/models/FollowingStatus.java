@@ -58,4 +58,9 @@ public enum FollowingStatus {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return toValue();
+    }
 }

@@ -57,13 +57,13 @@ public final class BlobsOperationsImpl implements BlobsOperations {
      */
     interface BlobsService {
         @Headers("Content-Type: application/octet-stream")
-        @POST("v0.2/blobs")
-        Call<ResponseBody> postBlob(@Header("Authorization") String authorization, @Body RequestBody blob);
+        @POST("v0.3/blobs")
+        Call<ResponseBody> postBlob(@Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle, @Body RequestBody blob);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/blobs/{blobHandle}")
+        @GET("v0.3/blobs/{blobHandle}")
         @Streaming
-        Call<ResponseBody> getBlob(@Path("blobHandle") String blobHandle, @Header("Authorization") String authorization);
+        Call<ResponseBody> getBlob(@Path("blobHandle") String blobHandle, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
     }
 
@@ -71,7 +71,9 @@ public final class BlobsOperationsImpl implements BlobsOperations {
      * Upload a blob.
      * If your blob is an image, use image APIs. For all other blob types, use this API.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param blob MIME encoded contents of the blob
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
@@ -85,7 +87,10 @@ public final class BlobsOperationsImpl implements BlobsOperations {
         if (blob == null) {
             throw new IllegalArgumentException("Parameter blob is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.postBlob(authorization, RequestBody.create(MediaType.parse("application/octet-stream"), blob));
+        final String appkey = null;
+        final String userHandle = null;
+        RequestBody blobConverted = RequestBody.create(MediaType.parse("application/octet-stream"), blob);
+        Call<ResponseBody> call = service.postBlob(appkey, authorization, userHandle, blobConverted);
         return postBlobDelegate(call.execute());
     }
 
@@ -93,7 +98,9 @@ public final class BlobsOperationsImpl implements BlobsOperations {
      * Upload a blob.
      * If your blob is an image, use image APIs. For all other blob types, use this API.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param blob MIME encoded contents of the blob
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
@@ -111,7 +118,79 @@ public final class BlobsOperationsImpl implements BlobsOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter blob is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.postBlob(authorization, RequestBody.create(MediaType.parse("application/octet-stream"), blob));
+        final String appkey = null;
+        final String userHandle = null;
+        RequestBody blobConverted = RequestBody.create(MediaType.parse("application/octet-stream"), blob);
+        Call<ResponseBody> call = service.postBlob(appkey, authorization, userHandle, blobConverted);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<PostBlobResponse>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(postBlobDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Upload a blob.
+     * If your blob is an image, use image APIs. For all other blob types, use this API.
+     *
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param blob MIME encoded contents of the blob
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the PostBlobResponse object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<PostBlobResponse> postBlob(String authorization, byte[] blob, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        if (blob == null) {
+            throw new IllegalArgumentException("Parameter blob is required and cannot be null.");
+        }
+        RequestBody blobConverted = RequestBody.create(MediaType.parse("application/octet-stream"), blob);
+        Call<ResponseBody> call = service.postBlob(appkey, authorization, userHandle, blobConverted);
+        return postBlobDelegate(call.execute());
+    }
+
+    /**
+     * Upload a blob.
+     * If your blob is an image, use image APIs. For all other blob types, use this API.
+     *
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param blob MIME encoded contents of the blob
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall postBlobAsync(String authorization, byte[] blob, String appkey, String userHandle, final ServiceCallback<PostBlobResponse> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        if (blob == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter blob is required and cannot be null."));
+            return null;
+        }
+        RequestBody blobConverted = RequestBody.create(MediaType.parse("application/octet-stream"), blob);
+        Call<ResponseBody> call = service.postBlob(appkey, authorization, userHandle, blobConverted);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<PostBlobResponse>(serviceCallback) {
             @Override
@@ -139,7 +218,9 @@ public final class BlobsOperationsImpl implements BlobsOperations {
      * Get blob.
      *
      * @param blobHandle Blob handle
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -152,7 +233,9 @@ public final class BlobsOperationsImpl implements BlobsOperations {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getBlob(blobHandle, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getBlob(blobHandle, appkey, authorization, userHandle);
         return getBlobDelegate(call.execute());
     }
 
@@ -160,7 +243,9 @@ public final class BlobsOperationsImpl implements BlobsOperations {
      * Get blob.
      *
      * @param blobHandle Blob handle
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -177,7 +262,74 @@ public final class BlobsOperationsImpl implements BlobsOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getBlob(blobHandle, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getBlob(blobHandle, appkey, authorization, userHandle);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<InputStream>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getBlobDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Get blob.
+     *
+     * @param blobHandle Blob handle
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the InputStream object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<InputStream> getBlob(String blobHandle, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (blobHandle == null) {
+            throw new IllegalArgumentException("Parameter blobHandle is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.getBlob(blobHandle, appkey, authorization, userHandle);
+        return getBlobDelegate(call.execute());
+    }
+
+    /**
+     * Get blob.
+     *
+     * @param blobHandle Blob handle
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getBlobAsync(String blobHandle, String authorization, String appkey, String userHandle, final ServiceCallback<InputStream> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (blobHandle == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter blobHandle is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Call<ResponseBody> call = service.getBlob(blobHandle, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<InputStream>(serviceCallback) {
             @Override

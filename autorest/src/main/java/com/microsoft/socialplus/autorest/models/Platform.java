@@ -55,4 +55,9 @@ public enum Platform {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return toValue();
+    }
 }

@@ -54,16 +54,16 @@ public final class ReplyLikesOperationsImpl implements ReplyLikesOperations {
      */
     interface ReplyLikesService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/replies/{replyHandle}/likes")
-        Call<ResponseBody> getLikes(@Path("replyHandle") String replyHandle, @Query("cursor") String cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization);
+        @GET("v0.3/replies/{replyHandle}/likes")
+        Call<ResponseBody> getLikes(@Path("replyHandle") String replyHandle, @Query("cursor") String cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.2/replies/{replyHandle}/likes")
-        Call<ResponseBody> postLike(@Path("replyHandle") String replyHandle, @Header("Authorization") String authorization);
+        @POST("v0.3/replies/{replyHandle}/likes")
+        Call<ResponseBody> postLike(@Path("replyHandle") String replyHandle, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.2/replies/{replyHandle}/likes/me", method = "DELETE", hasBody = true)
-        Call<ResponseBody> deleteLike(@Path("replyHandle") String replyHandle, @Header("Authorization") String authorization);
+        @HTTP(path = "v0.3/replies/{replyHandle}/likes/me", method = "DELETE", hasBody = true)
+        Call<ResponseBody> deleteLike(@Path("replyHandle") String replyHandle, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
     }
 
@@ -84,7 +84,8 @@ public final class ReplyLikesOperationsImpl implements ReplyLikesOperations {
         final Integer limit = null;
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getLikes(replyHandle, cursor, limit, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getLikes(replyHandle, cursor, limit, appkey, authorization, userHandle);
         return getLikesDelegate(call.execute());
     }
 
@@ -108,7 +109,8 @@ public final class ReplyLikesOperationsImpl implements ReplyLikesOperations {
         final Integer limit = null;
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getLikes(replyHandle, cursor, limit, appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getLikes(replyHandle, cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseUserCompactView>(serviceCallback) {
             @Override
@@ -129,18 +131,21 @@ public final class ReplyLikesOperationsImpl implements ReplyLikesOperations {
      * @param replyHandle Reply handle
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseUserCompactView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseUserCompactView> getLikes(String replyHandle, String cursor, Integer limit, String appkey, String authorization) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseUserCompactView> getLikes(String replyHandle, String cursor, Integer limit, String appkey, String authorization, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
         if (replyHandle == null) {
             throw new IllegalArgumentException("Parameter replyHandle is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getLikes(replyHandle, cursor, limit, appkey, authorization);
+        Call<ResponseBody> call = service.getLikes(replyHandle, cursor, limit, appkey, authorization, userHandle);
         return getLikesDelegate(call.execute());
     }
 
@@ -150,13 +155,16 @@ public final class ReplyLikesOperationsImpl implements ReplyLikesOperations {
      * @param replyHandle Reply handle
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getLikesAsync(String replyHandle, String cursor, Integer limit, String appkey, String authorization, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getLikesAsync(String replyHandle, String cursor, Integer limit, String appkey, String authorization, String userHandle, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -164,7 +172,7 @@ public final class ReplyLikesOperationsImpl implements ReplyLikesOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter replyHandle is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getLikes(replyHandle, cursor, limit, appkey, authorization);
+        Call<ResponseBody> call = service.getLikes(replyHandle, cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseUserCompactView>(serviceCallback) {
             @Override
@@ -193,7 +201,9 @@ public final class ReplyLikesOperationsImpl implements ReplyLikesOperations {
      * Add like to reply.
      *
      * @param replyHandle Reply handle
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -206,7 +216,9 @@ public final class ReplyLikesOperationsImpl implements ReplyLikesOperations {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.postLike(replyHandle, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.postLike(replyHandle, appkey, authorization, userHandle);
         return postLikeDelegate(call.execute());
     }
 
@@ -214,7 +226,9 @@ public final class ReplyLikesOperationsImpl implements ReplyLikesOperations {
      * Add like to reply.
      *
      * @param replyHandle Reply handle
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -231,7 +245,74 @@ public final class ReplyLikesOperationsImpl implements ReplyLikesOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.postLike(replyHandle, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.postLike(replyHandle, appkey, authorization, userHandle);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(postLikeDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Add like to reply.
+     *
+     * @param replyHandle Reply handle
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the Object object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<Object> postLike(String replyHandle, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (replyHandle == null) {
+            throw new IllegalArgumentException("Parameter replyHandle is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.postLike(replyHandle, appkey, authorization, userHandle);
+        return postLikeDelegate(call.execute());
+    }
+
+    /**
+     * Add like to reply.
+     *
+     * @param replyHandle Reply handle
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall postLikeAsync(String replyHandle, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (replyHandle == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter replyHandle is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Call<ResponseBody> call = service.postLike(replyHandle, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
@@ -261,7 +342,9 @@ public final class ReplyLikesOperationsImpl implements ReplyLikesOperations {
      * Remove like from reply.
      *
      * @param replyHandle Reply handle
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -274,7 +357,9 @@ public final class ReplyLikesOperationsImpl implements ReplyLikesOperations {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.deleteLike(replyHandle, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.deleteLike(replyHandle, appkey, authorization, userHandle);
         return deleteLikeDelegate(call.execute());
     }
 
@@ -282,7 +367,9 @@ public final class ReplyLikesOperationsImpl implements ReplyLikesOperations {
      * Remove like from reply.
      *
      * @param replyHandle Reply handle
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -299,7 +386,74 @@ public final class ReplyLikesOperationsImpl implements ReplyLikesOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.deleteLike(replyHandle, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.deleteLike(replyHandle, appkey, authorization, userHandle);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(deleteLikeDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Remove like from reply.
+     *
+     * @param replyHandle Reply handle
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the Object object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<Object> deleteLike(String replyHandle, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (replyHandle == null) {
+            throw new IllegalArgumentException("Parameter replyHandle is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.deleteLike(replyHandle, appkey, authorization, userHandle);
+        return deleteLikeDelegate(call.execute());
+    }
+
+    /**
+     * Remove like from reply.
+     *
+     * @param replyHandle Reply handle
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall deleteLikeAsync(String replyHandle, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (replyHandle == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter replyHandle is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Call<ResponseBody> call = service.deleteLike(replyHandle, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override

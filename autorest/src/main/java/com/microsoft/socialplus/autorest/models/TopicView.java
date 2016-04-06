@@ -6,8 +6,8 @@
 
 package com.microsoft.socialplus.autorest.models;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.joda.time.DateTime;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * Topic view.

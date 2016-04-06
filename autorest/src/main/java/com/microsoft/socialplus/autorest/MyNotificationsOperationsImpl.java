@@ -56,16 +56,16 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
      */
     interface MyNotificationsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @PUT("v0.2/users/me/notifications/status")
-        Call<ResponseBody> putNotificationsStatus(@Body PutNotificationsStatusRequest request, @Header("Authorization") String authorization);
+        @PUT("v0.3/users/me/notifications/status")
+        Call<ResponseBody> putNotificationsStatus(@Body PutNotificationsStatusRequest request, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/users/me/notifications")
-        Call<ResponseBody> getNotifications(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
+        @GET("v0.3/users/me/notifications")
+        Call<ResponseBody> getNotifications(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/users/me/notifications/count")
-        Call<ResponseBody> getNotificationsCount(@Header("Authorization") String authorization);
+        @GET("v0.3/users/me/notifications/count")
+        Call<ResponseBody> getNotificationsCount(@Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
     }
 
@@ -73,7 +73,9 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
      * Update notifications status.
      *
      * @param request Put notifications status request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -87,7 +89,9 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         Validator.validate(request);
-        Call<ResponseBody> call = service.putNotificationsStatus(request, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.putNotificationsStatus(request, appkey, authorization, userHandle);
         return putNotificationsStatusDelegate(call.execute());
     }
 
@@ -95,7 +99,9 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
      * Update notifications status.
      *
      * @param request Put notifications status request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -113,7 +119,76 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
             return null;
         }
         Validator.validate(request, serviceCallback);
-        Call<ResponseBody> call = service.putNotificationsStatus(request, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.putNotificationsStatus(request, appkey, authorization, userHandle);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(putNotificationsStatusDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Update notifications status.
+     *
+     * @param request Put notifications status request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the Object object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<Object> putNotificationsStatus(PutNotificationsStatusRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (request == null) {
+            throw new IllegalArgumentException("Parameter request is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Validator.validate(request);
+        Call<ResponseBody> call = service.putNotificationsStatus(request, appkey, authorization, userHandle);
+        return putNotificationsStatusDelegate(call.execute());
+    }
+
+    /**
+     * Update notifications status.
+     *
+     * @param request Put notifications status request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall putNotificationsStatusAsync(PutNotificationsStatusRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (request == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter request is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Validator.validate(request, serviceCallback);
+        Call<ResponseBody> call = service.putNotificationsStatus(request, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
@@ -141,7 +216,9 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
     /**
      * Get notifications.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -153,14 +230,18 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
         }
         final String cursor = null;
         final Integer limit = null;
-        Call<ResponseBody> call = service.getNotifications(cursor, limit, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getNotifications(cursor, limit, appkey, authorization, userHandle);
         return getNotificationsDelegate(call.execute());
     }
 
     /**
      * Get notifications.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -175,7 +256,9 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
         }
         final String cursor = null;
         final Integer limit = null;
-        Call<ResponseBody> call = service.getNotifications(cursor, limit, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getNotifications(cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseActivityView>(serviceCallback) {
             @Override
@@ -193,33 +276,41 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
     /**
      * Get notifications.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param cursor Current read cursor
      * @param limit Number of items to return
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseActivityView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseActivityView> getNotifications(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseActivityView> getNotifications(String authorization, String cursor, Integer limit, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getNotifications(cursor, limit, authorization);
+        Call<ResponseBody> call = service.getNotifications(cursor, limit, appkey, authorization, userHandle);
         return getNotificationsDelegate(call.execute());
     }
 
     /**
      * Get notifications.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param cursor Current read cursor
      * @param limit Number of items to return
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getNotificationsAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseActivityView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getNotificationsAsync(String authorization, String cursor, Integer limit, String appkey, String userHandle, final ServiceCallback<FeedResponseActivityView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -227,7 +318,7 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getNotifications(cursor, limit, authorization);
+        Call<ResponseBody> call = service.getNotifications(cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseActivityView>(serviceCallback) {
             @Override
@@ -254,7 +345,9 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
     /**
      * Get unread notifications count.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -264,14 +357,18 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getNotificationsCount(authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getNotificationsCount(appkey, authorization, userHandle);
         return getNotificationsCountDelegate(call.execute());
     }
 
     /**
      * Get unread notifications count.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -284,7 +381,65 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getNotificationsCount(authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getNotificationsCount(appkey, authorization, userHandle);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<CountResponse>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getNotificationsCountDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Get unread notifications count.
+     *
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the CountResponse object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<CountResponse> getNotificationsCount(String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.getNotificationsCount(appkey, authorization, userHandle);
+        return getNotificationsCountDelegate(call.execute());
+    }
+
+    /**
+     * Get unread notifications count.
+     *
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getNotificationsCountAsync(String authorization, String appkey, String userHandle, final ServiceCallback<CountResponse> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Call<ResponseBody> call = service.getNotificationsCount(appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<CountResponse>(serviceCallback) {
             @Override

@@ -50,8 +50,8 @@ public final class BuildsOperationsImpl implements BuildsOperations {
      */
     interface BuildsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/builds/current")
-        Call<ResponseBody> getBuildsCurrent(@Header("appkey") String appkey, @Header("Authorization") String authorization);
+        @GET("v0.3/builds/current")
+        Call<ResponseBody> getBuildsCurrent(@Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
     }
 
@@ -66,7 +66,8 @@ public final class BuildsOperationsImpl implements BuildsOperations {
     public ServiceResponse<BuildsCurrentResponse> getBuildsCurrent() throws ServiceException, IOException {
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getBuildsCurrent(appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getBuildsCurrent(appkey, authorization, userHandle);
         return getBuildsCurrentDelegate(call.execute());
     }
 
@@ -84,7 +85,8 @@ public final class BuildsOperationsImpl implements BuildsOperations {
         }
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getBuildsCurrent(appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getBuildsCurrent(appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<BuildsCurrentResponse>(serviceCallback) {
             @Override
@@ -103,14 +105,17 @@ public final class BuildsOperationsImpl implements BuildsOperations {
      * The build information for this service.
      * This API is meant to be called by humans for debugging.
      *
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @return the BuildsCurrentResponse object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<BuildsCurrentResponse> getBuildsCurrent(String appkey, String authorization) throws ServiceException, IOException {
-        Call<ResponseBody> call = service.getBuildsCurrent(appkey, authorization);
+    public ServiceResponse<BuildsCurrentResponse> getBuildsCurrent(String appkey, String authorization, String userHandle) throws ServiceException, IOException {
+        Call<ResponseBody> call = service.getBuildsCurrent(appkey, authorization, userHandle);
         return getBuildsCurrentDelegate(call.execute());
     }
 
@@ -118,17 +123,20 @@ public final class BuildsOperationsImpl implements BuildsOperations {
      * The build information for this service.
      * This API is meant to be called by humans for debugging.
      *
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getBuildsCurrentAsync(String appkey, String authorization, final ServiceCallback<BuildsCurrentResponse> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getBuildsCurrentAsync(String appkey, String authorization, String userHandle, final ServiceCallback<BuildsCurrentResponse> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
-        Call<ResponseBody> call = service.getBuildsCurrent(appkey, authorization);
+        Call<ResponseBody> call = service.getBuildsCurrent(appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<BuildsCurrentResponse>(serviceCallback) {
             @Override

@@ -57,23 +57,25 @@ public final class MyBlockedUsersOperationsImpl implements MyBlockedUsersOperati
      */
     interface MyBlockedUsersService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/users/me/blocked_users")
-        Call<ResponseBody> getBlockedUsers(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
+        @GET("v0.3/users/me/blocked_users")
+        Call<ResponseBody> getBlockedUsers(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.2/users/me/blocked_users")
-        Call<ResponseBody> postBlockedUser(@Body PostBlockedUserRequest request, @Header("Authorization") String authorization);
+        @POST("v0.3/users/me/blocked_users")
+        Call<ResponseBody> postBlockedUser(@Body PostBlockedUserRequest request, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.2/users/me/blocked_users/{userHandle}", method = "DELETE", hasBody = true)
-        Call<ResponseBody> deleteBlockedUser(@Path("userHandle") String userHandle, @Header("Authorization") String authorization);
+        @HTTP(path = "v0.3/users/me/blocked_users/{userHandle}", method = "DELETE", hasBody = true)
+        Call<ResponseBody> deleteBlockedUser(@Path("userHandle") String userHandle, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle1);
 
     }
 
     /**
      * Get my blocked users.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -85,14 +87,18 @@ public final class MyBlockedUsersOperationsImpl implements MyBlockedUsersOperati
         }
         final String cursor = null;
         final Integer limit = null;
-        Call<ResponseBody> call = service.getBlockedUsers(cursor, limit, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getBlockedUsers(cursor, limit, appkey, authorization, userHandle);
         return getBlockedUsersDelegate(call.execute());
     }
 
     /**
      * Get my blocked users.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -107,7 +113,9 @@ public final class MyBlockedUsersOperationsImpl implements MyBlockedUsersOperati
         }
         final String cursor = null;
         final Integer limit = null;
-        Call<ResponseBody> call = service.getBlockedUsers(cursor, limit, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getBlockedUsers(cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseUserCompactView>(serviceCallback) {
             @Override
@@ -125,33 +133,41 @@ public final class MyBlockedUsersOperationsImpl implements MyBlockedUsersOperati
     /**
      * Get my blocked users.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param cursor Current read cursor
      * @param limit Number of items to return
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseUserCompactView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseUserCompactView> getBlockedUsers(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseUserCompactView> getBlockedUsers(String authorization, String cursor, Integer limit, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getBlockedUsers(cursor, limit, authorization);
+        Call<ResponseBody> call = service.getBlockedUsers(cursor, limit, appkey, authorization, userHandle);
         return getBlockedUsersDelegate(call.execute());
     }
 
     /**
      * Get my blocked users.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param cursor Current read cursor
      * @param limit Number of items to return
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getBlockedUsersAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getBlockedUsersAsync(String authorization, String cursor, Integer limit, String appkey, String userHandle, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -159,7 +175,7 @@ public final class MyBlockedUsersOperationsImpl implements MyBlockedUsersOperati
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getBlockedUsers(cursor, limit, authorization);
+        Call<ResponseBody> call = service.getBlockedUsers(cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseUserCompactView>(serviceCallback) {
             @Override
@@ -187,7 +203,9 @@ public final class MyBlockedUsersOperationsImpl implements MyBlockedUsersOperati
      * Block user.
      *
      * @param request Post blocked user request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -201,7 +219,9 @@ public final class MyBlockedUsersOperationsImpl implements MyBlockedUsersOperati
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         Validator.validate(request);
-        Call<ResponseBody> call = service.postBlockedUser(request, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.postBlockedUser(request, appkey, authorization, userHandle);
         return postBlockedUserDelegate(call.execute());
     }
 
@@ -209,7 +229,9 @@ public final class MyBlockedUsersOperationsImpl implements MyBlockedUsersOperati
      * Block user.
      *
      * @param request Post blocked user request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -227,7 +249,76 @@ public final class MyBlockedUsersOperationsImpl implements MyBlockedUsersOperati
             return null;
         }
         Validator.validate(request, serviceCallback);
-        Call<ResponseBody> call = service.postBlockedUser(request, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.postBlockedUser(request, appkey, authorization, userHandle);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(postBlockedUserDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Block user.
+     *
+     * @param request Post blocked user request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the Object object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<Object> postBlockedUser(PostBlockedUserRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (request == null) {
+            throw new IllegalArgumentException("Parameter request is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Validator.validate(request);
+        Call<ResponseBody> call = service.postBlockedUser(request, appkey, authorization, userHandle);
+        return postBlockedUserDelegate(call.execute());
+    }
+
+    /**
+     * Block user.
+     *
+     * @param request Post blocked user request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall postBlockedUserAsync(PostBlockedUserRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (request == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter request is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Validator.validate(request, serviceCallback);
+        Call<ResponseBody> call = service.postBlockedUser(request, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
@@ -257,7 +348,9 @@ public final class MyBlockedUsersOperationsImpl implements MyBlockedUsersOperati
      * Unblock user.
      *
      * @param userHandle User handle
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -270,7 +363,9 @@ public final class MyBlockedUsersOperationsImpl implements MyBlockedUsersOperati
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.deleteBlockedUser(userHandle, authorization);
+        final String appkey = null;
+        final String userHandle1 = null;
+        Call<ResponseBody> call = service.deleteBlockedUser(userHandle, appkey, authorization, userHandle1);
         return deleteBlockedUserDelegate(call.execute());
     }
 
@@ -278,7 +373,9 @@ public final class MyBlockedUsersOperationsImpl implements MyBlockedUsersOperati
      * Unblock user.
      *
      * @param userHandle User handle
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -295,7 +392,74 @@ public final class MyBlockedUsersOperationsImpl implements MyBlockedUsersOperati
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.deleteBlockedUser(userHandle, authorization);
+        final String appkey = null;
+        final String userHandle1 = null;
+        Call<ResponseBody> call = service.deleteBlockedUser(userHandle, appkey, authorization, userHandle1);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(deleteBlockedUserDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Unblock user.
+     *
+     * @param userHandle User handle
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle1 User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the Object object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<Object> deleteBlockedUser(String userHandle, String authorization, String appkey, String userHandle1) throws ServiceException, IOException, IllegalArgumentException {
+        if (userHandle == null) {
+            throw new IllegalArgumentException("Parameter userHandle is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.deleteBlockedUser(userHandle, appkey, authorization, userHandle1);
+        return deleteBlockedUserDelegate(call.execute());
+    }
+
+    /**
+     * Unblock user.
+     *
+     * @param userHandle User handle
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle1 User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall deleteBlockedUserAsync(String userHandle, String authorization, String appkey, String userHandle1, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (userHandle == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter userHandle is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Call<ResponseBody> call = service.deleteBlockedUser(userHandle, appkey, authorization, userHandle1);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override

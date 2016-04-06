@@ -52,8 +52,8 @@ public final class RequestTokensOperationsImpl implements RequestTokensOperation
      */
     interface RequestTokensService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/request_tokens/{identityProvider}")
-        Call<ResponseBody> getRequestToken(@Path("identityProvider") String identityProvider, @Header("appkey") String appkey, @Header("Authorization") String authorization);
+        @GET("v0.3/request_tokens/{identityProvider}")
+        Call<ResponseBody> getRequestToken(@Path("identityProvider") IdentityProvider identityProvider, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
     }
 
@@ -72,7 +72,8 @@ public final class RequestTokensOperationsImpl implements RequestTokensOperation
         }
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getRequestToken(this.client.getMapperAdapter().serializeRaw(identityProvider), appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getRequestToken(identityProvider, appkey, authorization, userHandle);
         return getRequestTokenDelegate(call.execute());
     }
 
@@ -94,7 +95,8 @@ public final class RequestTokensOperationsImpl implements RequestTokensOperation
         }
         final String appkey = null;
         final String authorization = null;
-        Call<ResponseBody> call = service.getRequestToken(this.client.getMapperAdapter().serializeRaw(identityProvider), appkey, authorization);
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getRequestToken(identityProvider, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<GetRequestTokenResponse>(serviceCallback) {
             @Override
@@ -113,18 +115,21 @@ public final class RequestTokensOperationsImpl implements RequestTokensOperation
      * Get request token.
      *
      * @param identityProvider Identity provider type. Possible values include: 'Facebook', 'Microsoft', 'Google', 'Twitter', 'Beihai'
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the GetRequestTokenResponse object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<GetRequestTokenResponse> getRequestToken(IdentityProvider identityProvider, String appkey, String authorization) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<GetRequestTokenResponse> getRequestToken(IdentityProvider identityProvider, String appkey, String authorization, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
         if (identityProvider == null) {
             throw new IllegalArgumentException("Parameter identityProvider is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getRequestToken(this.client.getMapperAdapter().serializeRaw(identityProvider), appkey, authorization);
+        Call<ResponseBody> call = service.getRequestToken(identityProvider, appkey, authorization, userHandle);
         return getRequestTokenDelegate(call.execute());
     }
 
@@ -132,13 +137,16 @@ public final class RequestTokensOperationsImpl implements RequestTokensOperation
      * Get request token.
      *
      * @param identityProvider Identity provider type. Possible values include: 'Facebook', 'Microsoft', 'Google', 'Twitter', 'Beihai'
-     * @param appkey App Key Authentication
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getRequestTokenAsync(IdentityProvider identityProvider, String appkey, String authorization, final ServiceCallback<GetRequestTokenResponse> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getRequestTokenAsync(IdentityProvider identityProvider, String appkey, String authorization, String userHandle, final ServiceCallback<GetRequestTokenResponse> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -146,7 +154,7 @@ public final class RequestTokensOperationsImpl implements RequestTokensOperation
             serviceCallback.failure(new IllegalArgumentException("Parameter identityProvider is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getRequestToken(this.client.getMapperAdapter().serializeRaw(identityProvider), appkey, authorization);
+        Call<ResponseBody> call = service.getRequestToken(identityProvider, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<GetRequestTokenResponse>(serviceCallback) {
             @Override

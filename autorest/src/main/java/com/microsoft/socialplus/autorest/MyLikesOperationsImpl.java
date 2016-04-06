@@ -51,15 +51,17 @@ public final class MyLikesOperationsImpl implements MyLikesOperations {
      */
     interface MyLikesService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/users/me/likes/topics")
-        Call<ResponseBody> getLikedTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
+        @GET("v0.3/users/me/likes/topics")
+        Call<ResponseBody> getLikedTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
     }
 
     /**
      * Get my liked topics.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -71,14 +73,18 @@ public final class MyLikesOperationsImpl implements MyLikesOperations {
         }
         final String cursor = null;
         final Integer limit = null;
-        Call<ResponseBody> call = service.getLikedTopics(cursor, limit, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getLikedTopics(cursor, limit, appkey, authorization, userHandle);
         return getLikedTopicsDelegate(call.execute());
     }
 
     /**
      * Get my liked topics.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -93,7 +99,9 @@ public final class MyLikesOperationsImpl implements MyLikesOperations {
         }
         final String cursor = null;
         final Integer limit = null;
-        Call<ResponseBody> call = service.getLikedTopics(cursor, limit, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getLikedTopics(cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override
@@ -111,33 +119,41 @@ public final class MyLikesOperationsImpl implements MyLikesOperations {
     /**
      * Get my liked topics.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param cursor Current read cursor
      * @param limit Number of items to return
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseTopicView> getLikedTopics(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseTopicView> getLikedTopics(String authorization, String cursor, Integer limit, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getLikedTopics(cursor, limit, authorization);
+        Call<ResponseBody> call = service.getLikedTopics(cursor, limit, appkey, authorization, userHandle);
         return getLikedTopicsDelegate(call.execute());
     }
 
     /**
      * Get my liked topics.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param cursor Current read cursor
      * @param limit Number of items to return
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getLikedTopicsAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getLikedTopicsAsync(String authorization, String cursor, Integer limit, String appkey, String userHandle, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -145,7 +161,7 @@ public final class MyLikesOperationsImpl implements MyLikesOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getLikedTopics(cursor, limit, authorization);
+        Call<ResponseBody> call = service.getLikedTopics(cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override

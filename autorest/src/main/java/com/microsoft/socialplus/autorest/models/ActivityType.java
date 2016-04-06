@@ -70,4 +70,9 @@ public enum ActivityType {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return toValue();
+    }
 }

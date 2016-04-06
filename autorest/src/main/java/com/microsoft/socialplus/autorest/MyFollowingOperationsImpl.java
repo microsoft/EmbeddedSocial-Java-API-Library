@@ -59,35 +59,37 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
      */
     interface MyFollowingService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/users/me/following")
-        Call<ResponseBody> getFollowing(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
+        @GET("v0.3/users/me/following")
+        Call<ResponseBody> getFollowing(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.2/users/me/following")
-        Call<ResponseBody> postFollowing(@Body PostFollowingRequest request, @Header("Authorization") String authorization);
+        @POST("v0.3/users/me/following")
+        Call<ResponseBody> postFollowing(@Body PostFollowingRequest request, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.2/users/me/following/{userHandle}", method = "DELETE", hasBody = true)
-        Call<ResponseBody> deleteFollowing(@Path("userHandle") String userHandle, @Header("Authorization") String authorization);
+        @HTTP(path = "v0.3/users/me/following/{userHandle}", method = "DELETE", hasBody = true)
+        Call<ResponseBody> deleteFollowing(@Path("userHandle") String userHandle, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle1);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.2/users/me/following/topics/{topicHandle}", method = "DELETE", hasBody = true)
-        Call<ResponseBody> deleteTopic(@Path("topicHandle") String topicHandle, @Header("Authorization") String authorization);
+        @HTTP(path = "v0.3/users/me/following/topics/{topicHandle}", method = "DELETE", hasBody = true)
+        Call<ResponseBody> deleteTopic(@Path("topicHandle") String topicHandle, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/users/me/following/topics")
-        Call<ResponseBody> getTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
+        @GET("v0.3/users/me/following/topics")
+        Call<ResponseBody> getTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.2/users/me/following/activities")
-        Call<ResponseBody> getActivities(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
+        @GET("v0.3/users/me/following/activities")
+        Call<ResponseBody> getActivities(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
 
     }
 
     /**
      * Get my following.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -99,14 +101,18 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
         }
         final String cursor = null;
         final Integer limit = null;
-        Call<ResponseBody> call = service.getFollowing(cursor, limit, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getFollowing(cursor, limit, appkey, authorization, userHandle);
         return getFollowingDelegate(call.execute());
     }
 
     /**
      * Get my following.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -121,7 +127,9 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
         }
         final String cursor = null;
         final Integer limit = null;
-        Call<ResponseBody> call = service.getFollowing(cursor, limit, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getFollowing(cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseUserCompactView>(serviceCallback) {
             @Override
@@ -139,33 +147,41 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
     /**
      * Get my following.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param cursor Current read cursor
      * @param limit Number of items to return
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseUserCompactView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseUserCompactView> getFollowing(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseUserCompactView> getFollowing(String authorization, String cursor, Integer limit, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getFollowing(cursor, limit, authorization);
+        Call<ResponseBody> call = service.getFollowing(cursor, limit, appkey, authorization, userHandle);
         return getFollowingDelegate(call.execute());
     }
 
     /**
      * Get my following.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param cursor Current read cursor
      * @param limit Number of items to return
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getFollowingAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getFollowingAsync(String authorization, String cursor, Integer limit, String appkey, String userHandle, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -173,7 +189,7 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getFollowing(cursor, limit, authorization);
+        Call<ResponseBody> call = service.getFollowing(cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseUserCompactView>(serviceCallback) {
             @Override
@@ -201,7 +217,9 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
      * Follow user.
      *
      * @param request Post following request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -215,7 +233,9 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         Validator.validate(request);
-        Call<ResponseBody> call = service.postFollowing(request, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.postFollowing(request, appkey, authorization, userHandle);
         return postFollowingDelegate(call.execute());
     }
 
@@ -223,7 +243,9 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
      * Follow user.
      *
      * @param request Post following request
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -241,7 +263,76 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
             return null;
         }
         Validator.validate(request, serviceCallback);
-        Call<ResponseBody> call = service.postFollowing(request, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.postFollowing(request, appkey, authorization, userHandle);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(postFollowingDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Follow user.
+     *
+     * @param request Post following request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the Object object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<Object> postFollowing(PostFollowingRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (request == null) {
+            throw new IllegalArgumentException("Parameter request is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Validator.validate(request);
+        Call<ResponseBody> call = service.postFollowing(request, appkey, authorization, userHandle);
+        return postFollowingDelegate(call.execute());
+    }
+
+    /**
+     * Follow user.
+     *
+     * @param request Post following request
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall postFollowingAsync(PostFollowingRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (request == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter request is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Validator.validate(request, serviceCallback);
+        Call<ResponseBody> call = service.postFollowing(request, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
@@ -271,7 +362,9 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
      * Unfollow user.
      *
      * @param userHandle User handle
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -284,7 +377,9 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.deleteFollowing(userHandle, authorization);
+        final String appkey = null;
+        final String userHandle1 = null;
+        Call<ResponseBody> call = service.deleteFollowing(userHandle, appkey, authorization, userHandle1);
         return deleteFollowingDelegate(call.execute());
     }
 
@@ -292,7 +387,9 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
      * Unfollow user.
      *
      * @param userHandle User handle
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -309,7 +406,74 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.deleteFollowing(userHandle, authorization);
+        final String appkey = null;
+        final String userHandle1 = null;
+        Call<ResponseBody> call = service.deleteFollowing(userHandle, appkey, authorization, userHandle1);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(deleteFollowingDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Unfollow user.
+     *
+     * @param userHandle User handle
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle1 User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the Object object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<Object> deleteFollowing(String userHandle, String authorization, String appkey, String userHandle1) throws ServiceException, IOException, IllegalArgumentException {
+        if (userHandle == null) {
+            throw new IllegalArgumentException("Parameter userHandle is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.deleteFollowing(userHandle, appkey, authorization, userHandle1);
+        return deleteFollowingDelegate(call.execute());
+    }
+
+    /**
+     * Unfollow user.
+     *
+     * @param userHandle User handle
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle1 User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall deleteFollowingAsync(String userHandle, String authorization, String appkey, String userHandle1, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (userHandle == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter userHandle is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Call<ResponseBody> call = service.deleteFollowing(userHandle, appkey, authorization, userHandle1);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
@@ -339,7 +503,9 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
      * Hide topic from my following topics.
      *
      * @param topicHandle Topic handle
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -352,7 +518,9 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.deleteTopic(topicHandle, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.deleteTopic(topicHandle, appkey, authorization, userHandle);
         return deleteTopicDelegate(call.execute());
     }
 
@@ -360,7 +528,9 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
      * Hide topic from my following topics.
      *
      * @param topicHandle Topic handle
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -377,7 +547,74 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.deleteTopic(topicHandle, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.deleteTopic(topicHandle, appkey, authorization, userHandle);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(deleteTopicDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Hide topic from my following topics.
+     *
+     * @param topicHandle Topic handle
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the Object object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<Object> deleteTopic(String topicHandle, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+        if (topicHandle == null) {
+            throw new IllegalArgumentException("Parameter topicHandle is required and cannot be null.");
+        }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.deleteTopic(topicHandle, appkey, authorization, userHandle);
+        return deleteTopicDelegate(call.execute());
+    }
+
+    /**
+     * Hide topic from my following topics.
+     *
+     * @param topicHandle Topic handle
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall deleteTopicAsync(String topicHandle, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (topicHandle == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter topicHandle is required and cannot be null."));
+            return null;
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Call<ResponseBody> call = service.deleteTopic(topicHandle, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
@@ -405,7 +642,9 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
     /**
      * Get my following topic feed.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -417,14 +656,18 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
         }
         final String cursor = null;
         final Integer limit = null;
-        Call<ResponseBody> call = service.getTopics(cursor, limit, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization, userHandle);
         return getTopicsDelegate(call.execute());
     }
 
     /**
      * Get my following topic feed.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -439,7 +682,9 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
         }
         final String cursor = null;
         final Integer limit = null;
-        Call<ResponseBody> call = service.getTopics(cursor, limit, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override
@@ -457,33 +702,41 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
     /**
      * Get my following topic feed.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param cursor Current read cursor
      * @param limit Number of items to return
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseTopicView> getTopics(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseTopicView> getTopics(String authorization, String cursor, Integer limit, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getTopics(cursor, limit, authorization);
+        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization, userHandle);
         return getTopicsDelegate(call.execute());
     }
 
     /**
      * Get my following topic feed.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param cursor Current read cursor
      * @param limit Number of items to return
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getTopicsAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getTopicsAsync(String authorization, String cursor, Integer limit, String appkey, String userHandle, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -491,7 +744,7 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getTopics(cursor, limit, authorization);
+        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override
@@ -518,7 +771,9 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
     /**
      * Get my following activity feed.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -530,14 +785,18 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
         }
         final String cursor = null;
         final Integer limit = null;
-        Call<ResponseBody> call = service.getActivities(cursor, limit, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getActivities(cursor, limit, appkey, authorization, userHandle);
         return getActivitiesDelegate(call.execute());
     }
 
     /**
      * Get my following activity feed.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -552,7 +811,9 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
         }
         final String cursor = null;
         final Integer limit = null;
-        Call<ResponseBody> call = service.getActivities(cursor, limit, authorization);
+        final String appkey = null;
+        final String userHandle = null;
+        Call<ResponseBody> call = service.getActivities(cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseActivityView>(serviceCallback) {
             @Override
@@ -570,33 +831,41 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
     /**
      * Get my following activity feed.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param cursor Current read cursor
      * @param limit Number of items to return
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseActivityView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseActivityView> getActivities(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseActivityView> getActivities(String authorization, String cursor, Integer limit, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getActivities(cursor, limit, authorization);
+        Call<ResponseBody> call = service.getActivities(cursor, limit, appkey, authorization, userHandle);
         return getActivitiesDelegate(call.execute());
     }
 
     /**
      * Get my following activity feed.
      *
-     * @param authorization Authenication (must begin with string "Bearer ")
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param cursor Current read cursor
      * @param limit Number of items to return
+     * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getActivitiesAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseActivityView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getActivitiesAsync(String authorization, String cursor, Integer limit, String appkey, String userHandle, final ServiceCallback<FeedResponseActivityView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -604,7 +873,7 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getActivities(cursor, limit, authorization);
+        Call<ResponseBody> call = service.getActivities(cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseActivityView>(serviceCallback) {
             @Override

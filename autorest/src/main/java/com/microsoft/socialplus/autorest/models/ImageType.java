@@ -55,4 +55,9 @@ public enum ImageType {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return toValue();
+    }
 }
