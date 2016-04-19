@@ -21,7 +21,7 @@ public interface CommentReportsOperations {
     /**
      * Report comment.
      *
-     * @param commentHandle Comment handle
+     * @param commentHandle Comment handle for the comment being reported on
      * @param postReportRequest Post report request
      * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
      -sessionToken for client auth
@@ -36,7 +36,7 @@ public interface CommentReportsOperations {
     /**
      * Report comment.
      *
-     * @param commentHandle Comment handle
+     * @param commentHandle Comment handle for the comment being reported on
      * @param postReportRequest Post report request
      * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
      -sessionToken for client auth
@@ -49,7 +49,7 @@ public interface CommentReportsOperations {
     /**
      * Report comment.
      *
-     * @param commentHandle Comment handle
+     * @param commentHandle Comment handle for the comment being reported on
      * @param postReportRequest Post report request
      * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
      -sessionToken for client auth
@@ -66,7 +66,7 @@ public interface CommentReportsOperations {
     /**
      * Report comment.
      *
-     * @param commentHandle Comment handle
+     * @param commentHandle Comment handle for the comment being reported on
      * @param postReportRequest Post report request
      * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
      -sessionToken for client auth
