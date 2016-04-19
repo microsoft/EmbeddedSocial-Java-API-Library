@@ -25,16 +25,25 @@ import java.io.IOException;
  */
 public interface UsersOperations {
     /**
+     * Create a new user.
      * Create a new user using the following flow:
-     *                 1. Validate and parse the identity provider access token to construct an identity provider user
-     *                 2. If identity provider user present in linked account table, read user profile for this specific application from user profile table
-     *                 3.    If user profile exists, return user conflict
-     *                 4.    Otherwise, it means that the user does not have a profile for this particular application. Create one.
-     *                 5. Otherwise, the identity provider user is not present. Create the user, and its user profile.
-     *                 6. Generate session token, and return
-     *             The purpose of steps 2-4 is to ensure that if the user has already registered with us using the same identity provider
-     *             but for a different SocialPlus application, we reuse his user-handle and just resume to create a new profile for this specific
-     *             SocialPlus application. The end result is that we know it is the same user in both apps.
+     *             
+     *              1. Validate and parse the identity provider access token to construct an identity provider user
+     *             
+     *              2. If the identity provider user is present in the linked account table, read the user profile for this
+     *              specific application from the user profile table
+     *             
+     *              3.    If the user profile already exists, return user conflict
+     *             
+     *              4.    Otherwise, the user does not already have a profile for this particular application, so we create one.
+     *             
+     *              5. Otherwise, the identity provider user is not present. Create the user, and the corresponding user profile.
+     *             
+     *              6. Generate session token, and return
+     *             
+     *              The purpose of steps 2-4 is to ensure that if the user has already registered with us using the same identity
+     *              provider but for a different SocialPlus application, we reuse his user-handle and just create a new profile for
+     *              this specific SocialPlus application. The end result is that we know it is the same user in both apps.
      *
      * @param request Post user request
      * @throws ServiceException exception thrown from REST call
@@ -45,16 +54,25 @@ public interface UsersOperations {
     ServiceResponse<PostUserResponse> postUser(PostUserRequest request) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
+     * Create a new user.
      * Create a new user using the following flow:
-     *                 1. Validate and parse the identity provider access token to construct an identity provider user
-     *                 2. If identity provider user present in linked account table, read user profile for this specific application from user profile table
-     *                 3.    If user profile exists, return user conflict
-     *                 4.    Otherwise, it means that the user does not have a profile for this particular application. Create one.
-     *                 5. Otherwise, the identity provider user is not present. Create the user, and its user profile.
-     *                 6. Generate session token, and return
-     *             The purpose of steps 2-4 is to ensure that if the user has already registered with us using the same identity provider
-     *             but for a different SocialPlus application, we reuse his user-handle and just resume to create a new profile for this specific
-     *             SocialPlus application. The end result is that we know it is the same user in both apps.
+     *             
+     *              1. Validate and parse the identity provider access token to construct an identity provider user
+     *             
+     *              2. If the identity provider user is present in the linked account table, read the user profile for this
+     *              specific application from the user profile table
+     *             
+     *              3.    If the user profile already exists, return user conflict
+     *             
+     *              4.    Otherwise, the user does not already have a profile for this particular application, so we create one.
+     *             
+     *              5. Otherwise, the identity provider user is not present. Create the user, and the corresponding user profile.
+     *             
+     *              6. Generate session token, and return
+     *             
+     *              The purpose of steps 2-4 is to ensure that if the user has already registered with us using the same identity
+     *              provider but for a different SocialPlus application, we reuse his user-handle and just create a new profile for
+     *              this specific SocialPlus application. The end result is that we know it is the same user in both apps.
      *
      * @param request Post user request
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
@@ -63,16 +81,25 @@ public interface UsersOperations {
      */
     ServiceCall postUserAsync(PostUserRequest request, final ServiceCallback<PostUserResponse> serviceCallback) throws IllegalArgumentException;
     /**
+     * Create a new user.
      * Create a new user using the following flow:
-     *                 1. Validate and parse the identity provider access token to construct an identity provider user
-     *                 2. If identity provider user present in linked account table, read user profile for this specific application from user profile table
-     *                 3.    If user profile exists, return user conflict
-     *                 4.    Otherwise, it means that the user does not have a profile for this particular application. Create one.
-     *                 5. Otherwise, the identity provider user is not present. Create the user, and its user profile.
-     *                 6. Generate session token, and return
-     *             The purpose of steps 2-4 is to ensure that if the user has already registered with us using the same identity provider
-     *             but for a different SocialPlus application, we reuse his user-handle and just resume to create a new profile for this specific
-     *             SocialPlus application. The end result is that we know it is the same user in both apps.
+     *             
+     *              1. Validate and parse the identity provider access token to construct an identity provider user
+     *             
+     *              2. If the identity provider user is present in the linked account table, read the user profile for this
+     *              specific application from the user profile table
+     *             
+     *              3.    If the user profile already exists, return user conflict
+     *             
+     *              4.    Otherwise, the user does not already have a profile for this particular application, so we create one.
+     *             
+     *              5. Otherwise, the identity provider user is not present. Create the user, and the corresponding user profile.
+     *             
+     *              6. Generate session token, and return
+     *             
+     *              The purpose of steps 2-4 is to ensure that if the user has already registered with us using the same identity
+     *              provider but for a different SocialPlus application, we reuse his user-handle and just create a new profile for
+     *              this specific SocialPlus application. The end result is that we know it is the same user in both apps.
      *
      * @param request Post user request
      * @param appkey App key must be filled in when using AAD tokens for Authentication.
@@ -88,16 +115,25 @@ public interface UsersOperations {
     ServiceResponse<PostUserResponse> postUser(PostUserRequest request, String appkey, String authorization, String userHandle) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
+     * Create a new user.
      * Create a new user using the following flow:
-     *                 1. Validate and parse the identity provider access token to construct an identity provider user
-     *                 2. If identity provider user present in linked account table, read user profile for this specific application from user profile table
-     *                 3.    If user profile exists, return user conflict
-     *                 4.    Otherwise, it means that the user does not have a profile for this particular application. Create one.
-     *                 5. Otherwise, the identity provider user is not present. Create the user, and its user profile.
-     *                 6. Generate session token, and return
-     *             The purpose of steps 2-4 is to ensure that if the user has already registered with us using the same identity provider
-     *             but for a different SocialPlus application, we reuse his user-handle and just resume to create a new profile for this specific
-     *             SocialPlus application. The end result is that we know it is the same user in both apps.
+     *             
+     *              1. Validate and parse the identity provider access token to construct an identity provider user
+     *             
+     *              2. If the identity provider user is present in the linked account table, read the user profile for this
+     *              specific application from the user profile table
+     *             
+     *              3.    If the user profile already exists, return user conflict
+     *             
+     *              4.    Otherwise, the user does not already have a profile for this particular application, so we create one.
+     *             
+     *              5. Otherwise, the identity provider user is not present. Create the user, and the corresponding user profile.
+     *             
+     *              6. Generate session token, and return
+     *             
+     *              The purpose of steps 2-4 is to ensure that if the user has already registered with us using the same identity
+     *              provider but for a different SocialPlus application, we reuse his user-handle and just create a new profile for
+     *              this specific SocialPlus application. The end result is that we know it is the same user in both apps.
      *
      * @param request Post user request
      * @param appkey App key must be filled in when using AAD tokens for Authentication.

@@ -59,9 +59,9 @@ public final class UserReportsOperationsImpl implements UserReportsOperations {
     }
 
     /**
-     * Report user.
+     * Report a user.
      *
-     * @param userHandle User handle
+     * @param userHandle User handle for the user being reported on
      * @param postReportRequest Post report request
      * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
      -sessionToken for client auth
@@ -89,9 +89,9 @@ public final class UserReportsOperationsImpl implements UserReportsOperations {
     }
 
     /**
-     * Report user.
+     * Report a user.
      *
-     * @param userHandle User handle
+     * @param userHandle User handle for the user being reported on
      * @param postReportRequest Post report request
      * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
      -sessionToken for client auth
@@ -135,9 +135,9 @@ public final class UserReportsOperationsImpl implements UserReportsOperations {
     }
 
     /**
-     * Report user.
+     * Report a user.
      *
-     * @param userHandle User handle
+     * @param userHandle User handle for the user being reported on
      * @param postReportRequest Post report request
      * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
      -sessionToken for client auth
@@ -165,9 +165,9 @@ public final class UserReportsOperationsImpl implements UserReportsOperations {
     }
 
     /**
-     * Report user.
+     * Report a user.
      *
-     * @param userHandle User handle
+     * @param userHandle User handle for the user being reported on
      * @param postReportRequest Post report request
      * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
      -sessionToken for client auth
@@ -216,6 +216,7 @@ public final class UserReportsOperationsImpl implements UserReportsOperations {
                 .register(400, new TypeToken<Void>() { }.getType())
                 .register(401, new TypeToken<Void>() { }.getType())
                 .register(404, new TypeToken<Void>() { }.getType())
+                .register(409, new TypeToken<Void>() { }.getType())
                 .register(500, new TypeToken<Void>() { }.getType())
                 .build(response);
     }

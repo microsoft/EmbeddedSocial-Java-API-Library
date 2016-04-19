@@ -58,16 +58,16 @@ public interface SocialPlusClient {
     BuildsOperations getBuildsOperations();
 
     /**
-     * Gets the TopicCommentsOperations object to access its operations.
-     * @return the TopicCommentsOperations object.
-     */
-    TopicCommentsOperations getTopicCommentsOperations();
-
-    /**
      * Gets the CommentsOperations object to access its operations.
      * @return the CommentsOperations object.
      */
     CommentsOperations getCommentsOperations();
+
+    /**
+     * Gets the TopicCommentsOperations object to access its operations.
+     * @return the TopicCommentsOperations object.
+     */
+    TopicCommentsOperations getTopicCommentsOperations();
 
     /**
      * Gets the HashtagsOperations object to access its operations.
@@ -82,10 +82,10 @@ public interface SocialPlusClient {
     ImagesOperations getImagesOperations();
 
     /**
-     * Gets the CommentLikesOperations object to access its operations.
-     * @return the CommentLikesOperations object.
+     * Gets the TopicLikesOperations object to access its operations.
+     * @return the TopicLikesOperations object.
      */
-    CommentLikesOperations getCommentLikesOperations();
+    TopicLikesOperations getTopicLikesOperations();
 
     /**
      * Gets the ReplyLikesOperations object to access its operations.
@@ -94,10 +94,10 @@ public interface SocialPlusClient {
     ReplyLikesOperations getReplyLikesOperations();
 
     /**
-     * Gets the TopicLikesOperations object to access its operations.
-     * @return the TopicLikesOperations object.
+     * Gets the CommentLikesOperations object to access its operations.
+     * @return the CommentLikesOperations object.
      */
-    TopicLikesOperations getTopicLikesOperations();
+    CommentLikesOperations getCommentLikesOperations();
 
     /**
      * Gets the MyNotificationsOperations object to access its operations.
@@ -118,22 +118,28 @@ public interface SocialPlusClient {
     MyPushRegistrationsOperations getMyPushRegistrationsOperations();
 
     /**
-     * Gets the CommentRepliesOperations object to access its operations.
-     * @return the CommentRepliesOperations object.
-     */
-    CommentRepliesOperations getCommentRepliesOperations();
-
-    /**
      * Gets the RepliesOperations object to access its operations.
      * @return the RepliesOperations object.
      */
     RepliesOperations getRepliesOperations();
 
     /**
+     * Gets the CommentRepliesOperations object to access its operations.
+     * @return the CommentRepliesOperations object.
+     */
+    CommentRepliesOperations getCommentRepliesOperations();
+
+    /**
      * Gets the UserReportsOperations object to access its operations.
      * @return the UserReportsOperations object.
      */
     UserReportsOperations getUserReportsOperations();
+
+    /**
+     * Gets the TopicReportsOperations object to access its operations.
+     * @return the TopicReportsOperations object.
+     */
+    TopicReportsOperations getTopicReportsOperations();
 
     /**
      * Gets the ReplyReportsOperations object to access its operations.
@@ -146,12 +152,6 @@ public interface SocialPlusClient {
      * @return the CommentReportsOperations object.
      */
     CommentReportsOperations getCommentReportsOperations();
-
-    /**
-     * Gets the TopicReportsOperations object to access its operations.
-     * @return the TopicReportsOperations object.
-     */
-    TopicReportsOperations getTopicReportsOperations();
 
     /**
      * Gets the SearchOperations object to access its operations.
@@ -172,28 +172,10 @@ public interface SocialPlusClient {
     RequestTokensOperations getRequestTokensOperations();
 
     /**
-     * Gets the MyFollowingOperations object to access its operations.
-     * @return the MyFollowingOperations object.
-     */
-    MyFollowingOperations getMyFollowingOperations();
-
-    /**
      * Gets the UserFollowersOperations object to access its operations.
      * @return the UserFollowersOperations object.
      */
     UserFollowersOperations getUserFollowersOperations();
-
-    /**
-     * Gets the MyFollowersOperations object to access its operations.
-     * @return the MyFollowersOperations object.
-     */
-    MyFollowersOperations getMyFollowersOperations();
-
-    /**
-     * Gets the UserFollowingOperations object to access its operations.
-     * @return the UserFollowingOperations object.
-     */
-    UserFollowingOperations getUserFollowingOperations();
 
     /**
      * Gets the MyPendingUsersOperations object to access its operations.
@@ -202,10 +184,28 @@ public interface SocialPlusClient {
     MyPendingUsersOperations getMyPendingUsersOperations();
 
     /**
+     * Gets the MyFollowersOperations object to access its operations.
+     * @return the MyFollowersOperations object.
+     */
+    MyFollowersOperations getMyFollowersOperations();
+
+    /**
+     * Gets the MyFollowingOperations object to access its operations.
+     * @return the MyFollowingOperations object.
+     */
+    MyFollowingOperations getMyFollowingOperations();
+
+    /**
      * Gets the MyBlockedUsersOperations object to access its operations.
      * @return the MyBlockedUsersOperations object.
      */
     MyBlockedUsersOperations getMyBlockedUsersOperations();
+
+    /**
+     * Gets the UserFollowingOperations object to access its operations.
+     * @return the UserFollowingOperations object.
+     */
+    UserFollowingOperations getUserFollowingOperations();
 
     /**
      * Gets the TopicsOperations object to access its operations.
@@ -214,28 +214,22 @@ public interface SocialPlusClient {
     TopicsOperations getTopicsOperations();
 
     /**
-     * Gets the MyAppFollowingOperations object to access its operations.
-     * @return the MyAppFollowingOperations object.
-     */
-    MyAppFollowingOperations getMyAppFollowingOperations();
-
-    /**
      * Gets the MyTopicsOperations object to access its operations.
      * @return the MyTopicsOperations object.
      */
     MyTopicsOperations getMyTopicsOperations();
 
     /**
+     * Gets the MyAppFollowingOperations object to access its operations.
+     * @return the MyAppFollowingOperations object.
+     */
+    MyAppFollowingOperations getMyAppFollowingOperations();
+
+    /**
      * Gets the MyAppsOperations object to access its operations.
      * @return the MyAppsOperations object.
      */
     MyAppsOperations getMyAppsOperations();
-
-    /**
-     * Gets the UsersOperations object to access its operations.
-     * @return the UsersOperations object.
-     */
-    UsersOperations getUsersOperations();
 
     /**
      * Gets the MyLikesOperations object to access its operations.
@@ -248,6 +242,12 @@ public interface SocialPlusClient {
      * @return the MyLinkedAccountsOperations object.
      */
     MyLinkedAccountsOperations getMyLinkedAccountsOperations();
+
+    /**
+     * Gets the UsersOperations object to access its operations.
+     * @return the UsersOperations object.
+     */
+    UsersOperations getUsersOperations();
 
     /**
      * Gets the UserTopicsOperations object to access its operations.

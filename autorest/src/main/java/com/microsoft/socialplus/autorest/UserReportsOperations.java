@@ -19,9 +19,9 @@ import java.io.IOException;
  */
 public interface UserReportsOperations {
     /**
-     * Report user.
+     * Report a user.
      *
-     * @param userHandle User handle
+     * @param userHandle User handle for the user being reported on
      * @param postReportRequest Post report request
      * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
      -sessionToken for client auth
@@ -34,9 +34,9 @@ public interface UserReportsOperations {
     ServiceResponse<Object> postReport(String userHandle, PostReportRequest postReportRequest, String authorization) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
-     * Report user.
+     * Report a user.
      *
-     * @param userHandle User handle
+     * @param userHandle User handle for the user being reported on
      * @param postReportRequest Post report request
      * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
      -sessionToken for client auth
@@ -47,9 +47,9 @@ public interface UserReportsOperations {
      */
     ServiceCall postReportAsync(String userHandle, PostReportRequest postReportRequest, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
     /**
-     * Report user.
+     * Report a user.
      *
-     * @param userHandle User handle
+     * @param userHandle User handle for the user being reported on
      * @param postReportRequest Post report request
      * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
      -sessionToken for client auth
@@ -64,9 +64,9 @@ public interface UserReportsOperations {
     ServiceResponse<Object> postReport(String userHandle, PostReportRequest postReportRequest, String authorization, String appkey, String userHandle1) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
-     * Report user.
+     * Report a user.
      *
-     * @param userHandle User handle
+     * @param userHandle User handle for the user being reported on
      * @param postReportRequest Post report request
      * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
      -sessionToken for client auth

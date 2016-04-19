@@ -61,7 +61,7 @@ public final class ReplyReportsOperationsImpl implements ReplyReportsOperations 
     /**
      * Report reply.
      *
-     * @param replyHandle Reply handle
+     * @param replyHandle Reply handle for the reply being reported on
      * @param postReportRequest Post report request
      * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
      -sessionToken for client auth
@@ -91,7 +91,7 @@ public final class ReplyReportsOperationsImpl implements ReplyReportsOperations 
     /**
      * Report reply.
      *
-     * @param replyHandle Reply handle
+     * @param replyHandle Reply handle for the reply being reported on
      * @param postReportRequest Post report request
      * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
      -sessionToken for client auth
@@ -137,7 +137,7 @@ public final class ReplyReportsOperationsImpl implements ReplyReportsOperations 
     /**
      * Report reply.
      *
-     * @param replyHandle Reply handle
+     * @param replyHandle Reply handle for the reply being reported on
      * @param postReportRequest Post report request
      * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
      -sessionToken for client auth
@@ -167,7 +167,7 @@ public final class ReplyReportsOperationsImpl implements ReplyReportsOperations 
     /**
      * Report reply.
      *
-     * @param replyHandle Reply handle
+     * @param replyHandle Reply handle for the reply being reported on
      * @param postReportRequest Post report request
      * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
      -sessionToken for client auth
@@ -216,6 +216,7 @@ public final class ReplyReportsOperationsImpl implements ReplyReportsOperations 
                 .register(400, new TypeToken<Void>() { }.getType())
                 .register(401, new TypeToken<Void>() { }.getType())
                 .register(404, new TypeToken<Void>() { }.getType())
+                .register(409, new TypeToken<Void>() { }.getType())
                 .register(500, new TypeToken<Void>() { }.getType())
                 .build(response);
     }

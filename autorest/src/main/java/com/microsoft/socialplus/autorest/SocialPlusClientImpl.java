@@ -46,19 +46,19 @@ public final class SocialPlusClientImpl extends ServiceClient implements SocialP
     }
 
     /**
-     * Gets the TopicCommentsOperations object to access its operations.
-     * @return the TopicCommentsOperations object.
-     */
-    public TopicCommentsOperations getTopicCommentsOperations() {
-        return new TopicCommentsOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
-    }
-
-    /**
      * Gets the CommentsOperations object to access its operations.
      * @return the CommentsOperations object.
      */
     public CommentsOperations getCommentsOperations() {
         return new CommentsOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
+    }
+
+    /**
+     * Gets the TopicCommentsOperations object to access its operations.
+     * @return the TopicCommentsOperations object.
+     */
+    public TopicCommentsOperations getTopicCommentsOperations() {
+        return new TopicCommentsOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
     }
 
     /**
@@ -78,11 +78,11 @@ public final class SocialPlusClientImpl extends ServiceClient implements SocialP
     }
 
     /**
-     * Gets the CommentLikesOperations object to access its operations.
-     * @return the CommentLikesOperations object.
+     * Gets the TopicLikesOperations object to access its operations.
+     * @return the TopicLikesOperations object.
      */
-    public CommentLikesOperations getCommentLikesOperations() {
-        return new CommentLikesOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
+    public TopicLikesOperations getTopicLikesOperations() {
+        return new TopicLikesOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
     }
 
     /**
@@ -94,11 +94,11 @@ public final class SocialPlusClientImpl extends ServiceClient implements SocialP
     }
 
     /**
-     * Gets the TopicLikesOperations object to access its operations.
-     * @return the TopicLikesOperations object.
+     * Gets the CommentLikesOperations object to access its operations.
+     * @return the CommentLikesOperations object.
      */
-    public TopicLikesOperations getTopicLikesOperations() {
-        return new TopicLikesOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
+    public CommentLikesOperations getCommentLikesOperations() {
+        return new CommentLikesOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
     }
 
     /**
@@ -126,14 +126,6 @@ public final class SocialPlusClientImpl extends ServiceClient implements SocialP
     }
 
     /**
-     * Gets the CommentRepliesOperations object to access its operations.
-     * @return the CommentRepliesOperations object.
-     */
-    public CommentRepliesOperations getCommentRepliesOperations() {
-        return new CommentRepliesOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
-    }
-
-    /**
      * Gets the RepliesOperations object to access its operations.
      * @return the RepliesOperations object.
      */
@@ -142,11 +134,27 @@ public final class SocialPlusClientImpl extends ServiceClient implements SocialP
     }
 
     /**
+     * Gets the CommentRepliesOperations object to access its operations.
+     * @return the CommentRepliesOperations object.
+     */
+    public CommentRepliesOperations getCommentRepliesOperations() {
+        return new CommentRepliesOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
+    }
+
+    /**
      * Gets the UserReportsOperations object to access its operations.
      * @return the UserReportsOperations object.
      */
     public UserReportsOperations getUserReportsOperations() {
         return new UserReportsOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
+    }
+
+    /**
+     * Gets the TopicReportsOperations object to access its operations.
+     * @return the TopicReportsOperations object.
+     */
+    public TopicReportsOperations getTopicReportsOperations() {
+        return new TopicReportsOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
     }
 
     /**
@@ -163,14 +171,6 @@ public final class SocialPlusClientImpl extends ServiceClient implements SocialP
      */
     public CommentReportsOperations getCommentReportsOperations() {
         return new CommentReportsOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
-    }
-
-    /**
-     * Gets the TopicReportsOperations object to access its operations.
-     * @return the TopicReportsOperations object.
-     */
-    public TopicReportsOperations getTopicReportsOperations() {
-        return new TopicReportsOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
     }
 
     /**
@@ -198,35 +198,11 @@ public final class SocialPlusClientImpl extends ServiceClient implements SocialP
     }
 
     /**
-     * Gets the MyFollowingOperations object to access its operations.
-     * @return the MyFollowingOperations object.
-     */
-    public MyFollowingOperations getMyFollowingOperations() {
-        return new MyFollowingOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
-    }
-
-    /**
      * Gets the UserFollowersOperations object to access its operations.
      * @return the UserFollowersOperations object.
      */
     public UserFollowersOperations getUserFollowersOperations() {
         return new UserFollowersOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
-    }
-
-    /**
-     * Gets the MyFollowersOperations object to access its operations.
-     * @return the MyFollowersOperations object.
-     */
-    public MyFollowersOperations getMyFollowersOperations() {
-        return new MyFollowersOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
-    }
-
-    /**
-     * Gets the UserFollowingOperations object to access its operations.
-     * @return the UserFollowingOperations object.
-     */
-    public UserFollowingOperations getUserFollowingOperations() {
-        return new UserFollowingOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
     }
 
     /**
@@ -238,11 +214,35 @@ public final class SocialPlusClientImpl extends ServiceClient implements SocialP
     }
 
     /**
+     * Gets the MyFollowersOperations object to access its operations.
+     * @return the MyFollowersOperations object.
+     */
+    public MyFollowersOperations getMyFollowersOperations() {
+        return new MyFollowersOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
+    }
+
+    /**
+     * Gets the MyFollowingOperations object to access its operations.
+     * @return the MyFollowingOperations object.
+     */
+    public MyFollowingOperations getMyFollowingOperations() {
+        return new MyFollowingOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
+    }
+
+    /**
      * Gets the MyBlockedUsersOperations object to access its operations.
      * @return the MyBlockedUsersOperations object.
      */
     public MyBlockedUsersOperations getMyBlockedUsersOperations() {
         return new MyBlockedUsersOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
+    }
+
+    /**
+     * Gets the UserFollowingOperations object to access its operations.
+     * @return the UserFollowingOperations object.
+     */
+    public UserFollowingOperations getUserFollowingOperations() {
+        return new UserFollowingOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
     }
 
     /**
@@ -254,14 +254,6 @@ public final class SocialPlusClientImpl extends ServiceClient implements SocialP
     }
 
     /**
-     * Gets the MyAppFollowingOperations object to access its operations.
-     * @return the MyAppFollowingOperations object.
-     */
-    public MyAppFollowingOperations getMyAppFollowingOperations() {
-        return new MyAppFollowingOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
-    }
-
-    /**
      * Gets the MyTopicsOperations object to access its operations.
      * @return the MyTopicsOperations object.
      */
@@ -270,19 +262,19 @@ public final class SocialPlusClientImpl extends ServiceClient implements SocialP
     }
 
     /**
+     * Gets the MyAppFollowingOperations object to access its operations.
+     * @return the MyAppFollowingOperations object.
+     */
+    public MyAppFollowingOperations getMyAppFollowingOperations() {
+        return new MyAppFollowingOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
+    }
+
+    /**
      * Gets the MyAppsOperations object to access its operations.
      * @return the MyAppsOperations object.
      */
     public MyAppsOperations getMyAppsOperations() {
         return new MyAppsOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
-    }
-
-    /**
-     * Gets the UsersOperations object to access its operations.
-     * @return the UsersOperations object.
-     */
-    public UsersOperations getUsersOperations() {
-        return new UsersOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
     }
 
     /**
@@ -299,6 +291,14 @@ public final class SocialPlusClientImpl extends ServiceClient implements SocialP
      */
     public MyLinkedAccountsOperations getMyLinkedAccountsOperations() {
         return new MyLinkedAccountsOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
+    }
+
+    /**
+     * Gets the UsersOperations object to access its operations.
+     * @return the UsersOperations object.
+     */
+    public UsersOperations getUsersOperations() {
+        return new UsersOperationsImpl(this.retrofitBuilder.client(clientBuilder.build()).build(), this);
     }
 
     /**

@@ -70,24 +70,19 @@ public final class CommentRepliesOperationsImpl implements CommentRepliesOperati
      * Get replies for a comment.
      *
      * @param commentHandle Comment handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseReplyView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseReplyView> getReplies(String commentHandle, String authorization) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseReplyView> getReplies(String commentHandle) throws ServiceException, IOException, IllegalArgumentException {
         if (commentHandle == null) {
             throw new IllegalArgumentException("Parameter commentHandle is required and cannot be null.");
-        }
-        if (authorization == null) {
-            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         final String cursor = null;
         final Integer limit = null;
         final String appkey = null;
+        final String authorization = null;
         final String userHandle = null;
         Call<ResponseBody> call = service.getReplies(commentHandle, cursor, limit, appkey, authorization, userHandle);
         return getRepliesDelegate(call.execute());
@@ -97,14 +92,11 @@ public final class CommentRepliesOperationsImpl implements CommentRepliesOperati
      * Get replies for a comment.
      *
      * @param commentHandle Comment handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getRepliesAsync(String commentHandle, String authorization, final ServiceCallback<FeedResponseReplyView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getRepliesAsync(String commentHandle, final ServiceCallback<FeedResponseReplyView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -112,13 +104,10 @@ public final class CommentRepliesOperationsImpl implements CommentRepliesOperati
             serviceCallback.failure(new IllegalArgumentException("Parameter commentHandle is required and cannot be null."));
             return null;
         }
-        if (authorization == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
-            return null;
-        }
         final String cursor = null;
         final Integer limit = null;
         final String appkey = null;
+        final String authorization = null;
         final String userHandle = null;
         Call<ResponseBody> call = service.getReplies(commentHandle, cursor, limit, appkey, authorization, userHandle);
         final ServiceCall serviceCall = new ServiceCall(call);
@@ -139,24 +128,21 @@ public final class CommentRepliesOperationsImpl implements CommentRepliesOperati
      * Get replies for a comment.
      *
      * @param commentHandle Comment handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
      * @param cursor Current read cursor
      * @param limit Number of items to return
      * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseReplyView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseReplyView> getReplies(String commentHandle, String authorization, String cursor, Integer limit, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseReplyView> getReplies(String commentHandle, String cursor, Integer limit, String appkey, String authorization, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
         if (commentHandle == null) {
             throw new IllegalArgumentException("Parameter commentHandle is required and cannot be null.");
-        }
-        if (authorization == null) {
-            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         Call<ResponseBody> call = service.getReplies(commentHandle, cursor, limit, appkey, authorization, userHandle);
         return getRepliesDelegate(call.execute());
@@ -166,27 +152,23 @@ public final class CommentRepliesOperationsImpl implements CommentRepliesOperati
      * Get replies for a comment.
      *
      * @param commentHandle Comment handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
      * @param cursor Current read cursor
      * @param limit Number of items to return
      * @param appkey App key must be filled in when using AAD tokens for Authentication.
+     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
+     -sessionToken for client auth
+     -AAD token for service auth
      * @param userHandle User handle must be filled when using AAD tokens for Authentication.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getRepliesAsync(String commentHandle, String authorization, String cursor, Integer limit, String appkey, String userHandle, final ServiceCallback<FeedResponseReplyView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getRepliesAsync(String commentHandle, String cursor, Integer limit, String appkey, String authorization, String userHandle, final ServiceCallback<FeedResponseReplyView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
         if (commentHandle == null) {
             serviceCallback.failure(new IllegalArgumentException("Parameter commentHandle is required and cannot be null."));
-            return null;
-        }
-        if (authorization == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
         Call<ResponseBody> call = service.getReplies(commentHandle, cursor, limit, appkey, authorization, userHandle);

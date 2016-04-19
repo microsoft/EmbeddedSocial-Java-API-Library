@@ -70,17 +70,20 @@ public final class ImagesOperationsImpl implements ImagesOperations {
 
     /**
      * Upload a new image.
-     * &lt;para&gt;Images will be resized. To access a resized image, append the 1 character size identifier to the blobHandle that is returned.&lt;/para&gt;
-     * &lt;para&gt;d = 25 pixels wide&lt;/para&gt;
-     * &lt;para&gt;h = 50 pixels wide&lt;/para&gt;
-     * &lt;para&gt;l = 100 pixels wide&lt;/para&gt;
-     * &lt;para&gt;p = 250 pixels wide&lt;/para&gt;
-     * &lt;para&gt;t = 500 pixels wide&lt;/para&gt;
-     * &lt;para&gt;x = 1000 pixels wide&lt;/para&gt;
-     * &lt;para&gt;ImageType.UserPhoto supports d,h,l,p,t,x&lt;/para&gt;
-     * &lt;para&gt;ImageType.ContentBlob supports d,h,l,p,t,x&lt;/para&gt;
-     * &lt;para&gt;ImageType.AppIcon supports l&lt;/para&gt;
-     * &lt;para&gt;All resized images will maintain their aspect ratio. Any orientation specified in the EXIF headers will be honored.&lt;/para&gt;.
+     * Images will be resized. To access a resized image, append the 1 character size identifier to the blobHandle that is returned.
+     *             
+     *              - d is 25 pixels wide
+     *              - h is 50 pixels wide
+     *              - l is 100 pixels wide
+     *              - p is 250 pixels wide
+     *              - t is 500 pixels wide
+     *              - x is 1000 pixels wide
+     *             
+     *              - ImageType.UserPhoto supports d,h,l,p,t,x
+     *              - ImageType.ContentBlob supports d,h,l,p,t,x
+     *              - ImageType.AppIcon supports l
+     *             
+     *              All resized images will maintain their aspect ratio. Any orientation specified in the EXIF headers will be honored.
      *
      * @param imageType Image type. Possible values include: 'UserPhoto', 'ContentBlob', 'AppIcon'
      * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
@@ -111,17 +114,20 @@ public final class ImagesOperationsImpl implements ImagesOperations {
 
     /**
      * Upload a new image.
-     * &lt;para&gt;Images will be resized. To access a resized image, append the 1 character size identifier to the blobHandle that is returned.&lt;/para&gt;
-     * &lt;para&gt;d = 25 pixels wide&lt;/para&gt;
-     * &lt;para&gt;h = 50 pixels wide&lt;/para&gt;
-     * &lt;para&gt;l = 100 pixels wide&lt;/para&gt;
-     * &lt;para&gt;p = 250 pixels wide&lt;/para&gt;
-     * &lt;para&gt;t = 500 pixels wide&lt;/para&gt;
-     * &lt;para&gt;x = 1000 pixels wide&lt;/para&gt;
-     * &lt;para&gt;ImageType.UserPhoto supports d,h,l,p,t,x&lt;/para&gt;
-     * &lt;para&gt;ImageType.ContentBlob supports d,h,l,p,t,x&lt;/para&gt;
-     * &lt;para&gt;ImageType.AppIcon supports l&lt;/para&gt;
-     * &lt;para&gt;All resized images will maintain their aspect ratio. Any orientation specified in the EXIF headers will be honored.&lt;/para&gt;.
+     * Images will be resized. To access a resized image, append the 1 character size identifier to the blobHandle that is returned.
+     *             
+     *              - d is 25 pixels wide
+     *              - h is 50 pixels wide
+     *              - l is 100 pixels wide
+     *              - p is 250 pixels wide
+     *              - t is 500 pixels wide
+     *              - x is 1000 pixels wide
+     *             
+     *              - ImageType.UserPhoto supports d,h,l,p,t,x
+     *              - ImageType.ContentBlob supports d,h,l,p,t,x
+     *              - ImageType.AppIcon supports l
+     *             
+     *              All resized images will maintain their aspect ratio. Any orientation specified in the EXIF headers will be honored.
      *
      * @param imageType Image type. Possible values include: 'UserPhoto', 'ContentBlob', 'AppIcon'
      * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
@@ -168,17 +174,20 @@ public final class ImagesOperationsImpl implements ImagesOperations {
 
     /**
      * Upload a new image.
-     * &lt;para&gt;Images will be resized. To access a resized image, append the 1 character size identifier to the blobHandle that is returned.&lt;/para&gt;
-     * &lt;para&gt;d = 25 pixels wide&lt;/para&gt;
-     * &lt;para&gt;h = 50 pixels wide&lt;/para&gt;
-     * &lt;para&gt;l = 100 pixels wide&lt;/para&gt;
-     * &lt;para&gt;p = 250 pixels wide&lt;/para&gt;
-     * &lt;para&gt;t = 500 pixels wide&lt;/para&gt;
-     * &lt;para&gt;x = 1000 pixels wide&lt;/para&gt;
-     * &lt;para&gt;ImageType.UserPhoto supports d,h,l,p,t,x&lt;/para&gt;
-     * &lt;para&gt;ImageType.ContentBlob supports d,h,l,p,t,x&lt;/para&gt;
-     * &lt;para&gt;ImageType.AppIcon supports l&lt;/para&gt;
-     * &lt;para&gt;All resized images will maintain their aspect ratio. Any orientation specified in the EXIF headers will be honored.&lt;/para&gt;.
+     * Images will be resized. To access a resized image, append the 1 character size identifier to the blobHandle that is returned.
+     *             
+     *              - d is 25 pixels wide
+     *              - h is 50 pixels wide
+     *              - l is 100 pixels wide
+     *              - p is 250 pixels wide
+     *              - t is 500 pixels wide
+     *              - x is 1000 pixels wide
+     *             
+     *              - ImageType.UserPhoto supports d,h,l,p,t,x
+     *              - ImageType.ContentBlob supports d,h,l,p,t,x
+     *              - ImageType.AppIcon supports l
+     *             
+     *              All resized images will maintain their aspect ratio. Any orientation specified in the EXIF headers will be honored.
      *
      * @param imageType Image type. Possible values include: 'UserPhoto', 'ContentBlob', 'AppIcon'
      * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
@@ -209,17 +218,20 @@ public final class ImagesOperationsImpl implements ImagesOperations {
 
     /**
      * Upload a new image.
-     * &lt;para&gt;Images will be resized. To access a resized image, append the 1 character size identifier to the blobHandle that is returned.&lt;/para&gt;
-     * &lt;para&gt;d = 25 pixels wide&lt;/para&gt;
-     * &lt;para&gt;h = 50 pixels wide&lt;/para&gt;
-     * &lt;para&gt;l = 100 pixels wide&lt;/para&gt;
-     * &lt;para&gt;p = 250 pixels wide&lt;/para&gt;
-     * &lt;para&gt;t = 500 pixels wide&lt;/para&gt;
-     * &lt;para&gt;x = 1000 pixels wide&lt;/para&gt;
-     * &lt;para&gt;ImageType.UserPhoto supports d,h,l,p,t,x&lt;/para&gt;
-     * &lt;para&gt;ImageType.ContentBlob supports d,h,l,p,t,x&lt;/para&gt;
-     * &lt;para&gt;ImageType.AppIcon supports l&lt;/para&gt;
-     * &lt;para&gt;All resized images will maintain their aspect ratio. Any orientation specified in the EXIF headers will be honored.&lt;/para&gt;.
+     * Images will be resized. To access a resized image, append the 1 character size identifier to the blobHandle that is returned.
+     *             
+     *              - d is 25 pixels wide
+     *              - h is 50 pixels wide
+     *              - l is 100 pixels wide
+     *              - p is 250 pixels wide
+     *              - t is 500 pixels wide
+     *              - x is 1000 pixels wide
+     *             
+     *              - ImageType.UserPhoto supports d,h,l,p,t,x
+     *              - ImageType.ContentBlob supports d,h,l,p,t,x
+     *              - ImageType.AppIcon supports l
+     *             
+     *              All resized images will maintain their aspect ratio. Any orientation specified in the EXIF headers will be honored.
      *
      * @param imageType Image type. Possible values include: 'UserPhoto', 'ContentBlob', 'AppIcon'
      * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
