@@ -13,80 +13,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class PostLinkedAccountRequest {
     /**
-     * Gets or sets identity provider type. Possible values include:
-     * 'Facebook', 'Microsoft', 'Google', 'Twitter', 'Beihai'.
+     * Gets or sets a session token.
      */
     @JsonProperty(required = true)
-    private IdentityProvider identityProvider;
+    private String sessionToken;
 
     /**
-     * Gets or sets access or authentication token, user code, or verifier
-     * obtained from third-party provider.
-     * The server contacts the third-party provider to use the
-     * token (or user code, or verifier) for discover the user's identity.
-     */
-    private String accessToken;
-
-    /**
-     * Gets or sets request token obtained from third-party provider.
-     * Some providers do not issue authentication or access
-     * tokens, but they issue request tokens
-     * and verifiers.
-     */
-    private String requestToken;
-
-    /**
-     * Get the identityProvider value.
+     * Get the sessionToken value.
      *
-     * @return the identityProvider value
+     * @return the sessionToken value
      */
-    public IdentityProvider getIdentityProvider() {
-        return this.identityProvider;
+    public String getSessionToken() {
+        return this.sessionToken;
     }
 
     /**
-     * Set the identityProvider value.
+     * Set the sessionToken value.
      *
-     * @param identityProvider the identityProvider value to set
+     * @param sessionToken the sessionToken value to set
      */
-    public void setIdentityProvider(IdentityProvider identityProvider) {
-        this.identityProvider = identityProvider;
-    }
-
-    /**
-     * Get the accessToken value.
-     *
-     * @return the accessToken value
-     */
-    public String getAccessToken() {
-        return this.accessToken;
-    }
-
-    /**
-     * Set the accessToken value.
-     *
-     * @param accessToken the accessToken value to set
-     */
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    /**
-     * Get the requestToken value.
-     *
-     * @return the requestToken value
-     */
-    public String getRequestToken() {
-        return this.requestToken;
-    }
-
-    /**
-     * Set the requestToken value.
-     *
-     * @param requestToken the requestToken value to set
-     */
-    public void setRequestToken(String requestToken) {
-        this.requestToken = requestToken;
+    public void setSessionToken(String sessionToken) {
+        this.sessionToken = sessionToken;
     }
 
 }

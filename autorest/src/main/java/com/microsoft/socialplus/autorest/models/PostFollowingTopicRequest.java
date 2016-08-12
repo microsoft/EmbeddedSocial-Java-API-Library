@@ -9,31 +9,31 @@ package com.microsoft.socialplus.autorest.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Request to post a following (follow user).
+ * Request to follow a topic.
  */
-public class PostFollowingRequest {
+public class PostFollowingTopicRequest {
     /**
-     * Gets or sets user handle.
+     * Gets or sets topic handle.
      */
     @JsonProperty(required = true)
-    private String userHandle;
+    private String topicHandle;
 
     /**
-     * Get the userHandle value.
+     * Get the topicHandle value.
      *
-     * @return the userHandle value
+     * @return the topicHandle value
      */
-    public String getUserHandle() {
-        return this.userHandle;
+    public String getTopicHandle() {
+        return this.topicHandle;
     }
 
     /**
-     * Set the userHandle value.
+     * Set the topicHandle value.
      *
-     * @param userHandle the userHandle value to set
+     * @param topicHandle the topicHandle value to set
      */
-    public void setUserHandle(String userHandle) {
-        this.userHandle = userHandle;
+    public void setTopicHandle(String topicHandle) {
+        this.topicHandle = topicHandle;
     }
 
 }

@@ -52,8 +52,8 @@ public final class MyAppFollowingOperationsImpl implements MyAppFollowingOperati
      */
     interface MyAppFollowingService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.4/users/me/apps/{appHandle}/following/difference")
-        Call<ResponseBody> getUsers(@Path("appHandle") String appHandle, @Query("cursor") String cursor, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @GET("v0.5/users/me/apps/{appHandle}/following/difference")
+        Call<ResponseBody> getUsers(@Path("appHandle") String appHandle, @Query("cursor") String cursor, @Header("Authorization") String authorization);
 
     }
 
@@ -61,9 +61,14 @@ public final class MyAppFollowingOperationsImpl implements MyAppFollowingOperati
      * Find users the current user is following in another app but not in the current app.
      *
      * @param appHandle App handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -77,9 +82,7 @@ public final class MyAppFollowingOperationsImpl implements MyAppFollowingOperati
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         final String cursor = null;
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getUsers(appHandle, cursor, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getUsers(appHandle, cursor, authorization);
         return getUsersDelegate(call.execute());
     }
 
@@ -87,9 +90,14 @@ public final class MyAppFollowingOperationsImpl implements MyAppFollowingOperati
      * Find users the current user is following in another app but not in the current app.
      *
      * @param appHandle App handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -107,9 +115,7 @@ public final class MyAppFollowingOperationsImpl implements MyAppFollowingOperati
             return null;
         }
         final String cursor = null;
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getUsers(appHandle, cursor, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getUsers(appHandle, cursor, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseUserCompactView>(serviceCallback) {
             @Override
@@ -128,25 +134,28 @@ public final class MyAppFollowingOperationsImpl implements MyAppFollowingOperati
      * Find users the current user is following in another app but not in the current app.
      *
      * @param appHandle App handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param cursor Current read cursor
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseUserCompactView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseUserCompactView> getUsers(String appHandle, String authorization, String cursor, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseUserCompactView> getUsers(String appHandle, String authorization, String cursor) throws ServiceException, IOException, IllegalArgumentException {
         if (appHandle == null) {
             throw new IllegalArgumentException("Parameter appHandle is required and cannot be null.");
         }
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getUsers(appHandle, cursor, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getUsers(appHandle, cursor, authorization);
         return getUsersDelegate(call.execute());
     }
 
@@ -154,17 +163,20 @@ public final class MyAppFollowingOperationsImpl implements MyAppFollowingOperati
      * Find users the current user is following in another app but not in the current app.
      *
      * @param appHandle App handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param cursor Current read cursor
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getUsersAsync(String appHandle, String authorization, String cursor, String appkey, String userHandle, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getUsersAsync(String appHandle, String authorization, String cursor, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -176,7 +188,7 @@ public final class MyAppFollowingOperationsImpl implements MyAppFollowingOperati
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getUsers(appHandle, cursor, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getUsers(appHandle, cursor, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseUserCompactView>(serviceCallback) {
             @Override

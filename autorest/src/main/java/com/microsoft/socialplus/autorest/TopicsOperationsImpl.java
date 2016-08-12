@@ -67,85 +67,103 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      */
     interface TopicsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.4/topics")
-        Call<ResponseBody> getTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @GET("v0.5/topics")
+        Call<ResponseBody> getTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.4/topics")
-        Call<ResponseBody> postTopic(@Body PostTopicRequest request, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @POST("v0.5/topics")
+        Call<ResponseBody> postTopic(@Body PostTopicRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.4/topics/{topicHandle}")
-        Call<ResponseBody> getTopic(@Path("topicHandle") String topicHandle, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @GET("v0.5/topics/{topicHandle}")
+        Call<ResponseBody> getTopic(@Path("topicHandle") String topicHandle, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @PUT("v0.4/topics/{topicHandle}")
-        Call<ResponseBody> putTopic(@Path("topicHandle") String topicHandle, @Body PutTopicRequest request, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @PUT("v0.5/topics/{topicHandle}")
+        Call<ResponseBody> putTopic(@Path("topicHandle") String topicHandle, @Body PutTopicRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.4/topics/{topicHandle}", method = "DELETE", hasBody = true)
-        Call<ResponseBody> deleteTopic(@Path("topicHandle") String topicHandle, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @HTTP(path = "v0.5/topics/{topicHandle}", method = "DELETE", hasBody = true)
+        Call<ResponseBody> deleteTopic(@Path("topicHandle") String topicHandle, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.4/topics/popular/{timeRange}")
-        Call<ResponseBody> getPopularTopics(@Path("timeRange") TimeRange timeRange, @Query("cursor") Integer cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @GET("v0.5/topics/popular/{timeRange}")
+        Call<ResponseBody> getPopularTopics(@Path("timeRange") TimeRange timeRange, @Query("cursor") Integer cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.4/topics/featured")
-        Call<ResponseBody> getFeaturedTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @GET("v0.5/topics/featured")
+        Call<ResponseBody> getFeaturedTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.4/topics/names")
-        Call<ResponseBody> postTopicName(@Body PostTopicNameRequest request, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @POST("v0.5/topics/names")
+        Call<ResponseBody> postTopicName(@Body PostTopicNameRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.4/topics/names/{topicName}")
-        Call<ResponseBody> getTopicName(@Path("topicName") String topicName, @Query("publisherType") PublisherType publisherType, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @GET("v0.5/topics/names/{topicName}")
+        Call<ResponseBody> getTopicName(@Path("topicName") String topicName, @Query("publisherType") PublisherType publisherType, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @PUT("v0.4/topics/names/{topicName}")
-        Call<ResponseBody> putTopicName(@Path("topicName") String topicName, @Body PutTopicNameRequest request, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @PUT("v0.5/topics/names/{topicName}")
+        Call<ResponseBody> putTopicName(@Path("topicName") String topicName, @Body PutTopicNameRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.4/topics/names/{topicName}", method = "DELETE", hasBody = true)
-        Call<ResponseBody> deleteTopicName(@Path("topicName") String topicName, @Body DeleteTopicNameRequest request, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @HTTP(path = "v0.5/topics/names/{topicName}", method = "DELETE", hasBody = true)
+        Call<ResponseBody> deleteTopicName(@Path("topicName") String topicName, @Body DeleteTopicNameRequest request, @Header("Authorization") String authorization);
 
     }
 
     /**
      * Get recent topics.
      *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseTopicView> getTopics() throws ServiceException, IOException {
+    public ServiceResponse<FeedResponseTopicView> getTopics(String authorization) throws ServiceException, IOException, IllegalArgumentException {
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
         final String cursor = null;
         final Integer limit = null;
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getTopics(cursor, limit, authorization);
         return getTopicsDelegate(call.execute());
     }
 
     /**
      * Get recent topics.
      *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getTopicsAsync(final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getTopicsAsync(String authorization, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
         final String cursor = null;
         final Integer limit = null;
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getTopics(cursor, limit, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override
@@ -163,41 +181,55 @@ public final class TopicsOperationsImpl implements TopicsOperations {
     /**
      * Get recent topics.
      *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseTopicView> getTopics(String cursor, Integer limit, String appkey, String authorization, String userHandle) throws ServiceException, IOException {
-        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization, userHandle);
+    public ServiceResponse<FeedResponseTopicView> getTopics(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException {
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.getTopics(cursor, limit, authorization);
         return getTopicsDelegate(call.execute());
     }
 
     /**
      * Get recent topics.
      *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getTopicsAsync(String cursor, Integer limit, String appkey, String authorization, String userHandle, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getTopicsAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
-        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization, userHandle);
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Call<ResponseBody> call = service.getTopics(cursor, limit, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override
@@ -212,7 +244,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
         return serviceCall;
     }
 
-    private ServiceResponse<FeedResponseTopicView> getTopicsDelegate(Response<ResponseBody> response) throws ServiceException, IOException {
+    private ServiceResponse<FeedResponseTopicView> getTopicsDelegate(Response<ResponseBody> response) throws ServiceException, IOException, IllegalArgumentException {
         return new ServiceResponseBuilder<FeedResponseTopicView, ServiceException>(this.client.getMapperAdapter())
                 .register(200, new TypeToken<FeedResponseTopicView>() { }.getType())
                 .register(400, new TypeToken<Void>() { }.getType())
@@ -225,9 +257,14 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * Create a new topic.
      *
      * @param request Post topic request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -241,9 +278,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         Validator.validate(request);
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.postTopic(request, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.postTopic(request, authorization);
         return postTopicDelegate(call.execute());
     }
 
@@ -251,9 +286,14 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * Create a new topic.
      *
      * @param request Post topic request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -271,76 +311,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             return null;
         }
         Validator.validate(request, serviceCallback);
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.postTopic(request, appkey, authorization, userHandle);
-        final ServiceCall serviceCall = new ServiceCall(call);
-        call.enqueue(new ServiceResponseCallback<PostTopicResponse>(serviceCallback) {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    serviceCallback.success(postTopicDelegate(response));
-                } catch (ServiceException | IOException exception) {
-                    serviceCallback.failure(exception);
-                }
-            }
-        });
-        return serviceCall;
-    }
-
-    /**
-     * Create a new topic.
-     *
-     * @param request Post topic request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the PostTopicResponse object wrapped in {@link ServiceResponse} if successful.
-     */
-    public ServiceResponse<PostTopicResponse> postTopic(PostTopicRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
-        if (request == null) {
-            throw new IllegalArgumentException("Parameter request is required and cannot be null.");
-        }
-        if (authorization == null) {
-            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
-        }
-        Validator.validate(request);
-        Call<ResponseBody> call = service.postTopic(request, appkey, authorization, userHandle);
-        return postTopicDelegate(call.execute());
-    }
-
-    /**
-     * Create a new topic.
-     *
-     * @param request Post topic request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link Call} object
-     */
-    public ServiceCall postTopicAsync(PostTopicRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<PostTopicResponse> serviceCallback) throws IllegalArgumentException {
-        if (serviceCallback == null) {
-            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
-        }
-        if (request == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter request is required and cannot be null."));
-            return null;
-        }
-        if (authorization == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
-            return null;
-        }
-        Validator.validate(request, serviceCallback);
-        Call<ResponseBody> call = service.postTopic(request, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.postTopic(request, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<PostTopicResponse>(serviceCallback) {
             @Override
@@ -369,19 +340,27 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * Get topic.
      *
      * @param topicHandle Topic handle
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the TopicView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<TopicView> getTopic(String topicHandle) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<TopicView> getTopic(String topicHandle, String authorization) throws ServiceException, IOException, IllegalArgumentException {
         if (topicHandle == null) {
             throw new IllegalArgumentException("Parameter topicHandle is required and cannot be null.");
         }
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getTopic(topicHandle, appkey, authorization, userHandle);
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.getTopic(topicHandle, authorization);
         return getTopicDelegate(call.execute());
     }
 
@@ -389,11 +368,19 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * Get topic.
      *
      * @param topicHandle Topic handle
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getTopicAsync(String topicHandle, final ServiceCallback<TopicView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getTopicAsync(String topicHandle, String authorization, final ServiceCallback<TopicView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -401,68 +388,11 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter topicHandle is required and cannot be null."));
             return null;
         }
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getTopic(topicHandle, appkey, authorization, userHandle);
-        final ServiceCall serviceCall = new ServiceCall(call);
-        call.enqueue(new ServiceResponseCallback<TopicView>(serviceCallback) {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    serviceCallback.success(getTopicDelegate(response));
-                } catch (ServiceException | IOException exception) {
-                    serviceCallback.failure(exception);
-                }
-            }
-        });
-        return serviceCall;
-    }
-
-    /**
-     * Get topic.
-     *
-     * @param topicHandle Topic handle
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the TopicView object wrapped in {@link ServiceResponse} if successful.
-     */
-    public ServiceResponse<TopicView> getTopic(String topicHandle, String appkey, String authorization, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
-        if (topicHandle == null) {
-            throw new IllegalArgumentException("Parameter topicHandle is required and cannot be null.");
-        }
-        Call<ResponseBody> call = service.getTopic(topicHandle, appkey, authorization, userHandle);
-        return getTopicDelegate(call.execute());
-    }
-
-    /**
-     * Get topic.
-     *
-     * @param topicHandle Topic handle
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link Call} object
-     */
-    public ServiceCall getTopicAsync(String topicHandle, String appkey, String authorization, String userHandle, final ServiceCallback<TopicView> serviceCallback) throws IllegalArgumentException {
-        if (serviceCallback == null) {
-            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
-        }
-        if (topicHandle == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter topicHandle is required and cannot be null."));
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getTopic(topicHandle, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getTopic(topicHandle, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<TopicView>(serviceCallback) {
             @Override
@@ -492,9 +422,14 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      *
      * @param topicHandle Topic handle
      * @param request Put topic request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -511,9 +446,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         Validator.validate(request);
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.putTopic(topicHandle, request, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.putTopic(topicHandle, request, authorization);
         return putTopicDelegate(call.execute());
     }
 
@@ -522,9 +455,14 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      *
      * @param topicHandle Topic handle
      * @param request Put topic request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -546,85 +484,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             return null;
         }
         Validator.validate(request, serviceCallback);
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.putTopic(topicHandle, request, appkey, authorization, userHandle);
-        final ServiceCall serviceCall = new ServiceCall(call);
-        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    serviceCallback.success(putTopicDelegate(response));
-                } catch (ServiceException | IOException exception) {
-                    serviceCallback.failure(exception);
-                }
-            }
-        });
-        return serviceCall;
-    }
-
-    /**
-     * Update topic.
-     *
-     * @param topicHandle Topic handle
-     * @param request Put topic request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the Object object wrapped in {@link ServiceResponse} if successful.
-     */
-    public ServiceResponse<Object> putTopic(String topicHandle, PutTopicRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
-        if (topicHandle == null) {
-            throw new IllegalArgumentException("Parameter topicHandle is required and cannot be null.");
-        }
-        if (request == null) {
-            throw new IllegalArgumentException("Parameter request is required and cannot be null.");
-        }
-        if (authorization == null) {
-            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
-        }
-        Validator.validate(request);
-        Call<ResponseBody> call = service.putTopic(topicHandle, request, appkey, authorization, userHandle);
-        return putTopicDelegate(call.execute());
-    }
-
-    /**
-     * Update topic.
-     *
-     * @param topicHandle Topic handle
-     * @param request Put topic request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link Call} object
-     */
-    public ServiceCall putTopicAsync(String topicHandle, PutTopicRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
-        if (serviceCallback == null) {
-            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
-        }
-        if (topicHandle == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter topicHandle is required and cannot be null."));
-            return null;
-        }
-        if (request == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter request is required and cannot be null."));
-            return null;
-        }
-        if (authorization == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
-            return null;
-        }
-        Validator.validate(request, serviceCallback);
-        Call<ResponseBody> call = service.putTopic(topicHandle, request, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.putTopic(topicHandle, request, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
@@ -654,9 +514,14 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * Delete topic.
      *
      * @param topicHandle Topic handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -669,9 +534,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.deleteTopic(topicHandle, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.deleteTopic(topicHandle, authorization);
         return deleteTopicDelegate(call.execute());
     }
 
@@ -679,9 +542,14 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * Delete topic.
      *
      * @param topicHandle Topic handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -698,74 +566,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.deleteTopic(topicHandle, appkey, authorization, userHandle);
-        final ServiceCall serviceCall = new ServiceCall(call);
-        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    serviceCallback.success(deleteTopicDelegate(response));
-                } catch (ServiceException | IOException exception) {
-                    serviceCallback.failure(exception);
-                }
-            }
-        });
-        return serviceCall;
-    }
-
-    /**
-     * Delete topic.
-     *
-     * @param topicHandle Topic handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the Object object wrapped in {@link ServiceResponse} if successful.
-     */
-    public ServiceResponse<Object> deleteTopic(String topicHandle, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
-        if (topicHandle == null) {
-            throw new IllegalArgumentException("Parameter topicHandle is required and cannot be null.");
-        }
-        if (authorization == null) {
-            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
-        }
-        Call<ResponseBody> call = service.deleteTopic(topicHandle, appkey, authorization, userHandle);
-        return deleteTopicDelegate(call.execute());
-    }
-
-    /**
-     * Delete topic.
-     *
-     * @param topicHandle Topic handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link Call} object
-     */
-    public ServiceCall deleteTopicAsync(String topicHandle, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
-        if (serviceCallback == null) {
-            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
-        }
-        if (topicHandle == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter topicHandle is required and cannot be null."));
-            return null;
-        }
-        if (authorization == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
-            return null;
-        }
-        Call<ResponseBody> call = service.deleteTopic(topicHandle, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.deleteTopic(topicHandle, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
@@ -794,21 +595,29 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * Get popular topics today.
      *
      * @param timeRange Time range. Possible values include: 'Today', 'ThisWeek', 'ThisMonth', 'AllTime'
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseTopicView> getPopularTopics(TimeRange timeRange) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseTopicView> getPopularTopics(TimeRange timeRange, String authorization) throws ServiceException, IOException, IllegalArgumentException {
         if (timeRange == null) {
             throw new IllegalArgumentException("Parameter timeRange is required and cannot be null.");
         }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
         final Integer cursor = null;
         final Integer limit = null;
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getPopularTopics(timeRange, cursor, limit, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getPopularTopics(timeRange, cursor, limit, authorization);
         return getPopularTopicsDelegate(call.execute());
     }
 
@@ -816,11 +625,19 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * Get popular topics today.
      *
      * @param timeRange Time range. Possible values include: 'Today', 'ThisWeek', 'ThisMonth', 'AllTime'
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getPopularTopicsAsync(TimeRange timeRange, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getPopularTopicsAsync(TimeRange timeRange, String authorization, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -828,12 +645,13 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter timeRange is required and cannot be null."));
             return null;
         }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
         final Integer cursor = null;
         final Integer limit = null;
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getPopularTopics(timeRange, cursor, limit, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getPopularTopics(timeRange, cursor, limit, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override
@@ -852,23 +670,29 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * Get popular topics today.
      *
      * @param timeRange Time range. Possible values include: 'Today', 'ThisWeek', 'ThisMonth', 'AllTime'
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseTopicView> getPopularTopics(TimeRange timeRange, Integer cursor, Integer limit, String appkey, String authorization, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseTopicView> getPopularTopics(TimeRange timeRange, String authorization, Integer cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException {
         if (timeRange == null) {
             throw new IllegalArgumentException("Parameter timeRange is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getPopularTopics(timeRange, cursor, limit, appkey, authorization, userHandle);
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.getPopularTopics(timeRange, cursor, limit, authorization);
         return getPopularTopicsDelegate(call.execute());
     }
 
@@ -876,18 +700,21 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * Get popular topics today.
      *
      * @param timeRange Time range. Possible values include: 'Today', 'ThisWeek', 'ThisMonth', 'AllTime'
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getPopularTopicsAsync(TimeRange timeRange, Integer cursor, Integer limit, String appkey, String authorization, String userHandle, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getPopularTopicsAsync(TimeRange timeRange, String authorization, Integer cursor, Integer limit, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -895,7 +722,11 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter timeRange is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getPopularTopics(timeRange, cursor, limit, appkey, authorization, userHandle);
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Call<ResponseBody> call = service.getPopularTopics(timeRange, cursor, limit, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override
@@ -922,37 +753,55 @@ public final class TopicsOperationsImpl implements TopicsOperations {
     /**
      * Get featured topics.
      *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseTopicView> getFeaturedTopics() throws ServiceException, IOException {
+    public ServiceResponse<FeedResponseTopicView> getFeaturedTopics(String authorization) throws ServiceException, IOException, IllegalArgumentException {
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
         final String cursor = null;
         final Integer limit = null;
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getFeaturedTopics(cursor, limit, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getFeaturedTopics(cursor, limit, authorization);
         return getFeaturedTopicsDelegate(call.execute());
     }
 
     /**
      * Get featured topics.
      *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getFeaturedTopicsAsync(final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getFeaturedTopicsAsync(String authorization, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
         final String cursor = null;
         final Integer limit = null;
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getFeaturedTopics(cursor, limit, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getFeaturedTopics(cursor, limit, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override
@@ -970,41 +819,55 @@ public final class TopicsOperationsImpl implements TopicsOperations {
     /**
      * Get featured topics.
      *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseTopicView> getFeaturedTopics(String cursor, Integer limit, String appkey, String authorization, String userHandle) throws ServiceException, IOException {
-        Call<ResponseBody> call = service.getFeaturedTopics(cursor, limit, appkey, authorization, userHandle);
+    public ServiceResponse<FeedResponseTopicView> getFeaturedTopics(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException {
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.getFeaturedTopics(cursor, limit, authorization);
         return getFeaturedTopicsDelegate(call.execute());
     }
 
     /**
      * Get featured topics.
      *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getFeaturedTopicsAsync(String cursor, Integer limit, String appkey, String authorization, String userHandle, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getFeaturedTopicsAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
-        Call<ResponseBody> call = service.getFeaturedTopics(cursor, limit, appkey, authorization, userHandle);
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Call<ResponseBody> call = service.getFeaturedTopics(cursor, limit, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override
@@ -1019,7 +882,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
         return serviceCall;
     }
 
-    private ServiceResponse<FeedResponseTopicView> getFeaturedTopicsDelegate(Response<ResponseBody> response) throws ServiceException, IOException {
+    private ServiceResponse<FeedResponseTopicView> getFeaturedTopicsDelegate(Response<ResponseBody> response) throws ServiceException, IOException, IllegalArgumentException {
         return new ServiceResponseBuilder<FeedResponseTopicView, ServiceException>(this.client.getMapperAdapter())
                 .register(200, new TypeToken<FeedResponseTopicView>() { }.getType())
                 .register(400, new TypeToken<Void>() { }.getType())
@@ -1032,9 +895,14 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * Create a topic name.
      *
      * @param request Post topic name request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -1048,9 +916,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         Validator.validate(request);
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.postTopicName(request, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.postTopicName(request, authorization);
         return postTopicNameDelegate(call.execute());
     }
 
@@ -1058,9 +924,14 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * Create a topic name.
      *
      * @param request Post topic name request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -1078,76 +949,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             return null;
         }
         Validator.validate(request, serviceCallback);
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.postTopicName(request, appkey, authorization, userHandle);
-        final ServiceCall serviceCall = new ServiceCall(call);
-        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    serviceCallback.success(postTopicNameDelegate(response));
-                } catch (ServiceException | IOException exception) {
-                    serviceCallback.failure(exception);
-                }
-            }
-        });
-        return serviceCall;
-    }
-
-    /**
-     * Create a topic name.
-     *
-     * @param request Post topic name request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the Object object wrapped in {@link ServiceResponse} if successful.
-     */
-    public ServiceResponse<Object> postTopicName(PostTopicNameRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
-        if (request == null) {
-            throw new IllegalArgumentException("Parameter request is required and cannot be null.");
-        }
-        if (authorization == null) {
-            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
-        }
-        Validator.validate(request);
-        Call<ResponseBody> call = service.postTopicName(request, appkey, authorization, userHandle);
-        return postTopicNameDelegate(call.execute());
-    }
-
-    /**
-     * Create a topic name.
-     *
-     * @param request Post topic name request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link Call} object
-     */
-    public ServiceCall postTopicNameAsync(PostTopicNameRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
-        if (serviceCallback == null) {
-            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
-        }
-        if (request == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter request is required and cannot be null."));
-            return null;
-        }
-        if (authorization == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
-            return null;
-        }
-        Validator.validate(request, serviceCallback);
-        Call<ResponseBody> call = service.postTopicName(request, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.postTopicName(request, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
@@ -1177,22 +979,30 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      *
      * @param topicName Topic name
      * @param publisherType Publisher type. Possible values include: 'User', 'App'
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the GetTopicNameResponse object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<GetTopicNameResponse> getTopicName(String topicName, PublisherType publisherType) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<GetTopicNameResponse> getTopicName(String topicName, PublisherType publisherType, String authorization) throws ServiceException, IOException, IllegalArgumentException {
         if (topicName == null) {
             throw new IllegalArgumentException("Parameter topicName is required and cannot be null.");
         }
         if (publisherType == null) {
             throw new IllegalArgumentException("Parameter publisherType is required and cannot be null.");
         }
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getTopicName(topicName, publisherType, appkey, authorization, userHandle);
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.getTopicName(topicName, publisherType, authorization);
         return getTopicNameDelegate(call.execute());
     }
 
@@ -1201,11 +1011,19 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      *
      * @param topicName Topic name
      * @param publisherType Publisher type. Possible values include: 'User', 'App'
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getTopicNameAsync(String topicName, PublisherType publisherType, final ServiceCallback<GetTopicNameResponse> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getTopicNameAsync(String topicName, PublisherType publisherType, String authorization, final ServiceCallback<GetTopicNameResponse> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -1217,77 +1035,11 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter publisherType is required and cannot be null."));
             return null;
         }
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getTopicName(topicName, publisherType, appkey, authorization, userHandle);
-        final ServiceCall serviceCall = new ServiceCall(call);
-        call.enqueue(new ServiceResponseCallback<GetTopicNameResponse>(serviceCallback) {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    serviceCallback.success(getTopicNameDelegate(response));
-                } catch (ServiceException | IOException exception) {
-                    serviceCallback.failure(exception);
-                }
-            }
-        });
-        return serviceCall;
-    }
-
-    /**
-     * Get a topic name.
-     *
-     * @param topicName Topic name
-     * @param publisherType Publisher type. Possible values include: 'User', 'App'
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the GetTopicNameResponse object wrapped in {@link ServiceResponse} if successful.
-     */
-    public ServiceResponse<GetTopicNameResponse> getTopicName(String topicName, PublisherType publisherType, String appkey, String authorization, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
-        if (topicName == null) {
-            throw new IllegalArgumentException("Parameter topicName is required and cannot be null.");
-        }
-        if (publisherType == null) {
-            throw new IllegalArgumentException("Parameter publisherType is required and cannot be null.");
-        }
-        Call<ResponseBody> call = service.getTopicName(topicName, publisherType, appkey, authorization, userHandle);
-        return getTopicNameDelegate(call.execute());
-    }
-
-    /**
-     * Get a topic name.
-     *
-     * @param topicName Topic name
-     * @param publisherType Publisher type. Possible values include: 'User', 'App'
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link Call} object
-     */
-    public ServiceCall getTopicNameAsync(String topicName, PublisherType publisherType, String appkey, String authorization, String userHandle, final ServiceCallback<GetTopicNameResponse> serviceCallback) throws IllegalArgumentException {
-        if (serviceCallback == null) {
-            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
-        }
-        if (topicName == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter topicName is required and cannot be null."));
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        if (publisherType == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter publisherType is required and cannot be null."));
-            return null;
-        }
-        Call<ResponseBody> call = service.getTopicName(topicName, publisherType, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getTopicName(topicName, publisherType, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<GetTopicNameResponse>(serviceCallback) {
             @Override
@@ -1316,9 +1068,14 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      *
      * @param topicName Topic name
      * @param request Update topic name request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -1335,9 +1092,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         Validator.validate(request);
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.putTopicName(topicName, request, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.putTopicName(topicName, request, authorization);
         return putTopicNameDelegate(call.execute());
     }
 
@@ -1346,9 +1101,14 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      *
      * @param topicName Topic name
      * @param request Update topic name request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -1370,85 +1130,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             return null;
         }
         Validator.validate(request, serviceCallback);
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.putTopicName(topicName, request, appkey, authorization, userHandle);
-        final ServiceCall serviceCall = new ServiceCall(call);
-        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    serviceCallback.success(putTopicNameDelegate(response));
-                } catch (ServiceException | IOException exception) {
-                    serviceCallback.failure(exception);
-                }
-            }
-        });
-        return serviceCall;
-    }
-
-    /**
-     * Update a topic name.
-     *
-     * @param topicName Topic name
-     * @param request Update topic name request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the Object object wrapped in {@link ServiceResponse} if successful.
-     */
-    public ServiceResponse<Object> putTopicName(String topicName, PutTopicNameRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
-        if (topicName == null) {
-            throw new IllegalArgumentException("Parameter topicName is required and cannot be null.");
-        }
-        if (request == null) {
-            throw new IllegalArgumentException("Parameter request is required and cannot be null.");
-        }
-        if (authorization == null) {
-            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
-        }
-        Validator.validate(request);
-        Call<ResponseBody> call = service.putTopicName(topicName, request, appkey, authorization, userHandle);
-        return putTopicNameDelegate(call.execute());
-    }
-
-    /**
-     * Update a topic name.
-     *
-     * @param topicName Topic name
-     * @param request Update topic name request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link Call} object
-     */
-    public ServiceCall putTopicNameAsync(String topicName, PutTopicNameRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
-        if (serviceCallback == null) {
-            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
-        }
-        if (topicName == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter topicName is required and cannot be null."));
-            return null;
-        }
-        if (request == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter request is required and cannot be null."));
-            return null;
-        }
-        if (authorization == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
-            return null;
-        }
-        Validator.validate(request, serviceCallback);
-        Call<ResponseBody> call = service.putTopicName(topicName, request, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.putTopicName(topicName, request, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
@@ -1477,9 +1159,14 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      *
      * @param topicName Topic name
      * @param request Delete topic request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -1496,9 +1183,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         Validator.validate(request);
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.deleteTopicName(topicName, request, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.deleteTopicName(topicName, request, authorization);
         return deleteTopicNameDelegate(call.execute());
     }
 
@@ -1507,9 +1192,14 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      *
      * @param topicName Topic name
      * @param request Delete topic request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -1531,85 +1221,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             return null;
         }
         Validator.validate(request, serviceCallback);
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.deleteTopicName(topicName, request, appkey, authorization, userHandle);
-        final ServiceCall serviceCall = new ServiceCall(call);
-        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    serviceCallback.success(deleteTopicNameDelegate(response));
-                } catch (ServiceException | IOException exception) {
-                    serviceCallback.failure(exception);
-                }
-            }
-        });
-        return serviceCall;
-    }
-
-    /**
-     * Delete a topic name.
-     *
-     * @param topicName Topic name
-     * @param request Delete topic request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the Object object wrapped in {@link ServiceResponse} if successful.
-     */
-    public ServiceResponse<Object> deleteTopicName(String topicName, DeleteTopicNameRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
-        if (topicName == null) {
-            throw new IllegalArgumentException("Parameter topicName is required and cannot be null.");
-        }
-        if (request == null) {
-            throw new IllegalArgumentException("Parameter request is required and cannot be null.");
-        }
-        if (authorization == null) {
-            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
-        }
-        Validator.validate(request);
-        Call<ResponseBody> call = service.deleteTopicName(topicName, request, appkey, authorization, userHandle);
-        return deleteTopicNameDelegate(call.execute());
-    }
-
-    /**
-     * Delete a topic name.
-     *
-     * @param topicName Topic name
-     * @param request Delete topic request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link Call} object
-     */
-    public ServiceCall deleteTopicNameAsync(String topicName, DeleteTopicNameRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
-        if (serviceCallback == null) {
-            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
-        }
-        if (topicName == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter topicName is required and cannot be null."));
-            return null;
-        }
-        if (request == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter request is required and cannot be null."));
-            return null;
-        }
-        if (authorization == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
-            return null;
-        }
-        Validator.validate(request, serviceCallback);
-        Call<ResponseBody> call = service.deleteTopicName(topicName, request, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.deleteTopicName(topicName, request, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override

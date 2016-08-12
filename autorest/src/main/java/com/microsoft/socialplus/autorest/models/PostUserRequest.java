@@ -13,29 +13,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class PostUserRequest {
     /**
-     * Gets or sets identity provider type. Possible values include:
-     * 'Facebook', 'Microsoft', 'Google', 'Twitter', 'Beihai'.
-     */
-    @JsonProperty(required = true)
-    private IdentityProvider identityProvider;
-
-    /**
-     * Gets or sets access or authentication token obtained from third-party
-     * provider.
-     * The server contacts the third-party provider to validate
-     * the token.
-     */
-    private String accessToken;
-
-    /**
-     * Gets or sets request token obtained from third-party provider.
-     * Some providers do not issue authentication or access
-     * tokens, but they issue request tokens
-     * and verifiers.
-     */
-    private String requestToken;
-
-    /**
      * Gets or sets instance id -- Unique installation id of the app.
      */
     @JsonProperty(required = true)
@@ -62,60 +39,6 @@ public class PostUserRequest {
      * Gets or sets photo handle of the user.
      */
     private String photoHandle;
-
-    /**
-     * Get the identityProvider value.
-     *
-     * @return the identityProvider value
-     */
-    public IdentityProvider getIdentityProvider() {
-        return this.identityProvider;
-    }
-
-    /**
-     * Set the identityProvider value.
-     *
-     * @param identityProvider the identityProvider value to set
-     */
-    public void setIdentityProvider(IdentityProvider identityProvider) {
-        this.identityProvider = identityProvider;
-    }
-
-    /**
-     * Get the accessToken value.
-     *
-     * @return the accessToken value
-     */
-    public String getAccessToken() {
-        return this.accessToken;
-    }
-
-    /**
-     * Set the accessToken value.
-     *
-     * @param accessToken the accessToken value to set
-     */
-    public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
-    }
-
-    /**
-     * Get the requestToken value.
-     *
-     * @return the requestToken value
-     */
-    public String getRequestToken() {
-        return this.requestToken;
-    }
-
-    /**
-     * Set the requestToken value.
-     *
-     * @param requestToken the requestToken value to set
-     */
-    public void setRequestToken(String requestToken) {
-        this.requestToken = requestToken;
-    }
 
     /**
      * Get the instanceId value.

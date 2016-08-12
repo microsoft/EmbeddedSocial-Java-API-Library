@@ -49,7 +49,7 @@ public final class BuildsOperationsImpl implements BuildsOperations {
      */
     interface BuildsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.4/builds/current")
+        @GET("v0.5/builds/current")
         Call<ResponseBody> getBuildsCurrent();
 
     }

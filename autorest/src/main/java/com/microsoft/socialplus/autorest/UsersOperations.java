@@ -26,133 +26,54 @@ import java.io.IOException;
 public interface UsersOperations {
     /**
      * Create a new user.
-     * Create a new user using the following flow:
-     *             
-     *              1. Validate and parse the identity provider access token to construct an identity provider user
-     *             
-     *              2. If the identity provider user is present in the linked account table, read the user profile for this
-     *              specific application from the user profile table
-     *             
-     *              3.    If the user profile already exists, return user conflict
-     *             
-     *              4.    Otherwise, the user does not already have a profile for this particular application, so we create one.
-     *             
-     *              5. Otherwise, the identity provider user is not present. Create the user, and the corresponding user profile.
-     *             
-     *              6. Generate session token, and return
-     *             
-     *              The purpose of steps 2-4 is to ensure that if the user has already registered with us using the same identity
-     *              provider but for a different SocialPlus application, we reuse his user-handle and just create a new profile for
-     *              this specific SocialPlus application. The end result is that we know it is the same user in both apps.
+     * Create a new user and return a fresh session token.
      *
      * @param request Post user request
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the PostUserResponse object wrapped in {@link ServiceResponse} if successful.
      */
-    ServiceResponse<PostUserResponse> postUser(PostUserRequest request) throws ServiceException, IOException, IllegalArgumentException;
+    ServiceResponse<PostUserResponse> postUser(PostUserRequest request, String authorization) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
      * Create a new user.
-     * Create a new user using the following flow:
-     *             
-     *              1. Validate and parse the identity provider access token to construct an identity provider user
-     *             
-     *              2. If the identity provider user is present in the linked account table, read the user profile for this
-     *              specific application from the user profile table
-     *             
-     *              3.    If the user profile already exists, return user conflict
-     *             
-     *              4.    Otherwise, the user does not already have a profile for this particular application, so we create one.
-     *             
-     *              5. Otherwise, the identity provider user is not present. Create the user, and the corresponding user profile.
-     *             
-     *              6. Generate session token, and return
-     *             
-     *              The purpose of steps 2-4 is to ensure that if the user has already registered with us using the same identity
-     *              provider but for a different SocialPlus application, we reuse his user-handle and just create a new profile for
-     *              this specific SocialPlus application. The end result is that we know it is the same user in both apps.
+     * Create a new user and return a fresh session token.
      *
      * @param request Post user request
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
-    ServiceCall postUserAsync(PostUserRequest request, final ServiceCallback<PostUserResponse> serviceCallback) throws IllegalArgumentException;
-    /**
-     * Create a new user.
-     * Create a new user using the following flow:
-     *             
-     *              1. Validate and parse the identity provider access token to construct an identity provider user
-     *             
-     *              2. If the identity provider user is present in the linked account table, read the user profile for this
-     *              specific application from the user profile table
-     *             
-     *              3.    If the user profile already exists, return user conflict
-     *             
-     *              4.    Otherwise, the user does not already have a profile for this particular application, so we create one.
-     *             
-     *              5. Otherwise, the identity provider user is not present. Create the user, and the corresponding user profile.
-     *             
-     *              6. Generate session token, and return
-     *             
-     *              The purpose of steps 2-4 is to ensure that if the user has already registered with us using the same identity
-     *              provider but for a different SocialPlus application, we reuse his user-handle and just create a new profile for
-     *              this specific SocialPlus application. The end result is that we know it is the same user in both apps.
-     *
-     * @param request Post user request
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the PostUserResponse object wrapped in {@link ServiceResponse} if successful.
-     */
-    ServiceResponse<PostUserResponse> postUser(PostUserRequest request, String appkey, String authorization, String userHandle) throws ServiceException, IOException, IllegalArgumentException;
-
-    /**
-     * Create a new user.
-     * Create a new user using the following flow:
-     *             
-     *              1. Validate and parse the identity provider access token to construct an identity provider user
-     *             
-     *              2. If the identity provider user is present in the linked account table, read the user profile for this
-     *              specific application from the user profile table
-     *             
-     *              3.    If the user profile already exists, return user conflict
-     *             
-     *              4.    Otherwise, the user does not already have a profile for this particular application, so we create one.
-     *             
-     *              5. Otherwise, the identity provider user is not present. Create the user, and the corresponding user profile.
-     *             
-     *              6. Generate session token, and return
-     *             
-     *              The purpose of steps 2-4 is to ensure that if the user has already registered with us using the same identity
-     *              provider but for a different SocialPlus application, we reuse his user-handle and just create a new profile for
-     *              this specific SocialPlus application. The end result is that we know it is the same user in both apps.
-     *
-     * @param request Post user request
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link ServiceCall} object
-     */
-    ServiceCall postUserAsync(PostUserRequest request, String appkey, String authorization, String userHandle, final ServiceCallback<PostUserResponse> serviceCallback) throws IllegalArgumentException;
+    ServiceCall postUserAsync(PostUserRequest request, String authorization, final ServiceCallback<PostUserResponse> serviceCallback) throws IllegalArgumentException;
 
     /**
      * Get my profile.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -163,49 +84,31 @@ public interface UsersOperations {
     /**
      * Get my profile.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
     ServiceCall getMyProfileAsync(String authorization, final ServiceCallback<UserProfileView> serviceCallback) throws IllegalArgumentException;
-    /**
-     * Get my profile.
-     *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the UserProfileView object wrapped in {@link ServiceResponse} if successful.
-     */
-    ServiceResponse<UserProfileView> getMyProfile(String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException;
-
-    /**
-     * Get my profile.
-     *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link ServiceCall} object
-     */
-    ServiceCall getMyProfileAsync(String authorization, String appkey, String userHandle, final ServiceCallback<UserProfileView> serviceCallback) throws IllegalArgumentException;
 
     /**
      * Delete user.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -216,50 +119,32 @@ public interface UsersOperations {
     /**
      * Delete user.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
     ServiceCall deleteUserAsync(String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
-    /**
-     * Delete user.
-     *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the Object object wrapped in {@link ServiceResponse} if successful.
-     */
-    ServiceResponse<Object> deleteUser(String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException;
-
-    /**
-     * Delete user.
-     *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link ServiceCall} object
-     */
-    ServiceCall deleteUserAsync(String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
 
     /**
      * Update user info.
      *
      * @param request Put user info request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -271,52 +156,32 @@ public interface UsersOperations {
      * Update user info.
      *
      * @param request Put user info request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
     ServiceCall putUserInfoAsync(PutUserInfoRequest request, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
-    /**
-     * Update user info.
-     *
-     * @param request Put user info request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the Object object wrapped in {@link ServiceResponse} if successful.
-     */
-    ServiceResponse<Object> putUserInfo(PutUserInfoRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException;
-
-    /**
-     * Update user info.
-     *
-     * @param request Put user info request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link ServiceCall} object
-     */
-    ServiceCall putUserInfoAsync(PutUserInfoRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
 
     /**
      * Update user photo.
      *
      * @param request Put user photo request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -328,52 +193,32 @@ public interface UsersOperations {
      * Update user photo.
      *
      * @param request Put user photo request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
     ServiceCall putUserPhotoAsync(PutUserPhotoRequest request, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
-    /**
-     * Update user photo.
-     *
-     * @param request Put user photo request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the Object object wrapped in {@link ServiceResponse} if successful.
-     */
-    ServiceResponse<Object> putUserPhoto(PutUserPhotoRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException;
-
-    /**
-     * Update user photo.
-     *
-     * @param request Put user photo request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link ServiceCall} object
-     */
-    ServiceCall putUserPhotoAsync(PutUserPhotoRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
 
     /**
      * Update user visibility.
      *
      * @param request Put user visibility request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -385,143 +230,128 @@ public interface UsersOperations {
      * Update user visibility.
      *
      * @param request Put user visibility request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
     ServiceCall putUserVisibilityAsync(PutUserVisibilityRequest request, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
-    /**
-     * Update user visibility.
-     *
-     * @param request Put user visibility request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the Object object wrapped in {@link ServiceResponse} if successful.
-     */
-    ServiceResponse<Object> putUserVisibility(PutUserVisibilityRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException;
-
-    /**
-     * Update user visibility.
-     *
-     * @param request Put user visibility request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link ServiceCall} object
-     */
-    ServiceCall putUserVisibilityAsync(PutUserVisibilityRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
 
     /**
      * Get user profile.
      *
      * @param userHandle User handle
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the UserProfileView object wrapped in {@link ServiceResponse} if successful.
      */
-    ServiceResponse<UserProfileView> getUser(String userHandle) throws ServiceException, IOException, IllegalArgumentException;
+    ServiceResponse<UserProfileView> getUser(String userHandle, String authorization) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
      * Get user profile.
      *
      * @param userHandle User handle
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
-    ServiceCall getUserAsync(String userHandle, final ServiceCallback<UserProfileView> serviceCallback) throws IllegalArgumentException;
+    ServiceCall getUserAsync(String userHandle, String authorization, final ServiceCallback<UserProfileView> serviceCallback) throws IllegalArgumentException;
+
     /**
-     * Get user profile.
+     * Get popular users.
      *
-     * @param userHandle User handle
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle1 This field is for internal use only. Do not provide a value except under special circumstances.
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the UserProfileView object wrapped in {@link ServiceResponse} if successful.
-     */
-    ServiceResponse<UserProfileView> getUser(String userHandle, String appkey, String authorization, String userHandle1) throws ServiceException, IOException, IllegalArgumentException;
-
-    /**
-     * Get user profile.
-     *
-     * @param userHandle User handle
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle1 This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link ServiceCall} object
-     */
-    ServiceCall getUserAsync(String userHandle, String appkey, String authorization, String userHandle1, final ServiceCallback<UserProfileView> serviceCallback) throws IllegalArgumentException;
-
-    /**
-     * Get popular users.
-     *
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
      * @return the FeedResponseUserProfileView object wrapped in {@link ServiceResponse} if successful.
      */
-    ServiceResponse<FeedResponseUserProfileView> getPopularUsers() throws ServiceException, IOException;
+    ServiceResponse<FeedResponseUserProfileView> getPopularUsers(String authorization) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
      * Get popular users.
      *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
-    ServiceCall getPopularUsersAsync(final ServiceCallback<FeedResponseUserProfileView> serviceCallback) throws IllegalArgumentException;
+    ServiceCall getPopularUsersAsync(String authorization, final ServiceCallback<FeedResponseUserProfileView> serviceCallback) throws IllegalArgumentException;
     /**
      * Get popular users.
      *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseUserProfileView object wrapped in {@link ServiceResponse} if successful.
      */
-    ServiceResponse<FeedResponseUserProfileView> getPopularUsers(Integer cursor, Integer limit, String appkey, String authorization, String userHandle) throws ServiceException, IOException;
+    ServiceResponse<FeedResponseUserProfileView> getPopularUsers(String authorization, Integer cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
      * Get popular users.
      *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
-    ServiceCall getPopularUsersAsync(Integer cursor, Integer limit, String appkey, String authorization, String userHandle, final ServiceCallback<FeedResponseUserProfileView> serviceCallback) throws IllegalArgumentException;
+    ServiceCall getPopularUsersAsync(String authorization, Integer cursor, Integer limit, final ServiceCallback<FeedResponseUserProfileView> serviceCallback) throws IllegalArgumentException;
 
 }

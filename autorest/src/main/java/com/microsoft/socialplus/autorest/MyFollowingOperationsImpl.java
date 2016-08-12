@@ -17,7 +17,8 @@ import com.microsoft.rest.Validator;
 import com.microsoft.socialplus.autorest.models.FeedResponseActivityView;
 import com.microsoft.socialplus.autorest.models.FeedResponseTopicView;
 import com.microsoft.socialplus.autorest.models.FeedResponseUserCompactView;
-import com.microsoft.socialplus.autorest.models.PostFollowingRequest;
+import com.microsoft.socialplus.autorest.models.PostFollowingTopicRequest;
+import com.microsoft.socialplus.autorest.models.PostFollowingUserRequest;
 import java.io.IOException;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -59,65 +60,89 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
      */
     interface MyFollowingService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.4/users/me/following")
-        Call<ResponseBody> getFollowing(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @GET("v0.5/users/me/following/users")
+        Call<ResponseBody> getFollowingUsers(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.4/users/me/following")
-        Call<ResponseBody> postFollowing(@Body PostFollowingRequest request, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @POST("v0.5/users/me/following/users")
+        Call<ResponseBody> postFollowingUser(@Body PostFollowingUserRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.4/users/me/following/{userHandle}", method = "DELETE", hasBody = true)
-        Call<ResponseBody> deleteFollowing(@Path("userHandle") String userHandle, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle1);
+        @GET("v0.5/users/me/following/topics")
+        Call<ResponseBody> getFollowingTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.4/users/me/following/topics/{topicHandle}", method = "DELETE", hasBody = true)
-        Call<ResponseBody> deleteTopic(@Path("topicHandle") String topicHandle, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @POST("v0.5/users/me/following/topics")
+        Call<ResponseBody> postFollowingTopic(@Body PostFollowingTopicRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.4/users/me/following/topics")
-        Call<ResponseBody> getTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @HTTP(path = "v0.5/users/me/following/users/{userHandle}", method = "DELETE", hasBody = true)
+        Call<ResponseBody> deleteFollowingUser(@Path("userHandle") String userHandle, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.4/users/me/following/activities")
-        Call<ResponseBody> getActivities(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @HTTP(path = "v0.5/users/me/following/topics/{topicHandle}", method = "DELETE", hasBody = true)
+        Call<ResponseBody> deleteFollowingTopic(@Path("topicHandle") String topicHandle, @Header("Authorization") String authorization);
+
+        @Headers("Content-Type: application/json; charset=utf-8")
+        @HTTP(path = "v0.5/users/me/following/combined/{topicHandle}", method = "DELETE", hasBody = true)
+        Call<ResponseBody> deleteTopicFromCombinedFollowingFeed(@Path("topicHandle") String topicHandle, @Header("Authorization") String authorization);
+
+        @Headers("Content-Type: application/json; charset=utf-8")
+        @GET("v0.5/users/me/following/combined")
+        Call<ResponseBody> getTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
+
+        @Headers("Content-Type: application/json; charset=utf-8")
+        @GET("v0.5/users/me/following/activities")
+        Call<ResponseBody> getActivities(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
     }
 
     /**
      * Get the feed of users that I am following.
+     * These are the users whose topics appear on my following topics feed, and whose activities
+     *             appear on my following activities feed.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseUserCompactView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseUserCompactView> getFollowing(String authorization) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseUserCompactView> getFollowingUsers(String authorization) throws ServiceException, IOException, IllegalArgumentException {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         final String cursor = null;
         final Integer limit = null;
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getFollowing(cursor, limit, appkey, authorization, userHandle);
-        return getFollowingDelegate(call.execute());
+        Call<ResponseBody> call = service.getFollowingUsers(cursor, limit, authorization);
+        return getFollowingUsersDelegate(call.execute());
     }
 
     /**
      * Get the feed of users that I am following.
+     * These are the users whose topics appear on my following topics feed, and whose activities
+     *             appear on my following activities feed.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getFollowingAsync(String authorization, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getFollowingUsersAsync(String authorization, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -127,15 +152,13 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
         }
         final String cursor = null;
         final Integer limit = null;
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getFollowing(cursor, limit, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getFollowingUsers(cursor, limit, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseUserCompactView>(serviceCallback) {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
-                    serviceCallback.success(getFollowingDelegate(response));
+                    serviceCallback.success(getFollowingUsersDelegate(response));
                 } catch (ServiceException | IOException exception) {
                     serviceCallback.failure(exception);
                 }
@@ -146,42 +169,52 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
 
     /**
      * Get the feed of users that I am following.
+     * These are the users whose topics appear on my following topics feed, and whose activities
+     *             appear on my following activities feed.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseUserCompactView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseUserCompactView> getFollowing(String authorization, String cursor, Integer limit, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseUserCompactView> getFollowingUsers(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getFollowing(cursor, limit, appkey, authorization, userHandle);
-        return getFollowingDelegate(call.execute());
+        Call<ResponseBody> call = service.getFollowingUsers(cursor, limit, authorization);
+        return getFollowingUsersDelegate(call.execute());
     }
 
     /**
      * Get the feed of users that I am following.
+     * These are the users whose topics appear on my following topics feed, and whose activities
+     *             appear on my following activities feed.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getFollowingAsync(String authorization, String cursor, Integer limit, String appkey, String userHandle, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getFollowingUsersAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -189,13 +222,13 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getFollowing(cursor, limit, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getFollowingUsers(cursor, limit, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseUserCompactView>(serviceCallback) {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
-                    serviceCallback.success(getFollowingDelegate(response));
+                    serviceCallback.success(getFollowingUsersDelegate(response));
                 } catch (ServiceException | IOException exception) {
                     serviceCallback.failure(exception);
                 }
@@ -204,7 +237,7 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
         return serviceCall;
     }
 
-    private ServiceResponse<FeedResponseUserCompactView> getFollowingDelegate(Response<ResponseBody> response) throws ServiceException, IOException, IllegalArgumentException {
+    private ServiceResponse<FeedResponseUserCompactView> getFollowingUsersDelegate(Response<ResponseBody> response) throws ServiceException, IOException, IllegalArgumentException {
         return new ServiceResponseBuilder<FeedResponseUserCompactView, ServiceException>(this.client.getMapperAdapter())
                 .register(200, new TypeToken<FeedResponseUserCompactView>() { }.getType())
                 .register(400, new TypeToken<Void>() { }.getType())
@@ -215,17 +248,29 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
 
     /**
      * Follow a user.
+     * When I follow a user, that user will appear on my following feed. That feed is
+     *             visible to all users, unless my profile is set to private, in which case only those
+     *             users that request to follow me and I approve will see that feed. If I try to follow a
+     *             user with a private profile, then that private user controls whether I am allowed to
+     *             follow them or not.
+     *             That user's topics will appear in my following topics feed and actions
+     *             performed by that user will also appear in my following activities feed.
      *
-     * @param request Post following request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param request Post following user request
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the Object object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<Object> postFollowing(PostFollowingRequest request, String authorization) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<Object> postFollowingUser(PostFollowingUserRequest request, String authorization) throws ServiceException, IOException, IllegalArgumentException {
         if (request == null) {
             throw new IllegalArgumentException("Parameter request is required and cannot be null.");
         }
@@ -233,24 +278,34 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         Validator.validate(request);
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.postFollowing(request, appkey, authorization, userHandle);
-        return postFollowingDelegate(call.execute());
+        Call<ResponseBody> call = service.postFollowingUser(request, authorization);
+        return postFollowingUserDelegate(call.execute());
     }
 
     /**
      * Follow a user.
+     * When I follow a user, that user will appear on my following feed. That feed is
+     *             visible to all users, unless my profile is set to private, in which case only those
+     *             users that request to follow me and I approve will see that feed. If I try to follow a
+     *             user with a private profile, then that private user controls whether I am allowed to
+     *             follow them or not.
+     *             That user's topics will appear in my following topics feed and actions
+     *             performed by that user will also appear in my following activities feed.
      *
-     * @param request Post following request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param request Post following user request
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall postFollowingAsync(PostFollowingRequest request, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall postFollowingUserAsync(PostFollowingUserRequest request, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -263,15 +318,90 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
             return null;
         }
         Validator.validate(request, serviceCallback);
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.postFollowing(request, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.postFollowingUser(request, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
-                    serviceCallback.success(postFollowingDelegate(response));
+                    serviceCallback.success(postFollowingUserDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    private ServiceResponse<Object> postFollowingUserDelegate(Response<ResponseBody> response) throws ServiceException, IOException, IllegalArgumentException {
+        return new ServiceResponseBuilder<Object, ServiceException>(this.client.getMapperAdapter())
+                .register(204, new TypeToken<Object>() { }.getType())
+                .register(400, new TypeToken<Void>() { }.getType())
+                .register(401, new TypeToken<Void>() { }.getType())
+                .register(404, new TypeToken<Void>() { }.getType())
+                .register(409, new TypeToken<Void>() { }.getType())
+                .register(500, new TypeToken<Void>() { }.getType())
+                .build(response);
+    }
+
+    /**
+     * Get the feed of topics that I am following.
+     *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<FeedResponseTopicView> getFollowingTopics(String authorization) throws ServiceException, IOException, IllegalArgumentException {
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        final String cursor = null;
+        final Integer limit = null;
+        Call<ResponseBody> call = service.getFollowingTopics(cursor, limit, authorization);
+        return getFollowingTopicsDelegate(call.execute());
+    }
+
+    /**
+     * Get the feed of topics that I am following.
+     *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getFollowingTopicsAsync(String authorization, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        final String cursor = null;
+        final Integer limit = null;
+        Call<ResponseBody> call = service.getFollowingTopics(cursor, limit, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getFollowingTopicsDelegate(response));
                 } catch (ServiceException | IOException exception) {
                     serviceCallback.failure(exception);
                 }
@@ -281,20 +411,101 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
     }
 
     /**
-     * Follow a user.
+     * Get the feed of topics that I am following.
      *
-     * @param request Post following request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
+     * @param cursor Current read cursor
+     * @param limit Number of items to return
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<FeedResponseTopicView> getFollowingTopics(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException {
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.getFollowingTopics(cursor, limit, authorization);
+        return getFollowingTopicsDelegate(call.execute());
+    }
+
+    /**
+     * Get the feed of topics that I am following.
+     *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
+     * @param cursor Current read cursor
+     * @param limit Number of items to return
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getFollowingTopicsAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Call<ResponseBody> call = service.getFollowingTopics(cursor, limit, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getFollowingTopicsDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    private ServiceResponse<FeedResponseTopicView> getFollowingTopicsDelegate(Response<ResponseBody> response) throws ServiceException, IOException, IllegalArgumentException {
+        return new ServiceResponseBuilder<FeedResponseTopicView, ServiceException>(this.client.getMapperAdapter())
+                .register(200, new TypeToken<FeedResponseTopicView>() { }.getType())
+                .register(400, new TypeToken<Void>() { }.getType())
+                .register(401, new TypeToken<Void>() { }.getType())
+                .register(500, new TypeToken<Void>() { }.getType())
+                .build(response);
+    }
+
+    /**
+     * Follow a topic.
+     * When I follow a topic, that topic will appear on my following topics feed. When users
+     *             perform actions on the topic (such as posting comments or replies), those actions will
+     *             appear on my following activites feed.
+     *
+     * @param request Post following topic request
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the Object object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<Object> postFollowing(PostFollowingRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<Object> postFollowingTopic(PostFollowingTopicRequest request, String authorization) throws ServiceException, IOException, IllegalArgumentException {
         if (request == null) {
             throw new IllegalArgumentException("Parameter request is required and cannot be null.");
         }
@@ -302,24 +513,30 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         Validator.validate(request);
-        Call<ResponseBody> call = service.postFollowing(request, appkey, authorization, userHandle);
-        return postFollowingDelegate(call.execute());
+        Call<ResponseBody> call = service.postFollowingTopic(request, authorization);
+        return postFollowingTopicDelegate(call.execute());
     }
 
     /**
-     * Follow a user.
+     * Follow a topic.
+     * When I follow a topic, that topic will appear on my following topics feed. When users
+     *             perform actions on the topic (such as posting comments or replies), those actions will
+     *             appear on my following activites feed.
      *
-     * @param request Post following request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
+     * @param request Post following topic request
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall postFollowingAsync(PostFollowingRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall postFollowingTopicAsync(PostFollowingTopicRequest request, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -332,13 +549,13 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
             return null;
         }
         Validator.validate(request, serviceCallback);
-        Call<ResponseBody> call = service.postFollowing(request, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.postFollowingTopic(request, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
-                    serviceCallback.success(postFollowingDelegate(response));
+                    serviceCallback.success(postFollowingTopicDelegate(response));
                 } catch (ServiceException | IOException exception) {
                     serviceCallback.failure(exception);
                 }
@@ -347,7 +564,7 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
         return serviceCall;
     }
 
-    private ServiceResponse<Object> postFollowingDelegate(Response<ResponseBody> response) throws ServiceException, IOException, IllegalArgumentException {
+    private ServiceResponse<Object> postFollowingTopicDelegate(Response<ResponseBody> response) throws ServiceException, IOException, IllegalArgumentException {
         return new ServiceResponseBuilder<Object, ServiceException>(this.client.getMapperAdapter())
                 .register(204, new TypeToken<Object>() { }.getType())
                 .register(400, new TypeToken<Void>() { }.getType())
@@ -360,41 +577,57 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
 
     /**
      * Unfollow a user.
+     * After I unfollow a user, that user will no longer appear on my following feed.
+     *             All of that user's previous topics will be removed from my following topics feed and
+     *             none of their future topics will be added to that feed.
+     *             Their past and future activities will no longer appear in my following activities feed.
      *
      * @param userHandle User handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the Object object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<Object> deleteFollowing(String userHandle, String authorization) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<Object> deleteFollowingUser(String userHandle, String authorization) throws ServiceException, IOException, IllegalArgumentException {
         if (userHandle == null) {
             throw new IllegalArgumentException("Parameter userHandle is required and cannot be null.");
         }
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        final String appkey = null;
-        final String userHandle1 = null;
-        Call<ResponseBody> call = service.deleteFollowing(userHandle, appkey, authorization, userHandle1);
-        return deleteFollowingDelegate(call.execute());
+        Call<ResponseBody> call = service.deleteFollowingUser(userHandle, authorization);
+        return deleteFollowingUserDelegate(call.execute());
     }
 
     /**
      * Unfollow a user.
+     * After I unfollow a user, that user will no longer appear on my following feed.
+     *             All of that user's previous topics will be removed from my following topics feed and
+     *             none of their future topics will be added to that feed.
+     *             Their past and future activities will no longer appear in my following activities feed.
      *
      * @param userHandle User handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall deleteFollowingAsync(String userHandle, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall deleteFollowingUserAsync(String userHandle, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -406,15 +639,13 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        final String appkey = null;
-        final String userHandle1 = null;
-        Call<ResponseBody> call = service.deleteFollowing(userHandle, appkey, authorization, userHandle1);
+        Call<ResponseBody> call = service.deleteFollowingUser(userHandle, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
-                    serviceCallback.success(deleteFollowingDelegate(response));
+                    serviceCallback.success(deleteFollowingUserDelegate(response));
                 } catch (ServiceException | IOException exception) {
                     serviceCallback.failure(exception);
                 }
@@ -423,72 +654,7 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
         return serviceCall;
     }
 
-    /**
-     * Unfollow a user.
-     *
-     * @param userHandle User handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle1 This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the Object object wrapped in {@link ServiceResponse} if successful.
-     */
-    public ServiceResponse<Object> deleteFollowing(String userHandle, String authorization, String appkey, String userHandle1) throws ServiceException, IOException, IllegalArgumentException {
-        if (userHandle == null) {
-            throw new IllegalArgumentException("Parameter userHandle is required and cannot be null.");
-        }
-        if (authorization == null) {
-            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
-        }
-        Call<ResponseBody> call = service.deleteFollowing(userHandle, appkey, authorization, userHandle1);
-        return deleteFollowingDelegate(call.execute());
-    }
-
-    /**
-     * Unfollow a user.
-     *
-     * @param userHandle User handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle1 This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link Call} object
-     */
-    public ServiceCall deleteFollowingAsync(String userHandle, String authorization, String appkey, String userHandle1, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
-        if (serviceCallback == null) {
-            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
-        }
-        if (userHandle == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter userHandle is required and cannot be null."));
-            return null;
-        }
-        if (authorization == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
-            return null;
-        }
-        Call<ResponseBody> call = service.deleteFollowing(userHandle, appkey, authorization, userHandle1);
-        final ServiceCall serviceCall = new ServiceCall(call);
-        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    serviceCallback.success(deleteFollowingDelegate(response));
-                } catch (ServiceException | IOException exception) {
-                    serviceCallback.failure(exception);
-                }
-            }
-        });
-        return serviceCall;
-    }
-
-    private ServiceResponse<Object> deleteFollowingDelegate(Response<ResponseBody> response) throws ServiceException, IOException, IllegalArgumentException {
+    private ServiceResponse<Object> deleteFollowingUserDelegate(Response<ResponseBody> response) throws ServiceException, IOException, IllegalArgumentException {
         return new ServiceResponseBuilder<Object, ServiceException>(this.client.getMapperAdapter())
                 .register(204, new TypeToken<Object>() { }.getType())
                 .register(400, new TypeToken<Void>() { }.getType())
@@ -500,46 +666,54 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
     }
 
     /**
-     * Remove a topic from the feed of topics authored by users that I'm following.
-     * My following topics feed is a feed of topics created by users that I am following.
-     *             This API call will remove the specified topic from that feed.
+     * Unfollow a topic.
+     * After I unfollow a topic, that topic will no longer appear on my following topics feed.
+     *             The past and future activities on that topic will no longer appear in my following activities feed.
      *
      * @param topicHandle Topic handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the Object object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<Object> deleteTopic(String topicHandle, String authorization) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<Object> deleteFollowingTopic(String topicHandle, String authorization) throws ServiceException, IOException, IllegalArgumentException {
         if (topicHandle == null) {
             throw new IllegalArgumentException("Parameter topicHandle is required and cannot be null.");
         }
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.deleteTopic(topicHandle, appkey, authorization, userHandle);
-        return deleteTopicDelegate(call.execute());
+        Call<ResponseBody> call = service.deleteFollowingTopic(topicHandle, authorization);
+        return deleteFollowingTopicDelegate(call.execute());
     }
 
     /**
-     * Remove a topic from the feed of topics authored by users that I'm following.
-     * My following topics feed is a feed of topics created by users that I am following.
-     *             This API call will remove the specified topic from that feed.
+     * Unfollow a topic.
+     * After I unfollow a topic, that topic will no longer appear on my following topics feed.
+     *             The past and future activities on that topic will no longer appear in my following activities feed.
      *
      * @param topicHandle Topic handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall deleteTopicAsync(String topicHandle, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall deleteFollowingTopicAsync(String topicHandle, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -551,15 +725,13 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.deleteTopic(topicHandle, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.deleteFollowingTopic(topicHandle, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
-                    serviceCallback.success(deleteTopicDelegate(response));
+                    serviceCallback.success(deleteFollowingTopicDelegate(response));
                 } catch (ServiceException | IOException exception) {
                     serviceCallback.failure(exception);
                 }
@@ -568,49 +740,66 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
         return serviceCall;
     }
 
+    private ServiceResponse<Object> deleteFollowingTopicDelegate(Response<ResponseBody> response) throws ServiceException, IOException, IllegalArgumentException {
+        return new ServiceResponseBuilder<Object, ServiceException>(this.client.getMapperAdapter())
+                .register(204, new TypeToken<Object>() { }.getType())
+                .register(400, new TypeToken<Void>() { }.getType())
+                .register(401, new TypeToken<Void>() { }.getType())
+                .register(404, new TypeToken<Void>() { }.getType())
+                .register(409, new TypeToken<Void>() { }.getType())
+                .register(500, new TypeToken<Void>() { }.getType())
+                .build(response);
+    }
+
     /**
-     * Remove a topic from the feed of topics authored by users that I'm following.
-     * My following topics feed is a feed of topics created by users that I am following.
-     *             This API call will remove the specified topic from that feed.
+     * Remove a topic from my combined following topics feed.
+     * My combined following topics feed is a feed of topics I am explicitly following, combined with topics created by all users
+     *             that I am following.  This call will remove the specified topic from that feed.
      *
      * @param topicHandle Topic handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the Object object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<Object> deleteTopic(String topicHandle, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<Object> deleteTopicFromCombinedFollowingFeed(String topicHandle, String authorization) throws ServiceException, IOException, IllegalArgumentException {
         if (topicHandle == null) {
             throw new IllegalArgumentException("Parameter topicHandle is required and cannot be null.");
         }
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.deleteTopic(topicHandle, appkey, authorization, userHandle);
-        return deleteTopicDelegate(call.execute());
+        Call<ResponseBody> call = service.deleteTopicFromCombinedFollowingFeed(topicHandle, authorization);
+        return deleteTopicFromCombinedFollowingFeedDelegate(call.execute());
     }
 
     /**
-     * Remove a topic from the feed of topics authored by users that I'm following.
-     * My following topics feed is a feed of topics created by users that I am following.
-     *             This API call will remove the specified topic from that feed.
+     * Remove a topic from my combined following topics feed.
+     * My combined following topics feed is a feed of topics I am explicitly following, combined with topics created by all users
+     *             that I am following.  This call will remove the specified topic from that feed.
      *
      * @param topicHandle Topic handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall deleteTopicAsync(String topicHandle, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall deleteTopicFromCombinedFollowingFeedAsync(String topicHandle, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -622,13 +811,13 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.deleteTopic(topicHandle, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.deleteTopicFromCombinedFollowingFeed(topicHandle, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
-                    serviceCallback.success(deleteTopicDelegate(response));
+                    serviceCallback.success(deleteTopicFromCombinedFollowingFeedDelegate(response));
                 } catch (ServiceException | IOException exception) {
                     serviceCallback.failure(exception);
                 }
@@ -637,7 +826,7 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
         return serviceCall;
     }
 
-    private ServiceResponse<Object> deleteTopicDelegate(Response<ResponseBody> response) throws ServiceException, IOException, IllegalArgumentException {
+    private ServiceResponse<Object> deleteTopicFromCombinedFollowingFeedDelegate(Response<ResponseBody> response) throws ServiceException, IOException, IllegalArgumentException {
         return new ServiceResponseBuilder<Object, ServiceException>(this.client.getMapperAdapter())
                 .register(204, new TypeToken<Object>() { }.getType())
                 .register(400, new TypeToken<Void>() { }.getType())
@@ -648,18 +837,28 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
     }
 
     /**
-     * Get the feed of topics authored by users that I'm following.
-     * My following topics feed is a list of topics posted by users that I am following.
-     *             This feed is time ordered, with the most recent topic first.
-     *             This feed will not include topics that I have explicitly deleted from this feed.
-     *             When I follow a user, all of their past topics will be added to this feed, and all their
-     *             future topics will be added to this feed when they are created.
-     *             When I unfollow a user, all of their previous topics will be removed from the feed and
-     *             none of their future topics will be added to this feed.
+     * Get my combined following topics feed.
+     * My combined following topics feed includes:
+     *              (1) topics that I'm explicitly following and
+     *              (2) topics authored by users that I'm following
+     *             
+     *              This feed is time ordered, with the most recent topic first.
+     *              This feed will not include topics that I have explicitly deleted from this feed.
+     *              When I follow a user, a limited set of their past topics will be added to this feed,
+     *              and all their future topics will be added to this feed when they are created.
+     *              When I unfollow a user, all of their previous topics will be removed from the feed and
+     *              none of their future topics will be added to this feed.
+     *              When I follow a topic, it will appear in this feed.
+     *              When I unfollow a topic, it will no longer appear in this feed.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -671,25 +870,33 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
         }
         final String cursor = null;
         final Integer limit = null;
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getTopics(cursor, limit, authorization);
         return getTopicsDelegate(call.execute());
     }
 
     /**
-     * Get the feed of topics authored by users that I'm following.
-     * My following topics feed is a list of topics posted by users that I am following.
-     *             This feed is time ordered, with the most recent topic first.
-     *             This feed will not include topics that I have explicitly deleted from this feed.
-     *             When I follow a user, all of their past topics will be added to this feed, and all their
-     *             future topics will be added to this feed when they are created.
-     *             When I unfollow a user, all of their previous topics will be removed from the feed and
-     *             none of their future topics will be added to this feed.
+     * Get my combined following topics feed.
+     * My combined following topics feed includes:
+     *              (1) topics that I'm explicitly following and
+     *              (2) topics authored by users that I'm following
+     *             
+     *              This feed is time ordered, with the most recent topic first.
+     *              This feed will not include topics that I have explicitly deleted from this feed.
+     *              When I follow a user, a limited set of their past topics will be added to this feed,
+     *              and all their future topics will be added to this feed when they are created.
+     *              When I unfollow a user, all of their previous topics will be removed from the feed and
+     *              none of their future topics will be added to this feed.
+     *              When I follow a topic, it will appear in this feed.
+     *              When I unfollow a topic, it will no longer appear in this feed.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -704,9 +911,7 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
         }
         final String cursor = null;
         final Integer limit = null;
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getTopics(cursor, limit, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override
@@ -722,57 +927,73 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
     }
 
     /**
-     * Get the feed of topics authored by users that I'm following.
-     * My following topics feed is a list of topics posted by users that I am following.
-     *             This feed is time ordered, with the most recent topic first.
-     *             This feed will not include topics that I have explicitly deleted from this feed.
-     *             When I follow a user, all of their past topics will be added to this feed, and all their
-     *             future topics will be added to this feed when they are created.
-     *             When I unfollow a user, all of their previous topics will be removed from the feed and
-     *             none of their future topics will be added to this feed.
+     * Get my combined following topics feed.
+     * My combined following topics feed includes:
+     *              (1) topics that I'm explicitly following and
+     *              (2) topics authored by users that I'm following
+     *             
+     *              This feed is time ordered, with the most recent topic first.
+     *              This feed will not include topics that I have explicitly deleted from this feed.
+     *              When I follow a user, a limited set of their past topics will be added to this feed,
+     *              and all their future topics will be added to this feed when they are created.
+     *              When I unfollow a user, all of their previous topics will be removed from the feed and
+     *              none of their future topics will be added to this feed.
+     *              When I follow a topic, it will appear in this feed.
+     *              When I unfollow a topic, it will no longer appear in this feed.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseTopicView> getTopics(String authorization, String cursor, Integer limit, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseTopicView> getTopics(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getTopics(cursor, limit, authorization);
         return getTopicsDelegate(call.execute());
     }
 
     /**
-     * Get the feed of topics authored by users that I'm following.
-     * My following topics feed is a list of topics posted by users that I am following.
-     *             This feed is time ordered, with the most recent topic first.
-     *             This feed will not include topics that I have explicitly deleted from this feed.
-     *             When I follow a user, all of their past topics will be added to this feed, and all their
-     *             future topics will be added to this feed when they are created.
-     *             When I unfollow a user, all of their previous topics will be removed from the feed and
-     *             none of their future topics will be added to this feed.
+     * Get my combined following topics feed.
+     * My combined following topics feed includes:
+     *              (1) topics that I'm explicitly following and
+     *              (2) topics authored by users that I'm following
+     *             
+     *              This feed is time ordered, with the most recent topic first.
+     *              This feed will not include topics that I have explicitly deleted from this feed.
+     *              When I follow a user, a limited set of their past topics will be added to this feed,
+     *              and all their future topics will be added to this feed when they are created.
+     *              When I unfollow a user, all of their previous topics will be removed from the feed and
+     *              none of their future topics will be added to this feed.
+     *              When I follow a topic, it will appear in this feed.
+     *              When I unfollow a topic, it will no longer appear in this feed.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getTopicsAsync(String authorization, String cursor, Integer limit, String appkey, String userHandle, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getTopicsAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -780,7 +1001,7 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getTopics(cursor, limit, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getTopics(cursor, limit, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override
@@ -805,19 +1026,30 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
     }
 
     /**
-     * Get the feed of activities by users that I'm following.
-     * My following activity feed is a list of activities performed by users that I am following.
+     * Get the feed of activities by users that I'm following or on topics that I'm following.
+     * My following activity feed is a list of activities that are either
+     *             (1) performed by users that I am following, or
+     *             (2) performed on topics that I am following.
      *             This feed is time ordered, with the most recent activity first.
      *             An activity is added to this feed when a user I am following does one of the following 4 actions:
      *             (a) create a comment; (b) create a reply; (c) like a topic; (d) follow a user.
      *             If a user that I am following is deleted, then their past activities will no longer appear in this feed.
      *             If an activity is performed on content that is then deleted, that activity will no longer appear in this feed.
      *             If a user has un-done an activity (e.g. unlike a previous like), then that activity will no longer appear in this feed.
+     *             Similarly, an activity is added to this feed when a user does one of the following 3 actions on a topic that I am following:
+     *             (a) create a comment; (b) create a reply; (c) like the topic.
+     *             If a topic that I am following is deleted, then past activities on that topic will no longer appear in this feed.
+     *             If an activity that is performed is then deleted, that activity will no longer appear in this feed.
      *             Ignore the unread status of each activity - it will always be true.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -829,26 +1061,35 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
         }
         final String cursor = null;
         final Integer limit = null;
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getActivities(cursor, limit, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getActivities(cursor, limit, authorization);
         return getActivitiesDelegate(call.execute());
     }
 
     /**
-     * Get the feed of activities by users that I'm following.
-     * My following activity feed is a list of activities performed by users that I am following.
+     * Get the feed of activities by users that I'm following or on topics that I'm following.
+     * My following activity feed is a list of activities that are either
+     *             (1) performed by users that I am following, or
+     *             (2) performed on topics that I am following.
      *             This feed is time ordered, with the most recent activity first.
      *             An activity is added to this feed when a user I am following does one of the following 4 actions:
      *             (a) create a comment; (b) create a reply; (c) like a topic; (d) follow a user.
      *             If a user that I am following is deleted, then their past activities will no longer appear in this feed.
      *             If an activity is performed on content that is then deleted, that activity will no longer appear in this feed.
      *             If a user has un-done an activity (e.g. unlike a previous like), then that activity will no longer appear in this feed.
+     *             Similarly, an activity is added to this feed when a user does one of the following 3 actions on a topic that I am following:
+     *             (a) create a comment; (b) create a reply; (c) like the topic.
+     *             If a topic that I am following is deleted, then past activities on that topic will no longer appear in this feed.
+     *             If an activity that is performed is then deleted, that activity will no longer appear in this feed.
      *             Ignore the unread status of each activity - it will always be true.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -863,9 +1104,7 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
         }
         final String cursor = null;
         final Integer limit = null;
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getActivities(cursor, limit, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getActivities(cursor, limit, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseActivityView>(serviceCallback) {
             @Override
@@ -881,59 +1120,77 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
     }
 
     /**
-     * Get the feed of activities by users that I'm following.
-     * My following activity feed is a list of activities performed by users that I am following.
+     * Get the feed of activities by users that I'm following or on topics that I'm following.
+     * My following activity feed is a list of activities that are either
+     *             (1) performed by users that I am following, or
+     *             (2) performed on topics that I am following.
      *             This feed is time ordered, with the most recent activity first.
      *             An activity is added to this feed when a user I am following does one of the following 4 actions:
      *             (a) create a comment; (b) create a reply; (c) like a topic; (d) follow a user.
      *             If a user that I am following is deleted, then their past activities will no longer appear in this feed.
      *             If an activity is performed on content that is then deleted, that activity will no longer appear in this feed.
      *             If a user has un-done an activity (e.g. unlike a previous like), then that activity will no longer appear in this feed.
+     *             Similarly, an activity is added to this feed when a user does one of the following 3 actions on a topic that I am following:
+     *             (a) create a comment; (b) create a reply; (c) like the topic.
+     *             If a topic that I am following is deleted, then past activities on that topic will no longer appear in this feed.
+     *             If an activity that is performed is then deleted, that activity will no longer appear in this feed.
      *             Ignore the unread status of each activity - it will always be true.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseActivityView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseActivityView> getActivities(String authorization, String cursor, Integer limit, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseActivityView> getActivities(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getActivities(cursor, limit, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getActivities(cursor, limit, authorization);
         return getActivitiesDelegate(call.execute());
     }
 
     /**
-     * Get the feed of activities by users that I'm following.
-     * My following activity feed is a list of activities performed by users that I am following.
+     * Get the feed of activities by users that I'm following or on topics that I'm following.
+     * My following activity feed is a list of activities that are either
+     *             (1) performed by users that I am following, or
+     *             (2) performed on topics that I am following.
      *             This feed is time ordered, with the most recent activity first.
      *             An activity is added to this feed when a user I am following does one of the following 4 actions:
      *             (a) create a comment; (b) create a reply; (c) like a topic; (d) follow a user.
      *             If a user that I am following is deleted, then their past activities will no longer appear in this feed.
      *             If an activity is performed on content that is then deleted, that activity will no longer appear in this feed.
      *             If a user has un-done an activity (e.g. unlike a previous like), then that activity will no longer appear in this feed.
+     *             Similarly, an activity is added to this feed when a user does one of the following 3 actions on a topic that I am following:
+     *             (a) create a comment; (b) create a reply; (c) like the topic.
+     *             If a topic that I am following is deleted, then past activities on that topic will no longer appear in this feed.
+     *             If an activity that is performed is then deleted, that activity will no longer appear in this feed.
      *             Ignore the unread status of each activity - it will always be true.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getActivitiesAsync(String authorization, String cursor, Integer limit, String appkey, String userHandle, final ServiceCallback<FeedResponseActivityView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getActivitiesAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseActivityView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -941,7 +1198,7 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getActivities(cursor, limit, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getActivities(cursor, limit, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseActivityView>(serviceCallback) {
             @Override

@@ -52,40 +52,56 @@ public final class RequestTokensOperationsImpl implements RequestTokensOperation
      */
     interface RequestTokensService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.4/request_tokens/{identityProvider}")
-        Call<ResponseBody> getRequestToken(@Path("identityProvider") IdentityProvider identityProvider, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @GET("v0.5/request_tokens/{identityProvider}")
+        Call<ResponseBody> getRequestToken(@Path("identityProvider") IdentityProvider identityProvider, @Header("Authorization") String authorization);
 
     }
 
     /**
      * Get request token.
      *
-     * @param identityProvider Identity provider type. Possible values include: 'Facebook', 'Microsoft', 'Google', 'Twitter', 'Beihai'
+     * @param identityProvider Identity provider type. Possible values include: 'Facebook', 'Microsoft', 'Google', 'Twitter', 'AADS2S', 'SocialPlus'
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the GetRequestTokenResponse object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<GetRequestTokenResponse> getRequestToken(IdentityProvider identityProvider) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<GetRequestTokenResponse> getRequestToken(IdentityProvider identityProvider, String authorization) throws ServiceException, IOException, IllegalArgumentException {
         if (identityProvider == null) {
             throw new IllegalArgumentException("Parameter identityProvider is required and cannot be null.");
         }
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getRequestToken(identityProvider, appkey, authorization, userHandle);
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.getRequestToken(identityProvider, authorization);
         return getRequestTokenDelegate(call.execute());
     }
 
     /**
      * Get request token.
      *
-     * @param identityProvider Identity provider type. Possible values include: 'Facebook', 'Microsoft', 'Google', 'Twitter', 'Beihai'
+     * @param identityProvider Identity provider type. Possible values include: 'Facebook', 'Microsoft', 'Google', 'Twitter', 'AADS2S', 'SocialPlus'
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getRequestTokenAsync(IdentityProvider identityProvider, final ServiceCallback<GetRequestTokenResponse> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getRequestTokenAsync(IdentityProvider identityProvider, String authorization, final ServiceCallback<GetRequestTokenResponse> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -93,68 +109,11 @@ public final class RequestTokensOperationsImpl implements RequestTokensOperation
             serviceCallback.failure(new IllegalArgumentException("Parameter identityProvider is required and cannot be null."));
             return null;
         }
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getRequestToken(identityProvider, appkey, authorization, userHandle);
-        final ServiceCall serviceCall = new ServiceCall(call);
-        call.enqueue(new ServiceResponseCallback<GetRequestTokenResponse>(serviceCallback) {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    serviceCallback.success(getRequestTokenDelegate(response));
-                } catch (ServiceException | IOException exception) {
-                    serviceCallback.failure(exception);
-                }
-            }
-        });
-        return serviceCall;
-    }
-
-    /**
-     * Get request token.
-     *
-     * @param identityProvider Identity provider type. Possible values include: 'Facebook', 'Microsoft', 'Google', 'Twitter', 'Beihai'
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the GetRequestTokenResponse object wrapped in {@link ServiceResponse} if successful.
-     */
-    public ServiceResponse<GetRequestTokenResponse> getRequestToken(IdentityProvider identityProvider, String appkey, String authorization, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
-        if (identityProvider == null) {
-            throw new IllegalArgumentException("Parameter identityProvider is required and cannot be null.");
-        }
-        Call<ResponseBody> call = service.getRequestToken(identityProvider, appkey, authorization, userHandle);
-        return getRequestTokenDelegate(call.execute());
-    }
-
-    /**
-     * Get request token.
-     *
-     * @param identityProvider Identity provider type. Possible values include: 'Facebook', 'Microsoft', 'Google', 'Twitter', 'Beihai'
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link Call} object
-     */
-    public ServiceCall getRequestTokenAsync(IdentityProvider identityProvider, String appkey, String authorization, String userHandle, final ServiceCallback<GetRequestTokenResponse> serviceCallback) throws IllegalArgumentException {
-        if (serviceCallback == null) {
-            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
-        }
-        if (identityProvider == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter identityProvider is required and cannot be null."));
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getRequestToken(identityProvider, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getRequestToken(identityProvider, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<GetRequestTokenResponse>(serviceCallback) {
             @Override

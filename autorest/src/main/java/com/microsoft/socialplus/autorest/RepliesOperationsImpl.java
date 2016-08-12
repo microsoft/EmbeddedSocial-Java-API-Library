@@ -52,12 +52,12 @@ public final class RepliesOperationsImpl implements RepliesOperations {
      */
     interface RepliesService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.4/replies/{replyHandle}")
-        Call<ResponseBody> getReply(@Path("replyHandle") String replyHandle, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @GET("v0.5/replies/{replyHandle}")
+        Call<ResponseBody> getReply(@Path("replyHandle") String replyHandle, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.4/replies/{replyHandle}", method = "DELETE", hasBody = true)
-        Call<ResponseBody> deleteReply(@Path("replyHandle") String replyHandle, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @HTTP(path = "v0.5/replies/{replyHandle}", method = "DELETE", hasBody = true)
+        Call<ResponseBody> deleteReply(@Path("replyHandle") String replyHandle, @Header("Authorization") String authorization);
 
     }
 
@@ -65,9 +65,14 @@ public final class RepliesOperationsImpl implements RepliesOperations {
      * Get reply.
      *
      * @param replyHandle Reply handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -80,9 +85,7 @@ public final class RepliesOperationsImpl implements RepliesOperations {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getReply(replyHandle, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getReply(replyHandle, authorization);
         return getReplyDelegate(call.execute());
     }
 
@@ -90,9 +93,14 @@ public final class RepliesOperationsImpl implements RepliesOperations {
      * Get reply.
      *
      * @param replyHandle Reply handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -109,74 +117,7 @@ public final class RepliesOperationsImpl implements RepliesOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getReply(replyHandle, appkey, authorization, userHandle);
-        final ServiceCall serviceCall = new ServiceCall(call);
-        call.enqueue(new ServiceResponseCallback<ReplyView>(serviceCallback) {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    serviceCallback.success(getReplyDelegate(response));
-                } catch (ServiceException | IOException exception) {
-                    serviceCallback.failure(exception);
-                }
-            }
-        });
-        return serviceCall;
-    }
-
-    /**
-     * Get reply.
-     *
-     * @param replyHandle Reply handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the ReplyView object wrapped in {@link ServiceResponse} if successful.
-     */
-    public ServiceResponse<ReplyView> getReply(String replyHandle, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
-        if (replyHandle == null) {
-            throw new IllegalArgumentException("Parameter replyHandle is required and cannot be null.");
-        }
-        if (authorization == null) {
-            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
-        }
-        Call<ResponseBody> call = service.getReply(replyHandle, appkey, authorization, userHandle);
-        return getReplyDelegate(call.execute());
-    }
-
-    /**
-     * Get reply.
-     *
-     * @param replyHandle Reply handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link Call} object
-     */
-    public ServiceCall getReplyAsync(String replyHandle, String authorization, String appkey, String userHandle, final ServiceCallback<ReplyView> serviceCallback) throws IllegalArgumentException {
-        if (serviceCallback == null) {
-            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
-        }
-        if (replyHandle == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter replyHandle is required and cannot be null."));
-            return null;
-        }
-        if (authorization == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
-            return null;
-        }
-        Call<ResponseBody> call = service.getReply(replyHandle, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getReply(replyHandle, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<ReplyView>(serviceCallback) {
             @Override
@@ -205,9 +146,14 @@ public final class RepliesOperationsImpl implements RepliesOperations {
      * Delete reply.
      *
      * @param replyHandle Reply handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -220,9 +166,7 @@ public final class RepliesOperationsImpl implements RepliesOperations {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.deleteReply(replyHandle, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.deleteReply(replyHandle, authorization);
         return deleteReplyDelegate(call.execute());
     }
 
@@ -230,9 +174,14 @@ public final class RepliesOperationsImpl implements RepliesOperations {
      * Delete reply.
      *
      * @param replyHandle Reply handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -249,74 +198,7 @@ public final class RepliesOperationsImpl implements RepliesOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.deleteReply(replyHandle, appkey, authorization, userHandle);
-        final ServiceCall serviceCall = new ServiceCall(call);
-        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    serviceCallback.success(deleteReplyDelegate(response));
-                } catch (ServiceException | IOException exception) {
-                    serviceCallback.failure(exception);
-                }
-            }
-        });
-        return serviceCall;
-    }
-
-    /**
-     * Delete reply.
-     *
-     * @param replyHandle Reply handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the Object object wrapped in {@link ServiceResponse} if successful.
-     */
-    public ServiceResponse<Object> deleteReply(String replyHandle, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
-        if (replyHandle == null) {
-            throw new IllegalArgumentException("Parameter replyHandle is required and cannot be null.");
-        }
-        if (authorization == null) {
-            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
-        }
-        Call<ResponseBody> call = service.deleteReply(replyHandle, appkey, authorization, userHandle);
-        return deleteReplyDelegate(call.execute());
-    }
-
-    /**
-     * Delete reply.
-     *
-     * @param replyHandle Reply handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link Call} object
-     */
-    public ServiceCall deleteReplyAsync(String replyHandle, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
-        if (serviceCallback == null) {
-            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
-        }
-        if (replyHandle == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter replyHandle is required and cannot be null."));
-            return null;
-        }
-        if (authorization == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
-            return null;
-        }
-        Call<ResponseBody> call = service.deleteReply(replyHandle, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.deleteReply(replyHandle, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override

@@ -25,8 +25,11 @@ public enum IdentityProvider {
     /** Enum value Twitter. */
     TWITTER("Twitter"),
 
-    /** Enum value Beihai. */
-    BEIHAI("Beihai");
+    /** Enum value AADS2S. */
+    AADS2S("AADS2S"),
+
+    /** Enum value SocialPlus. */
+    SOCIALPLUS("SocialPlus");
 
     /** The actual serialized value for a IdentityProvider instance. */
     private String value;

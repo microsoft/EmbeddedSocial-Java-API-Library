@@ -56,16 +56,16 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
      */
     interface MyNotificationsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @PUT("v0.4/users/me/notifications/status")
-        Call<ResponseBody> putNotificationsStatus(@Body PutNotificationsStatusRequest request, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @PUT("v0.5/users/me/notifications/status")
+        Call<ResponseBody> putNotificationsStatus(@Body PutNotificationsStatusRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.4/users/me/notifications")
-        Call<ResponseBody> getNotifications(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @GET("v0.5/users/me/notifications")
+        Call<ResponseBody> getNotifications(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.4/users/me/notifications/count")
-        Call<ResponseBody> getNotificationsCount(@Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @GET("v0.5/users/me/notifications/count")
+        Call<ResponseBody> getNotificationsCount(@Header("Authorization") String authorization);
 
     }
 
@@ -78,9 +78,14 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
      *             If this API call has never been made, then all notifications will have an unread status of true.
      *
      * @param request Put notifications status request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -94,9 +99,7 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         Validator.validate(request);
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.putNotificationsStatus(request, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.putNotificationsStatus(request, authorization);
         return putNotificationsStatusDelegate(call.execute());
     }
 
@@ -109,9 +112,14 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
      *             If this API call has never been made, then all notifications will have an unread status of true.
      *
      * @param request Put notifications status request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -129,86 +137,7 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
             return null;
         }
         Validator.validate(request, serviceCallback);
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.putNotificationsStatus(request, appkey, authorization, userHandle);
-        final ServiceCall serviceCall = new ServiceCall(call);
-        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    serviceCallback.success(putNotificationsStatusDelegate(response));
-                } catch (ServiceException | IOException exception) {
-                    serviceCallback.failure(exception);
-                }
-            }
-        });
-        return serviceCall;
-    }
-
-    /**
-     * Update notifications status.
-     * This API call records the most recent notification that the user has read (or seen).
-     *             In the GET notifications API call, each notification will have an unread status.
-     *             Any notifications that are newer than this ReadActivityHandle will have an unread status of true.
-     *             Any notifications that correspond to this ReadActivityHandle or older will have an unread status of false.
-     *             If this API call has never been made, then all notifications will have an unread status of true.
-     *
-     * @param request Put notifications status request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the Object object wrapped in {@link ServiceResponse} if successful.
-     */
-    public ServiceResponse<Object> putNotificationsStatus(PutNotificationsStatusRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
-        if (request == null) {
-            throw new IllegalArgumentException("Parameter request is required and cannot be null.");
-        }
-        if (authorization == null) {
-            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
-        }
-        Validator.validate(request);
-        Call<ResponseBody> call = service.putNotificationsStatus(request, appkey, authorization, userHandle);
-        return putNotificationsStatusDelegate(call.execute());
-    }
-
-    /**
-     * Update notifications status.
-     * This API call records the most recent notification that the user has read (or seen).
-     *             In the GET notifications API call, each notification will have an unread status.
-     *             Any notifications that are newer than this ReadActivityHandle will have an unread status of true.
-     *             Any notifications that correspond to this ReadActivityHandle or older will have an unread status of false.
-     *             If this API call has never been made, then all notifications will have an unread status of true.
-     *
-     * @param request Put notifications status request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link Call} object
-     */
-    public ServiceCall putNotificationsStatusAsync(PutNotificationsStatusRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
-        if (serviceCallback == null) {
-            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
-        }
-        if (request == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter request is required and cannot be null."));
-            return null;
-        }
-        if (authorization == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
-            return null;
-        }
-        Validator.validate(request, serviceCallback);
-        Call<ResponseBody> call = service.putNotificationsStatus(request, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.putNotificationsStatus(request, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override
@@ -244,10 +173,21 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
      *             If a user that performed the activity is deleted, then that activity will no longer appear in this feed.
      *             If an activity is performed on content that is then deleted, that activity will no longer appear in this feed.
      *             If a user has un-done an activity (e.g. unlike a previous like), then that activity will no longer appear in this feed.
+     *             When activityType is Like, the activityHandle is the likeHandle that uniquely identifies the new like.
+     *             When activityType is Comment, the activityHandle is the commentHandle that uniquely identifies the new comment.
+     *             When activityType is Reply, the activityHandle is the replyHandle that uniquely identifies the new reply.
+     *             ActivityType values of CommentPeer and ReplyPeer are currently not used.
+     *             When activityType is Following or FollowRequest or FollowAccept, the activityHandle is the relationshipHandle
+     *             that uniquely identifies the relationship between the two users.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -259,9 +199,7 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
         }
         final String cursor = null;
         final Integer limit = null;
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getNotifications(cursor, limit, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getNotifications(cursor, limit, authorization);
         return getNotificationsDelegate(call.execute());
     }
 
@@ -276,10 +214,21 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
      *             If a user that performed the activity is deleted, then that activity will no longer appear in this feed.
      *             If an activity is performed on content that is then deleted, that activity will no longer appear in this feed.
      *             If a user has un-done an activity (e.g. unlike a previous like), then that activity will no longer appear in this feed.
+     *             When activityType is Like, the activityHandle is the likeHandle that uniquely identifies the new like.
+     *             When activityType is Comment, the activityHandle is the commentHandle that uniquely identifies the new comment.
+     *             When activityType is Reply, the activityHandle is the replyHandle that uniquely identifies the new reply.
+     *             ActivityType values of CommentPeer and ReplyPeer are currently not used.
+     *             When activityType is Following or FollowRequest or FollowAccept, the activityHandle is the relationshipHandle
+     *             that uniquely identifies the relationship between the two users.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -294,9 +243,7 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
         }
         final String cursor = null;
         final Integer limit = null;
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getNotifications(cursor, limit, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getNotifications(cursor, limit, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseActivityView>(serviceCallback) {
             @Override
@@ -322,24 +269,33 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
      *             If a user that performed the activity is deleted, then that activity will no longer appear in this feed.
      *             If an activity is performed on content that is then deleted, that activity will no longer appear in this feed.
      *             If a user has un-done an activity (e.g. unlike a previous like), then that activity will no longer appear in this feed.
+     *             When activityType is Like, the activityHandle is the likeHandle that uniquely identifies the new like.
+     *             When activityType is Comment, the activityHandle is the commentHandle that uniquely identifies the new comment.
+     *             When activityType is Reply, the activityHandle is the replyHandle that uniquely identifies the new reply.
+     *             ActivityType values of CommentPeer and ReplyPeer are currently not used.
+     *             When activityType is Following or FollowRequest or FollowAccept, the activityHandle is the relationshipHandle
+     *             that uniquely identifies the relationship between the two users.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseActivityView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseActivityView> getNotifications(String authorization, String cursor, Integer limit, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseActivityView> getNotifications(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getNotifications(cursor, limit, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getNotifications(cursor, limit, authorization);
         return getNotificationsDelegate(call.execute());
     }
 
@@ -354,19 +310,28 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
      *             If a user that performed the activity is deleted, then that activity will no longer appear in this feed.
      *             If an activity is performed on content that is then deleted, that activity will no longer appear in this feed.
      *             If a user has un-done an activity (e.g. unlike a previous like), then that activity will no longer appear in this feed.
+     *             When activityType is Like, the activityHandle is the likeHandle that uniquely identifies the new like.
+     *             When activityType is Comment, the activityHandle is the commentHandle that uniquely identifies the new comment.
+     *             When activityType is Reply, the activityHandle is the replyHandle that uniquely identifies the new reply.
+     *             ActivityType values of CommentPeer and ReplyPeer are currently not used.
+     *             When activityType is Following or FollowRequest or FollowAccept, the activityHandle is the relationshipHandle
+     *             that uniquely identifies the relationship between the two users.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getNotificationsAsync(String authorization, String cursor, Integer limit, String appkey, String userHandle, final ServiceCallback<FeedResponseActivityView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getNotificationsAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseActivityView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -374,7 +339,7 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getNotifications(cursor, limit, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getNotifications(cursor, limit, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseActivityView>(serviceCallback) {
             @Override
@@ -402,9 +367,14 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
      * Get unread notifications count.
      * This returns a count of activities in my notification feed that have an unread status of true.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -414,9 +384,7 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getNotificationsCount(appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getNotificationsCount(authorization);
         return getNotificationsCountDelegate(call.execute());
     }
 
@@ -424,9 +392,14 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
      * Get unread notifications count.
      * This returns a count of activities in my notification feed that have an unread status of true.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey,TK=AccessToken
+     - Google AK=AppKey,TK=AccessToken
+     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
+     - Microsoft AK=AppKey,TK=AccessToken
+     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -439,67 +412,7 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getNotificationsCount(appkey, authorization, userHandle);
-        final ServiceCall serviceCall = new ServiceCall(call);
-        call.enqueue(new ServiceResponseCallback<CountResponse>(serviceCallback) {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    serviceCallback.success(getNotificationsCountDelegate(response));
-                } catch (ServiceException | IOException exception) {
-                    serviceCallback.failure(exception);
-                }
-            }
-        });
-        return serviceCall;
-    }
-
-    /**
-     * Get unread notifications count.
-     * This returns a count of activities in my notification feed that have an unread status of true.
-     *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the CountResponse object wrapped in {@link ServiceResponse} if successful.
-     */
-    public ServiceResponse<CountResponse> getNotificationsCount(String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
-        if (authorization == null) {
-            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
-        }
-        Call<ResponseBody> call = service.getNotificationsCount(appkey, authorization, userHandle);
-        return getNotificationsCountDelegate(call.execute());
-    }
-
-    /**
-     * Get unread notifications count.
-     * This returns a count of activities in my notification feed that have an unread status of true.
-     *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link Call} object
-     */
-    public ServiceCall getNotificationsCountAsync(String authorization, String appkey, String userHandle, final ServiceCallback<CountResponse> serviceCallback) throws IllegalArgumentException {
-        if (serviceCallback == null) {
-            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
-        }
-        if (authorization == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
-            return null;
-        }
-        Call<ResponseBody> call = service.getNotificationsCount(appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getNotificationsCount(authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<CountResponse>(serviceCallback) {
             @Override
