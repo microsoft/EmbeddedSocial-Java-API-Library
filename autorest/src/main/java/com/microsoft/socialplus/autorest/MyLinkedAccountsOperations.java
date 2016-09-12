@@ -27,11 +27,11 @@ public interface MyLinkedAccountsOperations {
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
-     - Facebook AK=AppKey,TK=AccessToken
-     - Google AK=AppKey,TK=AccessToken
-     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
-     - Microsoft AK=AppKey,TK=AccessToken
-     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -45,11 +45,11 @@ public interface MyLinkedAccountsOperations {
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
-     - Facebook AK=AppKey,TK=AccessToken
-     - Google AK=AppKey,TK=AccessToken
-     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
-     - Microsoft AK=AppKey,TK=AccessToken
-     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
@@ -58,16 +58,18 @@ public interface MyLinkedAccountsOperations {
 
     /**
      * Create a new linked account.
+     *             The account to be linked must appear in the Auth header of the request. This new third-party account
+     *             will be linked against the credentials appearing in the session token passed in the body of the request.
      *
      * @param request Post linked account request
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
-     - Facebook AK=AppKey,TK=AccessToken
-     - Google AK=AppKey,TK=AccessToken
-     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
-     - Microsoft AK=AppKey,TK=AccessToken
-     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -77,16 +79,18 @@ public interface MyLinkedAccountsOperations {
 
     /**
      * Create a new linked account.
+     *             The account to be linked must appear in the Auth header of the request. This new third-party account
+     *             will be linked against the credentials appearing in the session token passed in the body of the request.
      *
      * @param request Post linked account request
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
-     - Facebook AK=AppKey,TK=AccessToken
-     - Google AK=AppKey,TK=AccessToken
-     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
-     - Microsoft AK=AppKey,TK=AccessToken
-     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
@@ -100,11 +104,11 @@ public interface MyLinkedAccountsOperations {
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
-     - Facebook AK=AppKey,TK=AccessToken
-     - Google AK=AppKey,TK=AccessToken
-     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
-     - Microsoft AK=AppKey,TK=AccessToken
-     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -119,11 +123,11 @@ public interface MyLinkedAccountsOperations {
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
-     - Facebook AK=AppKey,TK=AccessToken
-     - Google AK=AppKey,TK=AccessToken
-     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
-     - Microsoft AK=AppKey,TK=AccessToken
-     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object

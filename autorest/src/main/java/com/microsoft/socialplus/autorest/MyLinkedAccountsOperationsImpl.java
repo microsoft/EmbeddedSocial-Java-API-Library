@@ -77,11 +77,11 @@ public final class MyLinkedAccountsOperationsImpl implements MyLinkedAccountsOpe
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
-     - Facebook AK=AppKey,TK=AccessToken
-     - Google AK=AppKey,TK=AccessToken
-     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
-     - Microsoft AK=AppKey,TK=AccessToken
-     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -101,11 +101,11 @@ public final class MyLinkedAccountsOperationsImpl implements MyLinkedAccountsOpe
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
-     - Facebook AK=AppKey,TK=AccessToken
-     - Google AK=AppKey,TK=AccessToken
-     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
-     - Microsoft AK=AppKey,TK=AccessToken
-     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -136,24 +136,24 @@ public final class MyLinkedAccountsOperationsImpl implements MyLinkedAccountsOpe
     private ServiceResponse<List<LinkedAccountView>> getLinkedAccountsDelegate(Response<ResponseBody> response) throws ServiceException, IOException, IllegalArgumentException {
         return new ServiceResponseBuilder<List<LinkedAccountView>, ServiceException>(this.client.getMapperAdapter())
                 .register(200, new TypeToken<List<LinkedAccountView>>() { }.getType())
-                .register(400, new TypeToken<Void>() { }.getType())
-                .register(401, new TypeToken<Void>() { }.getType())
                 .register(500, new TypeToken<Void>() { }.getType())
                 .build(response);
     }
 
     /**
      * Create a new linked account.
+     *             The account to be linked must appear in the Auth header of the request. This new third-party account
+     *             will be linked against the credentials appearing in the session token passed in the body of the request.
      *
      * @param request Post linked account request
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
-     - Facebook AK=AppKey,TK=AccessToken
-     - Google AK=AppKey,TK=AccessToken
-     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
-     - Microsoft AK=AppKey,TK=AccessToken
-     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -173,16 +173,18 @@ public final class MyLinkedAccountsOperationsImpl implements MyLinkedAccountsOpe
 
     /**
      * Create a new linked account.
+     *             The account to be linked must appear in the Auth header of the request. This new third-party account
+     *             will be linked against the credentials appearing in the session token passed in the body of the request.
      *
      * @param request Post linked account request
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
-     - Facebook AK=AppKey,TK=AccessToken
-     - Google AK=AppKey,TK=AccessToken
-     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
-     - Microsoft AK=AppKey,TK=AccessToken
-     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -218,7 +220,7 @@ public final class MyLinkedAccountsOperationsImpl implements MyLinkedAccountsOpe
     private ServiceResponse<Object> postLinkedAccountDelegate(Response<ResponseBody> response) throws ServiceException, IOException, IllegalArgumentException {
         return new ServiceResponseBuilder<Object, ServiceException>(this.client.getMapperAdapter())
                 .register(204, new TypeToken<Object>() { }.getType())
-                .register(401, new TypeToken<Void>() { }.getType())
+                .register(400, new TypeToken<Void>() { }.getType())
                 .register(409, new TypeToken<Void>() { }.getType())
                 .build(response);
     }
@@ -230,11 +232,11 @@ public final class MyLinkedAccountsOperationsImpl implements MyLinkedAccountsOpe
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
-     - Facebook AK=AppKey,TK=AccessToken
-     - Google AK=AppKey,TK=AccessToken
-     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
-     - Microsoft AK=AppKey,TK=AccessToken
-     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -258,11 +260,11 @@ public final class MyLinkedAccountsOperationsImpl implements MyLinkedAccountsOpe
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
-     - Facebook AK=AppKey,TK=AccessToken
-     - Google AK=AppKey,TK=AccessToken
-     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
-     - Microsoft AK=AppKey,TK=AccessToken
-     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -299,7 +301,6 @@ public final class MyLinkedAccountsOperationsImpl implements MyLinkedAccountsOpe
                 .register(204, new TypeToken<Object>() { }.getType())
                 .register(400, new TypeToken<Void>() { }.getType())
                 .register(401, new TypeToken<Void>() { }.getType())
-                .register(403, new TypeToken<Void>() { }.getType())
                 .register(404, new TypeToken<Void>() { }.getType())
                 .register(500, new TypeToken<Void>() { }.getType())
                 .build(response);

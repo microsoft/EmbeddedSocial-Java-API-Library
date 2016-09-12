@@ -25,11 +25,11 @@ public interface RepliesOperations {
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
-     - Facebook AK=AppKey,TK=AccessToken
-     - Google AK=AppKey,TK=AccessToken
-     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
-     - Microsoft AK=AppKey,TK=AccessToken
-     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -44,11 +44,11 @@ public interface RepliesOperations {
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
-     - Facebook AK=AppKey,TK=AccessToken
-     - Google AK=AppKey,TK=AccessToken
-     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
-     - Microsoft AK=AppKey,TK=AccessToken
-     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
@@ -62,11 +62,11 @@ public interface RepliesOperations {
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
-     - Facebook AK=AppKey,TK=AccessToken
-     - Google AK=AppKey,TK=AccessToken
-     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
-     - Microsoft AK=AppKey,TK=AccessToken
-     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -81,11 +81,11 @@ public interface RepliesOperations {
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
-     - Facebook AK=AppKey,TK=AccessToken
-     - Google AK=AppKey,TK=AccessToken
-     - Twitter AK=AppKey,[RT=RequestToken],TK=AccessToken
-     - Microsoft AK=AppKey,TK=AccessToken
-     - AADS2S AK=AppKey,[UH=UserHandle],TK=AADToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
