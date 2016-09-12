@@ -9,38 +9,14 @@ package com.microsoft.socialplus.autorest.models;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Request to post (create) session.
+ * Request to follow a user.
  */
-public class PostSessionRequest {
-    /**
-     * Gets or sets instance id -- Unique installation id of the app.
-     */
-    @JsonProperty(required = true)
-    private String instanceId;
-
+public class PostFollowingUserRequest {
     /**
      * Gets or sets user handle.
      */
     @JsonProperty(required = true)
     private String userHandle;
-
-    /**
-     * Get the instanceId value.
-     *
-     * @return the instanceId value
-     */
-    public String getInstanceId() {
-        return this.instanceId;
-    }
-
-    /**
-     * Set the instanceId value.
-     *
-     * @param instanceId the instanceId value to set
-     */
-    public void setInstanceId(String instanceId) {
-        this.instanceId = instanceId;
-    }
 
     /**
      * Get the userHandle value.

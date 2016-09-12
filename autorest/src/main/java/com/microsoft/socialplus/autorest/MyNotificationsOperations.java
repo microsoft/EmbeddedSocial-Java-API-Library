@@ -29,9 +29,14 @@ public interface MyNotificationsOperations {
      *             If this API call has never been made, then all notifications will have an unread status of true.
      *
      * @param request Put notifications status request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -48,54 +53,19 @@ public interface MyNotificationsOperations {
      *             If this API call has never been made, then all notifications will have an unread status of true.
      *
      * @param request Put notifications status request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
     ServiceCall putNotificationsStatusAsync(PutNotificationsStatusRequest request, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
-    /**
-     * Update notifications status.
-     * This API call records the most recent notification that the user has read (or seen).
-     *             In the GET notifications API call, each notification will have an unread status.
-     *             Any notifications that are newer than this ReadActivityHandle will have an unread status of true.
-     *             Any notifications that correspond to this ReadActivityHandle or older will have an unread status of false.
-     *             If this API call has never been made, then all notifications will have an unread status of true.
-     *
-     * @param request Put notifications status request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the Object object wrapped in {@link ServiceResponse} if successful.
-     */
-    ServiceResponse<Object> putNotificationsStatus(PutNotificationsStatusRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException;
-
-    /**
-     * Update notifications status.
-     * This API call records the most recent notification that the user has read (or seen).
-     *             In the GET notifications API call, each notification will have an unread status.
-     *             Any notifications that are newer than this ReadActivityHandle will have an unread status of true.
-     *             Any notifications that correspond to this ReadActivityHandle or older will have an unread status of false.
-     *             If this API call has never been made, then all notifications will have an unread status of true.
-     *
-     * @param request Put notifications status request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link ServiceCall} object
-     */
-    ServiceCall putNotificationsStatusAsync(PutNotificationsStatusRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
 
     /**
      * Get my notifications.
@@ -108,10 +78,21 @@ public interface MyNotificationsOperations {
      *             If a user that performed the activity is deleted, then that activity will no longer appear in this feed.
      *             If an activity is performed on content that is then deleted, that activity will no longer appear in this feed.
      *             If a user has un-done an activity (e.g. unlike a previous like), then that activity will no longer appear in this feed.
+     *             When activityType is Like, the activityHandle is the likeHandle that uniquely identifies the new like.
+     *             When activityType is Comment, the activityHandle is the commentHandle that uniquely identifies the new comment.
+     *             When activityType is Reply, the activityHandle is the replyHandle that uniquely identifies the new reply.
+     *             ActivityType values of CommentPeer and ReplyPeer are currently not used.
+     *             When activityType is Following or FollowRequest or FollowAccept, the activityHandle is the relationshipHandle
+     *             that uniquely identifies the relationship between the two users.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -130,10 +111,21 @@ public interface MyNotificationsOperations {
      *             If a user that performed the activity is deleted, then that activity will no longer appear in this feed.
      *             If an activity is performed on content that is then deleted, that activity will no longer appear in this feed.
      *             If a user has un-done an activity (e.g. unlike a previous like), then that activity will no longer appear in this feed.
+     *             When activityType is Like, the activityHandle is the likeHandle that uniquely identifies the new like.
+     *             When activityType is Comment, the activityHandle is the commentHandle that uniquely identifies the new comment.
+     *             When activityType is Reply, the activityHandle is the replyHandle that uniquely identifies the new reply.
+     *             ActivityType values of CommentPeer and ReplyPeer are currently not used.
+     *             When activityType is Following or FollowRequest or FollowAccept, the activityHandle is the relationshipHandle
+     *             that uniquely identifies the relationship between the two users.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
@@ -150,20 +142,29 @@ public interface MyNotificationsOperations {
      *             If a user that performed the activity is deleted, then that activity will no longer appear in this feed.
      *             If an activity is performed on content that is then deleted, that activity will no longer appear in this feed.
      *             If a user has un-done an activity (e.g. unlike a previous like), then that activity will no longer appear in this feed.
+     *             When activityType is Like, the activityHandle is the likeHandle that uniquely identifies the new like.
+     *             When activityType is Comment, the activityHandle is the commentHandle that uniquely identifies the new comment.
+     *             When activityType is Reply, the activityHandle is the replyHandle that uniquely identifies the new reply.
+     *             ActivityType values of CommentPeer and ReplyPeer are currently not used.
+     *             When activityType is Following or FollowRequest or FollowAccept, the activityHandle is the relationshipHandle
+     *             that uniquely identifies the relationship between the two users.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseActivityView object wrapped in {@link ServiceResponse} if successful.
      */
-    ServiceResponse<FeedResponseActivityView> getNotifications(String authorization, String cursor, Integer limit, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException;
+    ServiceResponse<FeedResponseActivityView> getNotifications(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
      * Get my notifications.
@@ -176,27 +177,41 @@ public interface MyNotificationsOperations {
      *             If a user that performed the activity is deleted, then that activity will no longer appear in this feed.
      *             If an activity is performed on content that is then deleted, that activity will no longer appear in this feed.
      *             If a user has un-done an activity (e.g. unlike a previous like), then that activity will no longer appear in this feed.
+     *             When activityType is Like, the activityHandle is the likeHandle that uniquely identifies the new like.
+     *             When activityType is Comment, the activityHandle is the commentHandle that uniquely identifies the new comment.
+     *             When activityType is Reply, the activityHandle is the replyHandle that uniquely identifies the new reply.
+     *             ActivityType values of CommentPeer and ReplyPeer are currently not used.
+     *             When activityType is Following or FollowRequest or FollowAccept, the activityHandle is the relationshipHandle
+     *             that uniquely identifies the relationship between the two users.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
-    ServiceCall getNotificationsAsync(String authorization, String cursor, Integer limit, String appkey, String userHandle, final ServiceCallback<FeedResponseActivityView> serviceCallback) throws IllegalArgumentException;
+    ServiceCall getNotificationsAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseActivityView> serviceCallback) throws IllegalArgumentException;
 
     /**
      * Get unread notifications count.
      * This returns a count of activities in my notification feed that have an unread status of true.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -208,43 +223,18 @@ public interface MyNotificationsOperations {
      * Get unread notifications count.
      * This returns a count of activities in my notification feed that have an unread status of true.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
     ServiceCall getNotificationsCountAsync(String authorization, final ServiceCallback<CountResponse> serviceCallback) throws IllegalArgumentException;
-    /**
-     * Get unread notifications count.
-     * This returns a count of activities in my notification feed that have an unread status of true.
-     *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the CountResponse object wrapped in {@link ServiceResponse} if successful.
-     */
-    ServiceResponse<CountResponse> getNotificationsCount(String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException;
-
-    /**
-     * Get unread notifications count.
-     * This returns a count of activities in my notification feed that have an unread status of true.
-     *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link ServiceCall} object
-     */
-    ServiceCall getNotificationsCountAsync(String authorization, String appkey, String userHandle, final ServiceCallback<CountResponse> serviceCallback) throws IllegalArgumentException;
 
 }

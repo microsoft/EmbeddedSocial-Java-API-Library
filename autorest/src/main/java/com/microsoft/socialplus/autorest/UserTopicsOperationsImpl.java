@@ -52,12 +52,12 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
      */
     interface UserTopicsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.4/users/{userHandle}/topics")
-        Call<ResponseBody> getTopics(@Path("userHandle") String userHandle, @Query("cursor") String cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle1);
+        @GET("v0.5/users/{userHandle}/topics")
+        Call<ResponseBody> getTopics(@Path("userHandle") String userHandle, @Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.4/users/{userHandle}/topics/popular")
-        Call<ResponseBody> getPopularTopics(@Path("userHandle") String userHandle, @Query("cursor") Integer cursor, @Query("limit") Integer limit, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle1);
+        @GET("v0.5/users/{userHandle}/topics/popular")
+        Call<ResponseBody> getPopularTopics(@Path("userHandle") String userHandle, @Query("cursor") Integer cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
     }
 
@@ -65,21 +65,29 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
      * Get user topics sorted by creation time.
      *
      * @param userHandle User handle
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseTopicView> getTopics(String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseTopicView> getTopics(String userHandle, String authorization) throws ServiceException, IOException, IllegalArgumentException {
         if (userHandle == null) {
             throw new IllegalArgumentException("Parameter userHandle is required and cannot be null.");
         }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
         final String cursor = null;
         final Integer limit = null;
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle1 = null;
-        Call<ResponseBody> call = service.getTopics(userHandle, cursor, limit, appkey, authorization, userHandle1);
+        Call<ResponseBody> call = service.getTopics(userHandle, cursor, limit, authorization);
         return getTopicsDelegate(call.execute());
     }
 
@@ -87,11 +95,19 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
      * Get user topics sorted by creation time.
      *
      * @param userHandle User handle
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getTopicsAsync(String userHandle, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getTopicsAsync(String userHandle, String authorization, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -99,12 +115,13 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter userHandle is required and cannot be null."));
             return null;
         }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
         final String cursor = null;
         final Integer limit = null;
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle1 = null;
-        Call<ResponseBody> call = service.getTopics(userHandle, cursor, limit, appkey, authorization, userHandle1);
+        Call<ResponseBody> call = service.getTopics(userHandle, cursor, limit, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override
@@ -123,23 +140,29 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
      * Get user topics sorted by creation time.
      *
      * @param userHandle User handle
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle1 This field is for internal use only. Do not provide a value except under special circumstances.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseTopicView> getTopics(String userHandle, String cursor, Integer limit, String appkey, String authorization, String userHandle1) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseTopicView> getTopics(String userHandle, String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException {
         if (userHandle == null) {
             throw new IllegalArgumentException("Parameter userHandle is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getTopics(userHandle, cursor, limit, appkey, authorization, userHandle1);
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.getTopics(userHandle, cursor, limit, authorization);
         return getTopicsDelegate(call.execute());
     }
 
@@ -147,18 +170,21 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
      * Get user topics sorted by creation time.
      *
      * @param userHandle User handle
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle1 This field is for internal use only. Do not provide a value except under special circumstances.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getTopicsAsync(String userHandle, String cursor, Integer limit, String appkey, String authorization, String userHandle1, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getTopicsAsync(String userHandle, String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -166,7 +192,11 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter userHandle is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getTopics(userHandle, cursor, limit, appkey, authorization, userHandle1);
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Call<ResponseBody> call = service.getTopics(userHandle, cursor, limit, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override
@@ -195,21 +225,29 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
      * Get user topics sorted by popularity.
      *
      * @param userHandle User handle
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseTopicView> getPopularTopics(String userHandle) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseTopicView> getPopularTopics(String userHandle, String authorization) throws ServiceException, IOException, IllegalArgumentException {
         if (userHandle == null) {
             throw new IllegalArgumentException("Parameter userHandle is required and cannot be null.");
         }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
         final Integer cursor = null;
         final Integer limit = null;
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle1 = null;
-        Call<ResponseBody> call = service.getPopularTopics(userHandle, cursor, limit, appkey, authorization, userHandle1);
+        Call<ResponseBody> call = service.getPopularTopics(userHandle, cursor, limit, authorization);
         return getPopularTopicsDelegate(call.execute());
     }
 
@@ -217,11 +255,19 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
      * Get user topics sorted by popularity.
      *
      * @param userHandle User handle
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getPopularTopicsAsync(String userHandle, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getPopularTopicsAsync(String userHandle, String authorization, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -229,12 +275,13 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter userHandle is required and cannot be null."));
             return null;
         }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
         final Integer cursor = null;
         final Integer limit = null;
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle1 = null;
-        Call<ResponseBody> call = service.getPopularTopics(userHandle, cursor, limit, appkey, authorization, userHandle1);
+        Call<ResponseBody> call = service.getPopularTopics(userHandle, cursor, limit, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override
@@ -253,23 +300,29 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
      * Get user topics sorted by popularity.
      *
      * @param userHandle User handle
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle1 This field is for internal use only. Do not provide a value except under special circumstances.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<FeedResponseTopicView> getPopularTopics(String userHandle, Integer cursor, Integer limit, String appkey, String authorization, String userHandle1) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<FeedResponseTopicView> getPopularTopics(String userHandle, String authorization, Integer cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException {
         if (userHandle == null) {
             throw new IllegalArgumentException("Parameter userHandle is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getPopularTopics(userHandle, cursor, limit, appkey, authorization, userHandle1);
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.getPopularTopics(userHandle, cursor, limit, authorization);
         return getPopularTopicsDelegate(call.execute());
     }
 
@@ -277,18 +330,21 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
      * Get user topics sorted by popularity.
      *
      * @param userHandle User handle
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle1 This field is for internal use only. Do not provide a value except under special circumstances.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getPopularTopicsAsync(String userHandle, Integer cursor, Integer limit, String appkey, String authorization, String userHandle1, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getPopularTopicsAsync(String userHandle, String authorization, Integer cursor, Integer limit, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -296,7 +352,11 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter userHandle is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getPopularTopics(userHandle, cursor, limit, appkey, authorization, userHandle1);
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Call<ResponseBody> call = service.getPopularTopics(userHandle, cursor, limit, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<FeedResponseTopicView>(serviceCallback) {
             @Override

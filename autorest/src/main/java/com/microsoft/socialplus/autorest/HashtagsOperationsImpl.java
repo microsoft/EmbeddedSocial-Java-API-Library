@@ -51,45 +51,63 @@ public final class HashtagsOperationsImpl implements HashtagsOperations {
      */
     interface HashtagsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.4/hashtags/trending")
-        Call<ResponseBody> getTrendingHashtags(@Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @GET("v0.5/hashtags/trending")
+        Call<ResponseBody> getTrendingHashtags(@Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.4/hashtags/autocomplete")
-        Call<ResponseBody> getAutocompletedHashtags(@Query("query") String query, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @GET("v0.5/hashtags/autocomplete")
+        Call<ResponseBody> getAutocompletedHashtags(@Query("query") String query, @Header("Authorization") String authorization);
 
     }
 
     /**
      * Get trending hashtags.
      *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the List&lt;String&gt; object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<List<String>> getTrendingHashtags() throws ServiceException, IOException {
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getTrendingHashtags(appkey, authorization, userHandle);
+    public ServiceResponse<List<String>> getTrendingHashtags(String authorization) throws ServiceException, IOException, IllegalArgumentException {
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.getTrendingHashtags(authorization);
         return getTrendingHashtagsDelegate(call.execute());
     }
 
     /**
      * Get trending hashtags.
      *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getTrendingHashtagsAsync(final ServiceCallback<List<String>> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getTrendingHashtagsAsync(String authorization, final ServiceCallback<List<String>> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getTrendingHashtags(appkey, authorization, userHandle);
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Call<ResponseBody> call = service.getTrendingHashtags(authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<List<String>>(serviceCallback) {
             @Override
@@ -104,55 +122,7 @@ public final class HashtagsOperationsImpl implements HashtagsOperations {
         return serviceCall;
     }
 
-    /**
-     * Get trending hashtags.
-     *
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @return the List&lt;String&gt; object wrapped in {@link ServiceResponse} if successful.
-     */
-    public ServiceResponse<List<String>> getTrendingHashtags(String appkey, String authorization, String userHandle) throws ServiceException, IOException {
-        Call<ResponseBody> call = service.getTrendingHashtags(appkey, authorization, userHandle);
-        return getTrendingHashtagsDelegate(call.execute());
-    }
-
-    /**
-     * Get trending hashtags.
-     *
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link Call} object
-     */
-    public ServiceCall getTrendingHashtagsAsync(String appkey, String authorization, String userHandle, final ServiceCallback<List<String>> serviceCallback) throws IllegalArgumentException {
-        if (serviceCallback == null) {
-            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
-        }
-        Call<ResponseBody> call = service.getTrendingHashtags(appkey, authorization, userHandle);
-        final ServiceCall serviceCall = new ServiceCall(call);
-        call.enqueue(new ServiceResponseCallback<List<String>>(serviceCallback) {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    serviceCallback.success(getTrendingHashtagsDelegate(response));
-                } catch (ServiceException | IOException exception) {
-                    serviceCallback.failure(exception);
-                }
-            }
-        });
-        return serviceCall;
-    }
-
-    private ServiceResponse<List<String>> getTrendingHashtagsDelegate(Response<ResponseBody> response) throws ServiceException, IOException {
+    private ServiceResponse<List<String>> getTrendingHashtagsDelegate(Response<ResponseBody> response) throws ServiceException, IOException, IllegalArgumentException {
         return new ServiceResponseBuilder<List<String>, ServiceException>(this.client.getMapperAdapter())
                 .register(200, new TypeToken<List<String>>() { }.getType())
                 .register(400, new TypeToken<Void>() { }.getType())
@@ -163,33 +133,51 @@ public final class HashtagsOperationsImpl implements HashtagsOperations {
 
     /**
      * Get autocompleted hashtags.
+     * The query string must be at least 3 characters long, and no more than 25 characters long.
      *
      * @param query Search query
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the List&lt;String&gt; object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<List<String>> getAutocompletedHashtags(String query) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<List<String>> getAutocompletedHashtags(String query, String authorization) throws ServiceException, IOException, IllegalArgumentException {
         if (query == null) {
             throw new IllegalArgumentException("Parameter query is required and cannot be null.");
         }
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getAutocompletedHashtags(query, appkey, authorization, userHandle);
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.getAutocompletedHashtags(query, authorization);
         return getAutocompletedHashtagsDelegate(call.execute());
     }
 
     /**
      * Get autocompleted hashtags.
+     * The query string must be at least 3 characters long, and no more than 25 characters long.
      *
      * @param query Search query
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getAutocompletedHashtagsAsync(String query, final ServiceCallback<List<String>> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getAutocompletedHashtagsAsync(String query, String authorization, final ServiceCallback<List<String>> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -197,68 +185,11 @@ public final class HashtagsOperationsImpl implements HashtagsOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter query is required and cannot be null."));
             return null;
         }
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.getAutocompletedHashtags(query, appkey, authorization, userHandle);
-        final ServiceCall serviceCall = new ServiceCall(call);
-        call.enqueue(new ServiceResponseCallback<List<String>>(serviceCallback) {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    serviceCallback.success(getAutocompletedHashtagsDelegate(response));
-                } catch (ServiceException | IOException exception) {
-                    serviceCallback.failure(exception);
-                }
-            }
-        });
-        return serviceCall;
-    }
-
-    /**
-     * Get autocompleted hashtags.
-     *
-     * @param query Search query
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the List&lt;String&gt; object wrapped in {@link ServiceResponse} if successful.
-     */
-    public ServiceResponse<List<String>> getAutocompletedHashtags(String query, String appkey, String authorization, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
-        if (query == null) {
-            throw new IllegalArgumentException("Parameter query is required and cannot be null.");
-        }
-        Call<ResponseBody> call = service.getAutocompletedHashtags(query, appkey, authorization, userHandle);
-        return getAutocompletedHashtagsDelegate(call.execute());
-    }
-
-    /**
-     * Get autocompleted hashtags.
-     *
-     * @param query Search query
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link Call} object
-     */
-    public ServiceCall getAutocompletedHashtagsAsync(String query, String appkey, String authorization, String userHandle, final ServiceCallback<List<String>> serviceCallback) throws IllegalArgumentException {
-        if (serviceCallback == null) {
-            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
-        }
-        if (query == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter query is required and cannot be null."));
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getAutocompletedHashtags(query, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.getAutocompletedHashtags(query, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<List<String>>(serviceCallback) {
             @Override

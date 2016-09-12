@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class LinkedAccountView {
     /**
      * Gets or sets identity provider type. Possible values include:
-     * 'Facebook', 'Microsoft', 'Google', 'Twitter', 'Beihai'.
+     * 'Facebook', 'Microsoft', 'Google', 'Twitter', 'AADS2S', 'SocialPlus'.
      */
     @JsonProperty(required = true)
     private IdentityProvider identityProvider;

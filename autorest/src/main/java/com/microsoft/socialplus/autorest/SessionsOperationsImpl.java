@@ -54,12 +54,12 @@ public final class SessionsOperationsImpl implements SessionsOperations {
      */
     interface SessionsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.4/sessions")
-        Call<ResponseBody> postSession(@Body PostSessionRequest request, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @POST("v0.5/sessions")
+        Call<ResponseBody> postSession(@Body PostSessionRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.4/sessions/current", method = "DELETE", hasBody = true)
-        Call<ResponseBody> deleteSession(@Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @HTTP(path = "v0.5/sessions/current", method = "DELETE", hasBody = true)
+        Call<ResponseBody> deleteSession(@Header("Authorization") String authorization);
 
     }
 
@@ -67,20 +67,28 @@ public final class SessionsOperationsImpl implements SessionsOperations {
      * Create a new session (sign in).
      *
      * @param request Post session request
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the PostSessionResponse object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<PostSessionResponse> postSession(PostSessionRequest request) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<PostSessionResponse> postSession(PostSessionRequest request, String authorization) throws ServiceException, IOException, IllegalArgumentException {
         if (request == null) {
             throw new IllegalArgumentException("Parameter request is required and cannot be null.");
         }
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
         Validator.validate(request);
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.postSession(request, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.postSession(request, authorization);
         return postSessionDelegate(call.execute());
     }
 
@@ -88,11 +96,19 @@ public final class SessionsOperationsImpl implements SessionsOperations {
      * Create a new session (sign in).
      *
      * @param request Post session request
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall postSessionAsync(PostSessionRequest request, final ServiceCallback<PostSessionResponse> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall postSessionAsync(PostSessionRequest request, String authorization, final ServiceCallback<PostSessionResponse> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -100,71 +116,12 @@ public final class SessionsOperationsImpl implements SessionsOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter request is required and cannot be null."));
             return null;
         }
-        Validator.validate(request, serviceCallback);
-        final String appkey = null;
-        final String authorization = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.postSession(request, appkey, authorization, userHandle);
-        final ServiceCall serviceCall = new ServiceCall(call);
-        call.enqueue(new ServiceResponseCallback<PostSessionResponse>(serviceCallback) {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    serviceCallback.success(postSessionDelegate(response));
-                } catch (ServiceException | IOException exception) {
-                    serviceCallback.failure(exception);
-                }
-            }
-        });
-        return serviceCall;
-    }
-
-    /**
-     * Create a new session (sign in).
-     *
-     * @param request Post session request
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the PostSessionResponse object wrapped in {@link ServiceResponse} if successful.
-     */
-    public ServiceResponse<PostSessionResponse> postSession(PostSessionRequest request, String appkey, String authorization, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
-        if (request == null) {
-            throw new IllegalArgumentException("Parameter request is required and cannot be null.");
-        }
-        Validator.validate(request);
-        Call<ResponseBody> call = service.postSession(request, appkey, authorization, userHandle);
-        return postSessionDelegate(call.execute());
-    }
-
-    /**
-     * Create a new session (sign in).
-     *
-     * @param request Post session request
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link Call} object
-     */
-    public ServiceCall postSessionAsync(PostSessionRequest request, String appkey, String authorization, String userHandle, final ServiceCallback<PostSessionResponse> serviceCallback) throws IllegalArgumentException {
-        if (serviceCallback == null) {
-            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
-        }
-        if (request == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter request is required and cannot be null."));
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
         Validator.validate(request, serviceCallback);
-        Call<ResponseBody> call = service.postSession(request, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.postSession(request, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<PostSessionResponse>(serviceCallback) {
             @Override
@@ -182,7 +139,6 @@ public final class SessionsOperationsImpl implements SessionsOperations {
     private ServiceResponse<PostSessionResponse> postSessionDelegate(Response<ResponseBody> response) throws ServiceException, IOException, IllegalArgumentException {
         return new ServiceResponseBuilder<PostSessionResponse, ServiceException>(this.client.getMapperAdapter())
                 .register(201, new TypeToken<PostSessionResponse>() { }.getType())
-                .register(400, new TypeToken<Void>() { }.getType())
                 .register(401, new TypeToken<Void>() { }.getType())
                 .register(404, new TypeToken<Void>() { }.getType())
                 .register(500, new TypeToken<Void>() { }.getType())
@@ -192,9 +148,14 @@ public final class SessionsOperationsImpl implements SessionsOperations {
     /**
      * Delete the current session (sign out).
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -204,18 +165,21 @@ public final class SessionsOperationsImpl implements SessionsOperations {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.deleteSession(appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.deleteSession(authorization);
         return deleteSessionDelegate(call.execute());
     }
 
     /**
      * Delete the current session (sign out).
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -228,65 +192,7 @@ public final class SessionsOperationsImpl implements SessionsOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.deleteSession(appkey, authorization, userHandle);
-        final ServiceCall serviceCall = new ServiceCall(call);
-        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    serviceCallback.success(deleteSessionDelegate(response));
-                } catch (ServiceException | IOException exception) {
-                    serviceCallback.failure(exception);
-                }
-            }
-        });
-        return serviceCall;
-    }
-
-    /**
-     * Delete the current session (sign out).
-     *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the Object object wrapped in {@link ServiceResponse} if successful.
-     */
-    public ServiceResponse<Object> deleteSession(String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
-        if (authorization == null) {
-            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
-        }
-        Call<ResponseBody> call = service.deleteSession(appkey, authorization, userHandle);
-        return deleteSessionDelegate(call.execute());
-    }
-
-    /**
-     * Delete the current session (sign out).
-     *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link Call} object
-     */
-    public ServiceCall deleteSessionAsync(String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
-        if (serviceCallback == null) {
-            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
-        }
-        if (authorization == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
-            return null;
-        }
-        Call<ResponseBody> call = service.deleteSession(appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.deleteSession(authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override

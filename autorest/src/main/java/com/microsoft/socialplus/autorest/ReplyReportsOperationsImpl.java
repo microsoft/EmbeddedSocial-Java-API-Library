@@ -53,8 +53,8 @@ public final class ReplyReportsOperationsImpl implements ReplyReportsOperations 
      */
     interface ReplyReportsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.4/replies/{replyHandle}/reports")
-        Call<ResponseBody> postReport(@Path("replyHandle") String replyHandle, @Body PostReportRequest postReportRequest, @Header("appkey") String appkey, @Header("Authorization") String authorization, @Header("UserHandle") String userHandle);
+        @POST("v0.5/replies/{replyHandle}/reports")
+        Call<ResponseBody> postReport(@Path("replyHandle") String replyHandle, @Body PostReportRequest postReportRequest, @Header("Authorization") String authorization);
 
     }
 
@@ -63,9 +63,14 @@ public final class ReplyReportsOperationsImpl implements ReplyReportsOperations 
      *
      * @param replyHandle Reply handle for the reply being reported on
      * @param postReportRequest Post report request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -82,9 +87,7 @@ public final class ReplyReportsOperationsImpl implements ReplyReportsOperations 
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
         Validator.validate(postReportRequest);
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.postReport(replyHandle, postReportRequest, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.postReport(replyHandle, postReportRequest, authorization);
         return postReportDelegate(call.execute());
     }
 
@@ -93,9 +96,14 @@ public final class ReplyReportsOperationsImpl implements ReplyReportsOperations 
      *
      * @param replyHandle Reply handle for the reply being reported on
      * @param postReportRequest Post report request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
@@ -117,85 +125,7 @@ public final class ReplyReportsOperationsImpl implements ReplyReportsOperations 
             return null;
         }
         Validator.validate(postReportRequest, serviceCallback);
-        final String appkey = null;
-        final String userHandle = null;
-        Call<ResponseBody> call = service.postReport(replyHandle, postReportRequest, appkey, authorization, userHandle);
-        final ServiceCall serviceCall = new ServiceCall(call);
-        call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
-            @Override
-            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                try {
-                    serviceCallback.success(postReportDelegate(response));
-                } catch (ServiceException | IOException exception) {
-                    serviceCallback.failure(exception);
-                }
-            }
-        });
-        return serviceCall;
-    }
-
-    /**
-     * Report a reply as spam, offensive, etc.
-     *
-     * @param replyHandle Reply handle for the reply being reported on
-     * @param postReportRequest Post report request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the Object object wrapped in {@link ServiceResponse} if successful.
-     */
-    public ServiceResponse<Object> postReport(String replyHandle, PostReportRequest postReportRequest, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException {
-        if (replyHandle == null) {
-            throw new IllegalArgumentException("Parameter replyHandle is required and cannot be null.");
-        }
-        if (postReportRequest == null) {
-            throw new IllegalArgumentException("Parameter postReportRequest is required and cannot be null.");
-        }
-        if (authorization == null) {
-            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
-        }
-        Validator.validate(postReportRequest);
-        Call<ResponseBody> call = service.postReport(replyHandle, postReportRequest, appkey, authorization, userHandle);
-        return postReportDelegate(call.execute());
-    }
-
-    /**
-     * Report a reply as spam, offensive, etc.
-     *
-     * @param replyHandle Reply handle for the reply being reported on
-     * @param postReportRequest Post report request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link Call} object
-     */
-    public ServiceCall postReportAsync(String replyHandle, PostReportRequest postReportRequest, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException {
-        if (serviceCallback == null) {
-            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
-        }
-        if (replyHandle == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter replyHandle is required and cannot be null."));
-            return null;
-        }
-        if (postReportRequest == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter postReportRequest is required and cannot be null."));
-            return null;
-        }
-        if (authorization == null) {
-            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
-            return null;
-        }
-        Validator.validate(postReportRequest, serviceCallback);
-        Call<ResponseBody> call = service.postReport(replyHandle, postReportRequest, appkey, authorization, userHandle);
+        Call<ResponseBody> call = service.postReport(replyHandle, postReportRequest, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
         call.enqueue(new ServiceResponseCallback<Object>(serviceCallback) {
             @Override

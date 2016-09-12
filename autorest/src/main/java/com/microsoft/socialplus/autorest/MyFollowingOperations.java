@@ -13,7 +13,8 @@ import com.microsoft.rest.ServiceResponse;
 import com.microsoft.socialplus.autorest.models.FeedResponseActivityView;
 import com.microsoft.socialplus.autorest.models.FeedResponseTopicView;
 import com.microsoft.socialplus.autorest.models.FeedResponseUserCompactView;
-import com.microsoft.socialplus.autorest.models.PostFollowingRequest;
+import com.microsoft.socialplus.autorest.models.PostFollowingTopicRequest;
+import com.microsoft.socialplus.autorest.models.PostFollowingUserRequest;
 import java.io.IOException;
 
 /**
@@ -23,253 +24,402 @@ import java.io.IOException;
 public interface MyFollowingOperations {
     /**
      * Get the feed of users that I am following.
+     * These are the users whose topics appear on my following topics feed, and whose activities
+     *             appear on my following activities feed.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseUserCompactView object wrapped in {@link ServiceResponse} if successful.
      */
-    ServiceResponse<FeedResponseUserCompactView> getFollowing(String authorization) throws ServiceException, IOException, IllegalArgumentException;
+    ServiceResponse<FeedResponseUserCompactView> getFollowingUsers(String authorization) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
      * Get the feed of users that I am following.
+     * These are the users whose topics appear on my following topics feed, and whose activities
+     *             appear on my following activities feed.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
-    ServiceCall getFollowingAsync(String authorization, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException;
+    ServiceCall getFollowingUsersAsync(String authorization, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException;
     /**
      * Get the feed of users that I am following.
+     * These are the users whose topics appear on my following topics feed, and whose activities
+     *             appear on my following activities feed.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseUserCompactView object wrapped in {@link ServiceResponse} if successful.
      */
-    ServiceResponse<FeedResponseUserCompactView> getFollowing(String authorization, String cursor, Integer limit, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException;
+    ServiceResponse<FeedResponseUserCompactView> getFollowingUsers(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
      * Get the feed of users that I am following.
+     * These are the users whose topics appear on my following topics feed, and whose activities
+     *             appear on my following activities feed.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
-    ServiceCall getFollowingAsync(String authorization, String cursor, Integer limit, String appkey, String userHandle, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException;
+    ServiceCall getFollowingUsersAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseUserCompactView> serviceCallback) throws IllegalArgumentException;
 
     /**
      * Follow a user.
+     * When I follow a user, that user will appear on my following feed. That feed is
+     *             visible to all users, unless my profile is set to private, in which case only those
+     *             users that request to follow me and I approve will see that feed. If I try to follow a
+     *             user with a private profile, then that private user controls whether I am allowed to
+     *             follow them or not.
+     *             That user's topics will appear in my following topics feed and actions
+     *             performed by that user will also appear in my following activities feed.
      *
-     * @param request Post following request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param request Post following user request
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the Object object wrapped in {@link ServiceResponse} if successful.
      */
-    ServiceResponse<Object> postFollowing(PostFollowingRequest request, String authorization) throws ServiceException, IOException, IllegalArgumentException;
+    ServiceResponse<Object> postFollowingUser(PostFollowingUserRequest request, String authorization) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
      * Follow a user.
+     * When I follow a user, that user will appear on my following feed. That feed is
+     *             visible to all users, unless my profile is set to private, in which case only those
+     *             users that request to follow me and I approve will see that feed. If I try to follow a
+     *             user with a private profile, then that private user controls whether I am allowed to
+     *             follow them or not.
+     *             That user's topics will appear in my following topics feed and actions
+     *             performed by that user will also appear in my following activities feed.
      *
-     * @param request Post following request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param request Post following user request
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
-    ServiceCall postFollowingAsync(PostFollowingRequest request, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
+    ServiceCall postFollowingUserAsync(PostFollowingUserRequest request, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
+
     /**
-     * Follow a user.
+     * Get the feed of topics that I am following.
      *
-     * @param request Post following request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<FeedResponseTopicView> getFollowingTopics(String authorization) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Get the feed of topics that I am following.
+     *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getFollowingTopicsAsync(String authorization, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException;
+    /**
+     * Get the feed of topics that I am following.
+     *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
+     * @param cursor Current read cursor
+     * @param limit Number of items to return
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<FeedResponseTopicView> getFollowingTopics(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Get the feed of topics that I am following.
+     *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
+     * @param cursor Current read cursor
+     * @param limit Number of items to return
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getFollowingTopicsAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException;
+
+    /**
+     * Follow a topic.
+     * When I follow a topic, that topic will appear on my following topics feed. When users
+     *             perform actions on the topic (such as posting comments or replies), those actions will
+     *             appear on my following activites feed.
+     *
+     * @param request Post following topic request
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the Object object wrapped in {@link ServiceResponse} if successful.
      */
-    ServiceResponse<Object> postFollowing(PostFollowingRequest request, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException;
+    ServiceResponse<Object> postFollowingTopic(PostFollowingTopicRequest request, String authorization) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
-     * Follow a user.
+     * Follow a topic.
+     * When I follow a topic, that topic will appear on my following topics feed. When users
+     *             perform actions on the topic (such as posting comments or replies), those actions will
+     *             appear on my following activites feed.
      *
-     * @param request Post following request
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
+     * @param request Post following topic request
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
-    ServiceCall postFollowingAsync(PostFollowingRequest request, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
+    ServiceCall postFollowingTopicAsync(PostFollowingTopicRequest request, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
 
     /**
      * Unfollow a user.
+     * After I unfollow a user, that user will no longer appear on my following feed.
+     *             All of that user's previous topics will be removed from my following topics feed and
+     *             none of their future topics will be added to that feed.
+     *             Their past and future activities will no longer appear in my following activities feed.
      *
      * @param userHandle User handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the Object object wrapped in {@link ServiceResponse} if successful.
      */
-    ServiceResponse<Object> deleteFollowing(String userHandle, String authorization) throws ServiceException, IOException, IllegalArgumentException;
+    ServiceResponse<Object> deleteFollowingUser(String userHandle, String authorization) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
      * Unfollow a user.
+     * After I unfollow a user, that user will no longer appear on my following feed.
+     *             All of that user's previous topics will be removed from my following topics feed and
+     *             none of their future topics will be added to that feed.
+     *             Their past and future activities will no longer appear in my following activities feed.
      *
      * @param userHandle User handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
-    ServiceCall deleteFollowingAsync(String userHandle, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
+    ServiceCall deleteFollowingUserAsync(String userHandle, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
+
     /**
-     * Unfollow a user.
+     * Unfollow a topic.
+     * After I unfollow a topic, that topic will no longer appear on my following topics feed.
+     *             The past and future activities on that topic will no longer appear in my following activities feed.
      *
-     * @param userHandle User handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle1 This field is for internal use only. Do not provide a value except under special circumstances.
+     * @param topicHandle Topic handle
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the Object object wrapped in {@link ServiceResponse} if successful.
      */
-    ServiceResponse<Object> deleteFollowing(String userHandle, String authorization, String appkey, String userHandle1) throws ServiceException, IOException, IllegalArgumentException;
+    ServiceResponse<Object> deleteFollowingTopic(String topicHandle, String authorization) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
-     * Unfollow a user.
+     * Unfollow a topic.
+     * After I unfollow a topic, that topic will no longer appear on my following topics feed.
+     *             The past and future activities on that topic will no longer appear in my following activities feed.
      *
-     * @param userHandle User handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle1 This field is for internal use only. Do not provide a value except under special circumstances.
+     * @param topicHandle Topic handle
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
-    ServiceCall deleteFollowingAsync(String userHandle, String authorization, String appkey, String userHandle1, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
+    ServiceCall deleteFollowingTopicAsync(String topicHandle, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
 
     /**
-     * Remove a topic from the feed of topics authored by users that I'm following.
-     * My following topics feed is a feed of topics created by users that I am following.
-     *             This API call will remove the specified topic from that feed.
+     * Remove a topic from my combined following topics feed.
+     * My combined following topics feed is a feed of topics I am explicitly following, combined with topics created by all users
+     *             that I am following.  This call will remove the specified topic from that feed.
      *
      * @param topicHandle Topic handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the Object object wrapped in {@link ServiceResponse} if successful.
      */
-    ServiceResponse<Object> deleteTopic(String topicHandle, String authorization) throws ServiceException, IOException, IllegalArgumentException;
+    ServiceResponse<Object> deleteTopicFromCombinedFollowingFeed(String topicHandle, String authorization) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
-     * Remove a topic from the feed of topics authored by users that I'm following.
-     * My following topics feed is a feed of topics created by users that I am following.
-     *             This API call will remove the specified topic from that feed.
+     * Remove a topic from my combined following topics feed.
+     * My combined following topics feed is a feed of topics I am explicitly following, combined with topics created by all users
+     *             that I am following.  This call will remove the specified topic from that feed.
      *
      * @param topicHandle Topic handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
-    ServiceCall deleteTopicAsync(String topicHandle, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
-    /**
-     * Remove a topic from the feed of topics authored by users that I'm following.
-     * My following topics feed is a feed of topics created by users that I am following.
-     *             This API call will remove the specified topic from that feed.
-     *
-     * @param topicHandle Topic handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @throws ServiceException exception thrown from REST call
-     * @throws IOException exception thrown from serialization/deserialization
-     * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the Object object wrapped in {@link ServiceResponse} if successful.
-     */
-    ServiceResponse<Object> deleteTopic(String topicHandle, String authorization, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException;
+    ServiceCall deleteTopicFromCombinedFollowingFeedAsync(String topicHandle, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
 
     /**
-     * Remove a topic from the feed of topics authored by users that I'm following.
-     * My following topics feed is a feed of topics created by users that I am following.
-     *             This API call will remove the specified topic from that feed.
+     * Get my combined following topics feed.
+     * My combined following topics feed includes:
+     *              (1) topics that I'm explicitly following and
+     *              (2) topics authored by users that I'm following
+     *             
+     *              This feed is time ordered, with the most recent topic first.
+     *              This feed will not include topics that I have explicitly deleted from this feed.
+     *              When I follow a user, a limited set of their past topics will be added to this feed,
+     *              and all their future topics will be added to this feed when they are created.
+     *              When I unfollow a user, all of their previous topics will be removed from the feed and
+     *              none of their future topics will be added to this feed.
+     *              When I follow a topic, it will appear in this feed.
+     *              When I unfollow a topic, it will no longer appear in this feed.
      *
-     * @param topicHandle Topic handle
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
-     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
-     * @throws IllegalArgumentException thrown if callback is null
-     * @return the {@link ServiceCall} object
-     */
-    ServiceCall deleteTopicAsync(String topicHandle, String authorization, String appkey, String userHandle, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
-
-    /**
-     * Get the feed of topics authored by users that I'm following.
-     * My following topics feed is a list of topics posted by users that I am following.
-     *             This feed is time ordered, with the most recent topic first.
-     *             This feed will not include topics that I have explicitly deleted from this feed.
-     *             When I follow a user, all of their past topics will be added to this feed, and all their
-     *             future topics will be added to this feed when they are created.
-     *             When I unfollow a user, all of their previous topics will be removed from the feed and
-     *             none of their future topics will be added to this feed.
-     *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -278,84 +428,121 @@ public interface MyFollowingOperations {
     ServiceResponse<FeedResponseTopicView> getTopics(String authorization) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
-     * Get the feed of topics authored by users that I'm following.
-     * My following topics feed is a list of topics posted by users that I am following.
-     *             This feed is time ordered, with the most recent topic first.
-     *             This feed will not include topics that I have explicitly deleted from this feed.
-     *             When I follow a user, all of their past topics will be added to this feed, and all their
-     *             future topics will be added to this feed when they are created.
-     *             When I unfollow a user, all of their previous topics will be removed from the feed and
-     *             none of their future topics will be added to this feed.
+     * Get my combined following topics feed.
+     * My combined following topics feed includes:
+     *              (1) topics that I'm explicitly following and
+     *              (2) topics authored by users that I'm following
+     *             
+     *              This feed is time ordered, with the most recent topic first.
+     *              This feed will not include topics that I have explicitly deleted from this feed.
+     *              When I follow a user, a limited set of their past topics will be added to this feed,
+     *              and all their future topics will be added to this feed when they are created.
+     *              When I unfollow a user, all of their previous topics will be removed from the feed and
+     *              none of their future topics will be added to this feed.
+     *              When I follow a topic, it will appear in this feed.
+     *              When I unfollow a topic, it will no longer appear in this feed.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
     ServiceCall getTopicsAsync(String authorization, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException;
     /**
-     * Get the feed of topics authored by users that I'm following.
-     * My following topics feed is a list of topics posted by users that I am following.
-     *             This feed is time ordered, with the most recent topic first.
-     *             This feed will not include topics that I have explicitly deleted from this feed.
-     *             When I follow a user, all of their past topics will be added to this feed, and all their
-     *             future topics will be added to this feed when they are created.
-     *             When I unfollow a user, all of their previous topics will be removed from the feed and
-     *             none of their future topics will be added to this feed.
+     * Get my combined following topics feed.
+     * My combined following topics feed includes:
+     *              (1) topics that I'm explicitly following and
+     *              (2) topics authored by users that I'm following
+     *             
+     *              This feed is time ordered, with the most recent topic first.
+     *              This feed will not include topics that I have explicitly deleted from this feed.
+     *              When I follow a user, a limited set of their past topics will be added to this feed,
+     *              and all their future topics will be added to this feed when they are created.
+     *              When I unfollow a user, all of their previous topics will be removed from the feed and
+     *              none of their future topics will be added to this feed.
+     *              When I follow a topic, it will appear in this feed.
+     *              When I unfollow a topic, it will no longer appear in this feed.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseTopicView object wrapped in {@link ServiceResponse} if successful.
      */
-    ServiceResponse<FeedResponseTopicView> getTopics(String authorization, String cursor, Integer limit, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException;
+    ServiceResponse<FeedResponseTopicView> getTopics(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
-     * Get the feed of topics authored by users that I'm following.
-     * My following topics feed is a list of topics posted by users that I am following.
-     *             This feed is time ordered, with the most recent topic first.
-     *             This feed will not include topics that I have explicitly deleted from this feed.
-     *             When I follow a user, all of their past topics will be added to this feed, and all their
-     *             future topics will be added to this feed when they are created.
-     *             When I unfollow a user, all of their previous topics will be removed from the feed and
-     *             none of their future topics will be added to this feed.
+     * Get my combined following topics feed.
+     * My combined following topics feed includes:
+     *              (1) topics that I'm explicitly following and
+     *              (2) topics authored by users that I'm following
+     *             
+     *              This feed is time ordered, with the most recent topic first.
+     *              This feed will not include topics that I have explicitly deleted from this feed.
+     *              When I follow a user, a limited set of their past topics will be added to this feed,
+     *              and all their future topics will be added to this feed when they are created.
+     *              When I unfollow a user, all of their previous topics will be removed from the feed and
+     *              none of their future topics will be added to this feed.
+     *              When I follow a topic, it will appear in this feed.
+     *              When I unfollow a topic, it will no longer appear in this feed.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
-    ServiceCall getTopicsAsync(String authorization, String cursor, Integer limit, String appkey, String userHandle, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException;
+    ServiceCall getTopicsAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException;
 
     /**
-     * Get the feed of activities by users that I'm following.
-     * My following activity feed is a list of activities performed by users that I am following.
+     * Get the feed of activities by users that I'm following or on topics that I'm following.
+     * My following activity feed is a list of activities that are either
+     *             (1) performed by users that I am following, or
+     *             (2) performed on topics that I am following.
      *             This feed is time ordered, with the most recent activity first.
      *             An activity is added to this feed when a user I am following does one of the following 4 actions:
      *             (a) create a comment; (b) create a reply; (c) like a topic; (d) follow a user.
      *             If a user that I am following is deleted, then their past activities will no longer appear in this feed.
      *             If an activity is performed on content that is then deleted, that activity will no longer appear in this feed.
      *             If a user has un-done an activity (e.g. unlike a previous like), then that activity will no longer appear in this feed.
+     *             Similarly, an activity is added to this feed when a user does one of the following 3 actions on a topic that I am following:
+     *             (a) create a comment; (b) create a reply; (c) like the topic.
+     *             If a topic that I am following is deleted, then past activities on that topic will no longer appear in this feed.
+     *             If an activity that is performed is then deleted, that activity will no longer appear in this feed.
      *             Ignore the unread status of each activity - it will always be true.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
@@ -364,71 +551,100 @@ public interface MyFollowingOperations {
     ServiceResponse<FeedResponseActivityView> getActivities(String authorization) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
-     * Get the feed of activities by users that I'm following.
-     * My following activity feed is a list of activities performed by users that I am following.
+     * Get the feed of activities by users that I'm following or on topics that I'm following.
+     * My following activity feed is a list of activities that are either
+     *             (1) performed by users that I am following, or
+     *             (2) performed on topics that I am following.
      *             This feed is time ordered, with the most recent activity first.
      *             An activity is added to this feed when a user I am following does one of the following 4 actions:
      *             (a) create a comment; (b) create a reply; (c) like a topic; (d) follow a user.
      *             If a user that I am following is deleted, then their past activities will no longer appear in this feed.
      *             If an activity is performed on content that is then deleted, that activity will no longer appear in this feed.
      *             If a user has un-done an activity (e.g. unlike a previous like), then that activity will no longer appear in this feed.
+     *             Similarly, an activity is added to this feed when a user does one of the following 3 actions on a topic that I am following:
+     *             (a) create a comment; (b) create a reply; (c) like the topic.
+     *             If a topic that I am following is deleted, then past activities on that topic will no longer appear in this feed.
+     *             If an activity that is performed is then deleted, that activity will no longer appear in this feed.
      *             Ignore the unread status of each activity - it will always be true.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
     ServiceCall getActivitiesAsync(String authorization, final ServiceCallback<FeedResponseActivityView> serviceCallback) throws IllegalArgumentException;
     /**
-     * Get the feed of activities by users that I'm following.
-     * My following activity feed is a list of activities performed by users that I am following.
+     * Get the feed of activities by users that I'm following or on topics that I'm following.
+     * My following activity feed is a list of activities that are either
+     *             (1) performed by users that I am following, or
+     *             (2) performed on topics that I am following.
      *             This feed is time ordered, with the most recent activity first.
      *             An activity is added to this feed when a user I am following does one of the following 4 actions:
      *             (a) create a comment; (b) create a reply; (c) like a topic; (d) follow a user.
      *             If a user that I am following is deleted, then their past activities will no longer appear in this feed.
      *             If an activity is performed on content that is then deleted, that activity will no longer appear in this feed.
      *             If a user has un-done an activity (e.g. unlike a previous like), then that activity will no longer appear in this feed.
+     *             Similarly, an activity is added to this feed when a user does one of the following 3 actions on a topic that I am following:
+     *             (a) create a comment; (b) create a reply; (c) like the topic.
+     *             If a topic that I am following is deleted, then past activities on that topic will no longer appear in this feed.
+     *             If an activity that is performed is then deleted, that activity will no longer appear in this feed.
      *             Ignore the unread status of each activity - it will always be true.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
      * @return the FeedResponseActivityView object wrapped in {@link ServiceResponse} if successful.
      */
-    ServiceResponse<FeedResponseActivityView> getActivities(String authorization, String cursor, Integer limit, String appkey, String userHandle) throws ServiceException, IOException, IllegalArgumentException;
+    ServiceResponse<FeedResponseActivityView> getActivities(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
-     * Get the feed of activities by users that I'm following.
-     * My following activity feed is a list of activities performed by users that I am following.
+     * Get the feed of activities by users that I'm following or on topics that I'm following.
+     * My following activity feed is a list of activities that are either
+     *             (1) performed by users that I am following, or
+     *             (2) performed on topics that I am following.
      *             This feed is time ordered, with the most recent activity first.
      *             An activity is added to this feed when a user I am following does one of the following 4 actions:
      *             (a) create a comment; (b) create a reply; (c) like a topic; (d) follow a user.
      *             If a user that I am following is deleted, then their past activities will no longer appear in this feed.
      *             If an activity is performed on content that is then deleted, that activity will no longer appear in this feed.
      *             If a user has un-done an activity (e.g. unlike a previous like), then that activity will no longer appear in this feed.
+     *             Similarly, an activity is added to this feed when a user does one of the following 3 actions on a topic that I am following:
+     *             (a) create a comment; (b) create a reply; (c) like the topic.
+     *             If a topic that I am following is deleted, then past activities on that topic will no longer appear in this feed.
+     *             If an activity that is performed is then deleted, that activity will no longer appear in this feed.
      *             Ignore the unread status of each activity - it will always be true.
      *
-     * @param authorization Authentication (must begin with string "Bearer "). Possible values are:
-     -sessionToken for client auth
-     -AAD token for service auth
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
      * @param cursor Current read cursor
      * @param limit Number of items to return
-     * @param appkey App key must be filled in when using AAD tokens for Authentication.
-     * @param userHandle This field is for internal use only. Do not provide a value except under special circumstances.
      * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
-    ServiceCall getActivitiesAsync(String authorization, String cursor, Integer limit, String appkey, String userHandle, final ServiceCallback<FeedResponseActivityView> serviceCallback) throws IllegalArgumentException;
+    ServiceCall getActivitiesAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseActivityView> serviceCallback) throws IllegalArgumentException;
 
 }
