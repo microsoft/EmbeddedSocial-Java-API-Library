@@ -5768,16 +5768,11 @@
     "AppCompactView": {
       "description": "App compact view",
       "required": [
-        "appHandle",
         "name",
         "platformType"
       ],
       "type": "object",
       "properties": {
-        "appHandle": {
-          "description": "Gets or sets app handle",
-          "type": "string"
-        },
         "name": {
           "description": "Gets or sets app name",
           "type": "string"
@@ -6541,7 +6536,6 @@
       "description": "User profile view",
       "required": [
         "userHandle",
-        "appHandle",
         "firstName",
         "lastName",
         "bio",
@@ -6559,10 +6553,6 @@
       "properties": {
         "userHandle": {
           "description": "Gets or sets user handle",
-          "type": "string"
-        },
-        "appHandle": {
-          "description": "Gets or sets app handle",
           "type": "string"
         },
         "firstName": {

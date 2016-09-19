@@ -19,12 +19,6 @@ public class UserProfileView {
     private String userHandle;
 
     /**
-     * Gets or sets app handle.
-     */
-    @JsonProperty(required = true)
-    private String appHandle;
-
-    /**
      * Gets or sets first name of the user.
      */
     @JsonProperty(required = true)
@@ -116,24 +110,6 @@ public class UserProfileView {
      */
     public void setUserHandle(String userHandle) {
         this.userHandle = userHandle;
-    }
-
-    /**
-     * Get the appHandle value.
-     *
-     * @return the appHandle value
-     */
-    public String getAppHandle() {
-        return this.appHandle;
-    }
-
-    /**
-     * Set the appHandle value.
-     *
-     * @param appHandle the appHandle value to set
-     */
-    public void setAppHandle(String appHandle) {
-        this.appHandle = appHandle;
     }
 
     /**
