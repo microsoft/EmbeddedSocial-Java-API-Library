@@ -13,12 +13,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class AppCompactView {
     /**
-     * Gets or sets app handle.
-     */
-    @JsonProperty(required = true)
-    private String appHandle;
-
-    /**
      * Gets or sets app name.
      */
     @JsonProperty(required = true)
@@ -50,24 +44,6 @@ public class AppCompactView {
      * Gets or sets app store link.
      */
     private String storeLink;
-
-    /**
-     * Get the appHandle value.
-     *
-     * @return the appHandle value
-     */
-    public String getAppHandle() {
-        return this.appHandle;
-    }
-
-    /**
-     * Set the appHandle value.
-     *
-     * @param appHandle the appHandle value to set
-     */
-    public void setAppHandle(String appHandle) {
-        this.appHandle = appHandle;
-    }
 
     /**
      * Get the name value.
