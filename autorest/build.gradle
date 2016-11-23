@@ -1,8 +1,10 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.jfrog.bintray'
+apply plugin: 'com.github.dcendents.android-maven'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.1"
 
     defaultConfig {
         minSdkVersion 15
@@ -30,4 +32,94 @@ dependencies {
 
 ext {
     outputFolder = new File((File) project.getProjectDir(), "aar")
+}
+
+
+def siteUrl = 'https://github.com/Microsoft/MSR-SocialPlus-Java-API-Library'
+def gitUrl = 'https://github.com/Microsoft/MSR-SocialPlus-Java-API-Library.git'
+group = "com.acrowntest.test"
+version = '0.0.1'
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                packaging 'aar'
+                groupId "com.acrowntest.test"
+                artifactId 'autorest'
+
+                name = 'autorest'
+                description = 'test library'
+                url siteUrl
+
+                licenses {
+                    license {
+                        name 'MIT'
+                        url 'https://opensource.org/licenses/MIT'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'acrown-msft'
+                        name 'Alex Crown'
+                        email 'acrown@microsoft.com'
+                    }
+                }
+                scm {
+                    connection gitUrl
+                    developerConnection gitUrl
+                    url siteUrl
+                }
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+//
+//task javadoc(type: Javadoc) {
+//    source = android.sourceSets.main.java.srcDirs
+//    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+//    destinationDir = file("../javadoc")
+//    failOnError false
+//}
+//
+//task javadocJar(type: Jar, dependsOn: javadoc) {
+//    classifier = 'javadoc'
+//    from javadoc.destinationDir
+//}
+
+artifacts {
+//    archives javadocJar
+    archives sourcesJar
+}
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+bintray {
+    user = properties.getProperty('bintray.user')
+    key = properties.getProperty('bintray.apikey')
+    configurations = ['archives']
+    pkg {
+        repo = 'test'
+        name = 'autorest'
+        userOrg = 'acrowntest'
+        licenses = ['MIT']
+        vcsUrl = gitUrl
+        publish = true
+        version {
+            name = '0.0.1'
+            desc = 'AutorestLib 0.0.1'
+            released = new Date()
+            vcsTag = '0.0.1'
+            attributes = ['gradle-plugin': 'com.acrowntest.test:autorest']
+            gpg {
+                sign = true
+            }
+        }
+    }
 }
