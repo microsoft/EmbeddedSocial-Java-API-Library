@@ -21,7 +21,7 @@ android {
 
     libraryVariants.all { variant ->
         variant.outputs.each { output ->
-            output.outputFile = new File((File) outputFolder, "SocialPlus_Autorest_$variant.buildType.name" + '.aar')
+            output.outputFile = new File((File) outputFolder, "EmbeddedSocial_Autorest_$variant.buildType.name" + '.aar')
         }
     }
 }
