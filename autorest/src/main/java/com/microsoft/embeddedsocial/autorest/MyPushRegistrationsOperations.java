@@ -29,7 +29,7 @@ public interface MyPushRegistrationsOperations {
      * @param platform Platform type. Possible values include: 'Windows', 'Android', 'IOS'
      * @param registrationId Unique registration ID provided by the mobile OS.
                  You must URL encode the registration ID.
-                 For Android, this is the GCM registration ID.
+                 For Android, this is the GCM or FCM registration ID.
                  For Windows, this is the PushNotificationChannel URI.
                  For iOS, this is the device token.
      * @param request Put push registration request
@@ -58,7 +58,7 @@ public interface MyPushRegistrationsOperations {
      * @param platform Platform type. Possible values include: 'Windows', 'Android', 'IOS'
      * @param registrationId Unique registration ID provided by the mobile OS.
                  You must URL encode the registration ID.
-                 For Android, this is the GCM registration ID.
+                 For Android, this is the GCM or FCM registration ID.
                  For Windows, this is the PushNotificationChannel URI.
                  For iOS, this is the device token.
      * @param request Put push registration request

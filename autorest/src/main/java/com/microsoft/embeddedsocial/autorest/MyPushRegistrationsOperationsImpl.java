@@ -74,7 +74,7 @@ public final class MyPushRegistrationsOperationsImpl implements MyPushRegistrati
      * @param platform Platform type. Possible values include: 'Windows', 'Android', 'IOS'
      * @param registrationId Unique registration ID provided by the mobile OS.
                  You must URL encode the registration ID.
-                 For Android, this is the GCM registration ID.
+                 For Android, this is the GCM or FCM registration ID.
                  For Windows, this is the PushNotificationChannel URI.
                  For iOS, this is the device token.
      * @param request Put push registration request
@@ -119,7 +119,7 @@ public final class MyPushRegistrationsOperationsImpl implements MyPushRegistrati
      * @param platform Platform type. Possible values include: 'Windows', 'Android', 'IOS'
      * @param registrationId Unique registration ID provided by the mobile OS.
                  You must URL encode the registration ID.
-                 For Android, this is the GCM registration ID.
+                 For Android, this is the GCM or FCM registration ID.
                  For Windows, this is the PushNotificationChannel URI.
                  For iOS, this is the device token.
      * @param request Put push registration request
@@ -174,6 +174,7 @@ public final class MyPushRegistrationsOperationsImpl implements MyPushRegistrati
     private ServiceResponse<Object> putPushRegistrationDelegate(Response<ResponseBody> response) throws ServiceException, IOException, IllegalArgumentException {
         return new ServiceResponseBuilder<Object, ServiceException>(this.client.getMapperAdapter())
                 .register(204, new TypeToken<Object>() { }.getType())
+                .register(400, new TypeToken<Void>() { }.getType())
                 .register(401, new TypeToken<Void>() { }.getType())
                 .register(409, new TypeToken<Void>() { }.getType())
                 .register(500, new TypeToken<Void>() { }.getType())

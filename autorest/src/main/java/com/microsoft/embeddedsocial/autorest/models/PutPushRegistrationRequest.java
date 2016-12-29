@@ -6,7 +6,6 @@
 
 package com.microsoft.embeddedsocial.autorest.models;
 
-import org.joda.time.DateTime;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -14,12 +13,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 public class PutPushRegistrationRequest {
     /**
-     * Gets or sets last updated time from the OS
+     * Gets or sets last updated time from the OS in ISO 8601 format.
      * This is used to expire out registrations that have not been
      * updated every 30 days.
      */
     @JsonProperty(required = true)
-    private DateTime lastUpdatedTime;
+    private String lastUpdatedTime;
 
     /**
      * Gets or sets language of the user.
@@ -32,7 +31,7 @@ public class PutPushRegistrationRequest {
      *
      * @return the lastUpdatedTime value
      */
-    public DateTime getLastUpdatedTime() {
+    public String getLastUpdatedTime() {
         return this.lastUpdatedTime;
     }
 
@@ -41,7 +40,7 @@ public class PutPushRegistrationRequest {
      *
      * @param lastUpdatedTime the lastUpdatedTime value to set
      */
-    public void setLastUpdatedTime(DateTime lastUpdatedTime) {
+    public void setLastUpdatedTime(String lastUpdatedTime) {
         this.lastUpdatedTime = lastUpdatedTime;
     }
 
