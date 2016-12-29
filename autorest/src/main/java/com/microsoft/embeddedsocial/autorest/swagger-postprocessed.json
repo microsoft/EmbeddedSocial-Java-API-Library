@@ -17,7 +17,7 @@
       "url": "https://opensource.org/licenses/MIT"
     }
   },
-  "host": "dev-sharad.embeddedsocial.microsoft.com",
+  "host": "api.embeddedsocial.microsoft.com",
   "schemes": [
     "https"
   ],

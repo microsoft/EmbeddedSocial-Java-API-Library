@@ -313,7 +313,7 @@ public final class EmbeddedSocialClientImpl extends ServiceClient implements Emb
      * Initializes an instance of EmbeddedSocialClient client.
      */
     public EmbeddedSocialClientImpl() {
-        this("https://dev-sharad.embeddedsocial.microsoft.com");
+        this("https://api.embeddedsocial.microsoft.com");
     }
 
     /**
