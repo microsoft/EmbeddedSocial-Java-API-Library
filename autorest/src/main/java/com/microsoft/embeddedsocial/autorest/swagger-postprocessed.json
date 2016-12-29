@@ -17,7 +17,7 @@
       "url": "https://opensource.org/licenses/MIT"
     }
   },
-  "host": "api.embeddedsocial.microsoft.com",
+  "host": "dev-sharad.embeddedsocial.microsoft.com",
   "schemes": [
     "https"
   ],
@@ -1534,7 +1534,7 @@
           {
             "name": "registrationId",
             "in": "path",
-            "description": "Unique registration ID provided by the mobile OS.\r\n            You must URL encode the registration ID.\r\n            For Android, this is the GCM registration ID.\r\n            For Windows, this is the PushNotificationChannel URI.\r\n            For iOS, this is the device token.",
+            "description": "Unique registration ID provided by the mobile OS.\r\n            You must URL encode the registration ID.\r\n            For Android, this is the GCM or FCM registration ID.\r\n            For Windows, this is the PushNotificationChannel URI.\r\n            For iOS, this is the device token.",
             "required": true,
             "type": "string"
           },
@@ -1561,6 +1561,9 @@
             "schema": {
               "$ref": "#/definitions/Object"
             }
+          },
+          "400": {
+            "description": "Bad request. The request structure fields could not be parsed."
           },
           "401": {
             "description": "Unauthorized. The user or the app is not authorized."
@@ -5993,8 +5996,7 @@
       "type": "object",
       "properties": {
         "lastUpdatedTime": {
-          "format": "date-time",
-          "description": "Gets or sets last updated time from the OS\r\n            This is used to expire out registrations that have not been updated every 30 days.",
+          "description": "Gets or sets last updated time from the OS in ISO 8601 format.\r\n            This is used to expire out registrations that have not been updated every 30 days.",
           "type": "string"
         },
         "language": {
