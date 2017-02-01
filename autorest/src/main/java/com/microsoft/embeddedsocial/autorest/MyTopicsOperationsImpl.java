@@ -51,11 +51,11 @@ public final class MyTopicsOperationsImpl implements MyTopicsOperations {
      */
     interface MyTopicsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.5/users/me/topics")
+        @GET("v0.6/users/me/topics")
         Call<ResponseBody> getTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.5/users/me/topics/popular")
+        @GET("v0.6/users/me/topics/popular")
         Call<ResponseBody> getPopularTopics(@Query("cursor") Integer cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
     }

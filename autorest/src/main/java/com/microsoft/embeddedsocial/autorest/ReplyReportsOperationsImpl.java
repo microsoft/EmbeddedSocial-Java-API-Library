@@ -53,7 +53,7 @@ public final class ReplyReportsOperationsImpl implements ReplyReportsOperations 
      */
     interface ReplyReportsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.5/replies/{replyHandle}/reports")
+        @POST("v0.6/replies/{replyHandle}/reports")
         Call<ResponseBody> postReport(@Path("replyHandle") String replyHandle, @Body PostReportRequest postReportRequest, @Header("Authorization") String authorization);
 
     }

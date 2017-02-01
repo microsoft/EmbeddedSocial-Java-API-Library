@@ -67,47 +67,47 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      */
     interface TopicsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.5/topics")
+        @GET("v0.6/topics")
         Call<ResponseBody> getTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.5/topics")
+        @POST("v0.6/topics")
         Call<ResponseBody> postTopic(@Body PostTopicRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.5/topics/{topicHandle}")
+        @GET("v0.6/topics/{topicHandle}")
         Call<ResponseBody> getTopic(@Path("topicHandle") String topicHandle, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @PUT("v0.5/topics/{topicHandle}")
+        @PUT("v0.6/topics/{topicHandle}")
         Call<ResponseBody> putTopic(@Path("topicHandle") String topicHandle, @Body PutTopicRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.5/topics/{topicHandle}", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.6/topics/{topicHandle}", method = "DELETE", hasBody = true)
         Call<ResponseBody> deleteTopic(@Path("topicHandle") String topicHandle, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.5/topics/popular/{timeRange}")
+        @GET("v0.6/topics/popular/{timeRange}")
         Call<ResponseBody> getPopularTopics(@Path("timeRange") TimeRange timeRange, @Query("cursor") Integer cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.5/topics/featured")
+        @GET("v0.6/topics/featured")
         Call<ResponseBody> getFeaturedTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.5/topics/names")
+        @POST("v0.6/topics/names")
         Call<ResponseBody> postTopicName(@Body PostTopicNameRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.5/topics/names/{topicName}")
+        @GET("v0.6/topics/names/{topicName}")
         Call<ResponseBody> getTopicName(@Path("topicName") String topicName, @Query("publisherType") PublisherType publisherType, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @PUT("v0.5/topics/names/{topicName}")
+        @PUT("v0.6/topics/names/{topicName}")
         Call<ResponseBody> putTopicName(@Path("topicName") String topicName, @Body PutTopicNameRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.5/topics/names/{topicName}", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.6/topics/names/{topicName}", method = "DELETE", hasBody = true)
         Call<ResponseBody> deleteTopicName(@Path("topicName") String topicName, @Body DeleteTopicNameRequest request, @Header("Authorization") String authorization);
 
     }

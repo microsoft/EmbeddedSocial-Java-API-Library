@@ -51,7 +51,7 @@ public final class MyAppsOperationsImpl implements MyAppsOperations {
      */
     interface MyAppsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.5/users/me/apps")
+        @GET("v0.6/users/me/apps")
         Call<ResponseBody> getApps(@Header("Authorization") String authorization);
 
     }

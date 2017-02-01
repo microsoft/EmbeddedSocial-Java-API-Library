@@ -52,7 +52,7 @@ public final class RequestTokensOperationsImpl implements RequestTokensOperation
      */
     interface RequestTokensService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.5/request_tokens/{identityProvider}")
+        @GET("v0.6/request_tokens/{identityProvider}")
         Call<ResponseBody> getRequestToken(@Path("identityProvider") IdentityProvider identityProvider, @Header("Authorization") String authorization);
 
     }

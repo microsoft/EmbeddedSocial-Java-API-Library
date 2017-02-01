@@ -54,15 +54,15 @@ public final class MyPendingUsersOperationsImpl implements MyPendingUsersOperati
      */
     interface MyPendingUsersService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.5/users/me/pending_users/{userHandle}", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.6/users/me/pending_users/{userHandle}", method = "DELETE", hasBody = true)
         Call<ResponseBody> deletePendingUser(@Path("userHandle") String userHandle, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.5/users/me/pending_users")
+        @GET("v0.6/users/me/pending_users")
         Call<ResponseBody> getPendingUsers(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.5/users/me/pending_users/count")
+        @GET("v0.6/users/me/pending_users/count")
         Call<ResponseBody> getPendingUsersCount(@Header("Authorization") String authorization);
 
     }

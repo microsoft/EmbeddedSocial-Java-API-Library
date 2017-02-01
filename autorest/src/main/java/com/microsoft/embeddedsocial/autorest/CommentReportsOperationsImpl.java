@@ -53,7 +53,7 @@ public final class CommentReportsOperationsImpl implements CommentReportsOperati
      */
     interface CommentReportsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.5/comments/{commentHandle}/reports")
+        @POST("v0.6/comments/{commentHandle}/reports")
         Call<ResponseBody> postReport(@Path("commentHandle") String commentHandle, @Body PostReportRequest postReportRequest, @Header("Authorization") String authorization);
 
     }

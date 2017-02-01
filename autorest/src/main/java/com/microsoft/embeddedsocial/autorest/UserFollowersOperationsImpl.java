@@ -52,7 +52,7 @@ public final class UserFollowersOperationsImpl implements UserFollowersOperation
      */
     interface UserFollowersService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.5/users/{userHandle}/followers")
+        @GET("v0.6/users/{userHandle}/followers")
         Call<ResponseBody> getFollowers(@Path("userHandle") String userHandle, @Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
     }

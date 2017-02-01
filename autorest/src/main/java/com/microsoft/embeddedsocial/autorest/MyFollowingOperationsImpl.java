@@ -60,39 +60,39 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
      */
     interface MyFollowingService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.5/users/me/following/users")
+        @GET("v0.6/users/me/following/users")
         Call<ResponseBody> getFollowingUsers(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.5/users/me/following/users")
+        @POST("v0.6/users/me/following/users")
         Call<ResponseBody> postFollowingUser(@Body PostFollowingUserRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.5/users/me/following/topics")
+        @GET("v0.6/users/me/following/topics")
         Call<ResponseBody> getFollowingTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.5/users/me/following/topics")
+        @POST("v0.6/users/me/following/topics")
         Call<ResponseBody> postFollowingTopic(@Body PostFollowingTopicRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.5/users/me/following/users/{userHandle}", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.6/users/me/following/users/{userHandle}", method = "DELETE", hasBody = true)
         Call<ResponseBody> deleteFollowingUser(@Path("userHandle") String userHandle, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.5/users/me/following/topics/{topicHandle}", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.6/users/me/following/topics/{topicHandle}", method = "DELETE", hasBody = true)
         Call<ResponseBody> deleteFollowingTopic(@Path("topicHandle") String topicHandle, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.5/users/me/following/combined/{topicHandle}", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.6/users/me/following/combined/{topicHandle}", method = "DELETE", hasBody = true)
         Call<ResponseBody> deleteTopicFromCombinedFollowingFeed(@Path("topicHandle") String topicHandle, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.5/users/me/following/combined")
+        @GET("v0.6/users/me/following/combined")
         Call<ResponseBody> getTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.5/users/me/following/activities")
+        @GET("v0.6/users/me/following/activities")
         Call<ResponseBody> getActivities(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
     }
