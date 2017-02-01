@@ -55,11 +55,11 @@ public final class MyPushRegistrationsOperationsImpl implements MyPushRegistrati
      */
     interface MyPushRegistrationsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @PUT("v0.5/users/me/push_registrations/{platform}/{registrationId}")
+        @PUT("v0.6/users/me/push_registrations/{platform}/{registrationId}")
         Call<ResponseBody> putPushRegistration(@Path("platform") Platform platform, @Path("registrationId") String registrationId, @Body PutPushRegistrationRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.5/users/me/push_registrations/{platform}/{registrationId}", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.6/users/me/push_registrations/{platform}/{registrationId}", method = "DELETE", hasBody = true)
         Call<ResponseBody> deletePushRegistration(@Path("platform") Platform platform, @Path("registrationId") String registrationId, @Header("Authorization") String authorization);
 
     }
@@ -176,7 +176,6 @@ public final class MyPushRegistrationsOperationsImpl implements MyPushRegistrati
                 .register(204, new TypeToken<Object>() { }.getType())
                 .register(400, new TypeToken<Void>() { }.getType())
                 .register(401, new TypeToken<Void>() { }.getType())
-                .register(409, new TypeToken<Void>() { }.getType())
                 .register(500, new TypeToken<Void>() { }.getType())
                 .build(response);
     }

@@ -52,7 +52,7 @@ public final class UserFollowingOperationsImpl implements UserFollowingOperation
      */
     interface UserFollowingService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.5/users/{userHandle}/following")
+        @GET("v0.6/users/{userHandle}/following")
         Call<ResponseBody> getFollowing(@Path("userHandle") String userHandle, @Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
     }

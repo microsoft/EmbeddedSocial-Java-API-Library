@@ -53,7 +53,7 @@ public final class TopicReportsOperationsImpl implements TopicReportsOperations 
      */
     interface TopicReportsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.5/topics/{topicHandle}/reports")
+        @POST("v0.6/topics/{topicHandle}/reports")
         Call<ResponseBody> postReport(@Path("topicHandle") String topicHandle, @Body PostReportRequest postReportRequest, @Header("Authorization") String authorization);
 
     }

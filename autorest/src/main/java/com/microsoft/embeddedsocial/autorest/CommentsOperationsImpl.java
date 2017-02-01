@@ -52,11 +52,11 @@ public final class CommentsOperationsImpl implements CommentsOperations {
      */
     interface CommentsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.5/comments/{commentHandle}")
+        @GET("v0.6/comments/{commentHandle}")
         Call<ResponseBody> getComment(@Path("commentHandle") String commentHandle, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.5/comments/{commentHandle}", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.6/comments/{commentHandle}", method = "DELETE", hasBody = true)
         Call<ResponseBody> deleteComment(@Path("commentHandle") String commentHandle, @Header("Authorization") String authorization);
 
     }
