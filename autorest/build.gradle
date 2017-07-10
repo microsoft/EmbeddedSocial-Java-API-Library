@@ -35,10 +35,12 @@ ext {
 }
 
 
-def siteUrl = 'https://github.com/Microsoft/MSR-SocialPlus-Java-API-Library'
-def gitUrl = 'https://github.com/Microsoft/MSR-SocialPlus-Java-API-Library.git'
+def siteUrl = 'https://github.com/Microsoft/EmbeddedSocial-Java-API-Library'
+def gitUrl = 'https://github.com/Microsoft/EmbeddedSocial-Java-API-Library.git'
+def versionNum = '0.0.6'
+
 group = "com.acrowntest.test"
-version = '0.0.1'
+version = versionNum
 
 install {
     repositories.mavenInstaller {
@@ -112,10 +114,10 @@ bintray {
         vcsUrl = gitUrl
         publish = true
         version {
-            name = '0.0.1'
-            desc = 'AutorestLib 0.0.1'
+            name = versionNum
+            desc = 'AutorestLib ' + versionNum
             released = new Date()
-            vcsTag = '0.0.1'
+            vcsTag = versionNum
             attributes = ['gradle-plugin': 'com.acrowntest.test:autorest']
             gpg {
                 sign = true
