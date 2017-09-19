@@ -1,6 +1,6 @@
-# Microsoft Research Embedded Social Software Development Kit
+# Microsoft Embedded Social
 ## Java Library for Server API
-This is a library for accessing the "Microsoft Research Embedded Social Plus Software Development Kit" API in your Java code.
+This is a library for interacting with the Microsoft Embedded Social API in your Java code.
 
 By using this code, you agree to the [Developer Code of Conduct](DeveloperCodeOfConduct.md), and the [License Terms](LICENSE).
 
