@@ -22,7 +22,7 @@ public interface MyPendingUsersOperations {
     /**
      * Reject follower request.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of pending user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -41,7 +41,7 @@ public interface MyPendingUsersOperations {
     /**
      * Reject follower request.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of pending user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken

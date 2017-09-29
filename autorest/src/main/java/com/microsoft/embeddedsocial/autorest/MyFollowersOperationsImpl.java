@@ -57,15 +57,15 @@ public final class MyFollowersOperationsImpl implements MyFollowersOperations {
      */
     interface MyFollowersService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/users/me/followers")
+        @GET("v0.7/users/me/followers")
         Call<ResponseBody> getFollowers(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.6/users/me/followers")
+        @POST("v0.7/users/me/followers")
         Call<ResponseBody> postFollower(@Body PostFollowerRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.6/users/me/followers/{userHandle}", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.7/users/me/followers/{userHandle}", method = "DELETE", hasBody = true)
         Call<ResponseBody> deleteFollower(@Path("userHandle") String userHandle, @Header("Authorization") String authorization);
 
     }
@@ -299,7 +299,7 @@ public final class MyFollowersOperationsImpl implements MyFollowersOperations {
     /**
      * Remove follower.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of follower user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -327,7 +327,7 @@ public final class MyFollowersOperationsImpl implements MyFollowersOperations {
     /**
      * Remove follower.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of follower user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken

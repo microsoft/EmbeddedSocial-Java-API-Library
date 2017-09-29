@@ -21,7 +21,7 @@ public interface UserTopicsOperations {
     /**
      * Get user topics sorted by creation time.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -40,7 +40,7 @@ public interface UserTopicsOperations {
     /**
      * Get user topics sorted by creation time.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -57,7 +57,7 @@ public interface UserTopicsOperations {
     /**
      * Get user topics sorted by creation time.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -78,7 +78,7 @@ public interface UserTopicsOperations {
     /**
      * Get user topics sorted by creation time.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -98,7 +98,7 @@ public interface UserTopicsOperations {
     /**
      * Get user topics sorted by popularity.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -117,7 +117,7 @@ public interface UserTopicsOperations {
     /**
      * Get user topics sorted by popularity.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -134,7 +134,7 @@ public interface UserTopicsOperations {
     /**
      * Get user topics sorted by popularity.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -155,7 +155,7 @@ public interface UserTopicsOperations {
     /**
      * Get user topics sorted by popularity.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken

@@ -52,7 +52,7 @@ public final class MyAppFollowingOperationsImpl implements MyAppFollowingOperati
      */
     interface MyAppFollowingService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/users/me/apps/{appHandle}/following/difference")
+        @GET("v0.7/users/me/apps/{appHandle}/following/difference")
         Call<ResponseBody> getUsers(@Path("appHandle") String appHandle, @Query("cursor") String cursor, @Header("Authorization") String authorization);
 
     }

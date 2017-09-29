@@ -57,11 +57,11 @@ public final class BlobsOperationsImpl implements BlobsOperations {
      */
     interface BlobsService {
         @Headers("Content-Type: application/octet-stream")
-        @POST("v0.6/blobs")
+        @POST("v0.7/blobs")
         Call<ResponseBody> postBlob(@Header("Authorization") String authorization, @Body RequestBody blob);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/blobs/{blobHandle}")
+        @GET("v0.7/blobs/{blobHandle}")
         @Streaming
         Call<ResponseBody> getBlob(@Path("blobHandle") String blobHandle, @Header("Authorization") String authorization);
 

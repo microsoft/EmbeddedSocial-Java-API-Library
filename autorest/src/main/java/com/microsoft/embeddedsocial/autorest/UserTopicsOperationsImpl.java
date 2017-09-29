@@ -52,11 +52,11 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
      */
     interface UserTopicsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/users/{userHandle}/topics")
+        @GET("v0.7/users/{userHandle}/topics")
         Call<ResponseBody> getTopics(@Path("userHandle") String userHandle, @Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/users/{userHandle}/topics/popular")
+        @GET("v0.7/users/{userHandle}/topics/popular")
         Call<ResponseBody> getPopularTopics(@Path("userHandle") String userHandle, @Query("cursor") Integer cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
     }
@@ -64,7 +64,7 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
     /**
      * Get user topics sorted by creation time.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -94,7 +94,7 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
     /**
      * Get user topics sorted by creation time.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -139,7 +139,7 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
     /**
      * Get user topics sorted by creation time.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -169,7 +169,7 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
     /**
      * Get user topics sorted by creation time.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -224,7 +224,7 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
     /**
      * Get user topics sorted by popularity.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -254,7 +254,7 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
     /**
      * Get user topics sorted by popularity.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -299,7 +299,7 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
     /**
      * Get user topics sorted by popularity.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -329,7 +329,7 @@ public final class UserTopicsOperationsImpl implements UserTopicsOperations {
     /**
      * Get user topics sorted by popularity.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken

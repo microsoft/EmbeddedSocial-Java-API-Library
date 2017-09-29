@@ -55,11 +55,11 @@ public final class MyPushRegistrationsOperationsImpl implements MyPushRegistrati
      */
     interface MyPushRegistrationsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @PUT("v0.6/users/me/push_registrations/{platform}/{registrationId}")
+        @PUT("v0.7/users/me/push_registrations/{platform}/{registrationId}")
         Call<ResponseBody> putPushRegistration(@Path("platform") Platform platform, @Path("registrationId") String registrationId, @Body PutPushRegistrationRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.6/users/me/push_registrations/{platform}/{registrationId}", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.7/users/me/push_registrations/{platform}/{registrationId}", method = "DELETE", hasBody = true)
         Call<ResponseBody> deletePushRegistration(@Path("platform") Platform platform, @Path("registrationId") String registrationId, @Header("Authorization") String authorization);
 
     }
@@ -70,6 +70,11 @@ public final class MyPushRegistrationsOperationsImpl implements MyPushRegistrati
      *             notifications feed where the unread status is true.
      *             If multiple devices register for push notifications, then all those devices
      *             will get push notifications.
+     *             Each push notification will have three components: (1) a human readable string
+     *             that the mobile OS should display to the user, (2) a "publisher" string with
+     *             value "EmbeddedSocial" to identify that the push notification came from
+     *             this service, and (3) an "activityHandle" that identifies which activity
+     *             in the notification feed this push notification is for.
      *
      * @param platform Platform type. Possible values include: 'Windows', 'Android', 'IOS'
      * @param registrationId Unique registration ID provided by the mobile OS.
@@ -115,6 +120,11 @@ public final class MyPushRegistrationsOperationsImpl implements MyPushRegistrati
      *             notifications feed where the unread status is true.
      *             If multiple devices register for push notifications, then all those devices
      *             will get push notifications.
+     *             Each push notification will have three components: (1) a human readable string
+     *             that the mobile OS should display to the user, (2) a "publisher" string with
+     *             value "EmbeddedSocial" to identify that the push notification came from
+     *             this service, and (3) an "activityHandle" that identifies which activity
+     *             in the notification feed this push notification is for.
      *
      * @param platform Platform type. Possible values include: 'Windows', 'Android', 'IOS'
      * @param registrationId Unique registration ID provided by the mobile OS.

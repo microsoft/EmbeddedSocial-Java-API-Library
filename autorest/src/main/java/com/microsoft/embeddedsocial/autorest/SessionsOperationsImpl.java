@@ -54,11 +54,11 @@ public final class SessionsOperationsImpl implements SessionsOperations {
      */
     interface SessionsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.6/sessions")
+        @POST("v0.7/sessions")
         Call<ResponseBody> postSession(@Body PostSessionRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.6/sessions/current", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.7/sessions/current", method = "DELETE", hasBody = true)
         Call<ResponseBody> deleteSession(@Header("Authorization") String authorization);
 
     }

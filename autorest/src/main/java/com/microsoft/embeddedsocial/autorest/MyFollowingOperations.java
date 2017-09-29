@@ -11,11 +11,13 @@ import com.microsoft.embeddedsocial.autorest.models.FeedResponseTopicView;
 import com.microsoft.embeddedsocial.autorest.models.FeedResponseUserCompactView;
 import com.microsoft.embeddedsocial.autorest.models.PostFollowingTopicRequest;
 import com.microsoft.embeddedsocial.autorest.models.PostFollowingUserRequest;
+import com.microsoft.embeddedsocial.autorest.models.UserCompactView;
 import com.microsoft.rest.ServiceCall;
 import com.microsoft.rest.ServiceCallback;
 import com.microsoft.rest.ServiceException;
 import com.microsoft.rest.ServiceResponse;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * An instance of this class provides access to all the operations defined
@@ -277,7 +279,7 @@ public interface MyFollowingOperations {
      *             none of their future topics will be added to that feed.
      *             Their past and future activities will no longer appear in my following activities feed.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of following user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -300,7 +302,7 @@ public interface MyFollowingOperations {
      *             none of their future topics will be added to that feed.
      *             Their past and future activities will no longer appear in my following activities feed.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of following user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -320,7 +322,7 @@ public interface MyFollowingOperations {
      * After I unfollow a topic, that topic will no longer appear on my following topics feed.
      *             The past and future activities on that topic will no longer appear in my following activities feed.
      *
-     * @param topicHandle Topic handle
+     * @param topicHandle Handle of following topic
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -341,7 +343,7 @@ public interface MyFollowingOperations {
      * After I unfollow a topic, that topic will no longer appear on my following topics feed.
      *             The past and future activities on that topic will no longer appear in my following activities feed.
      *
-     * @param topicHandle Topic handle
+     * @param topicHandle Handle of following topic
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -361,7 +363,7 @@ public interface MyFollowingOperations {
      * My combined following topics feed is a feed of topics I am explicitly following, combined with topics created by all users
      *             that I am following.  This call will remove the specified topic from that feed.
      *
-     * @param topicHandle Topic handle
+     * @param topicHandle Handle of following topic
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -382,7 +384,7 @@ public interface MyFollowingOperations {
      * My combined following topics feed is a feed of topics I am explicitly following, combined with topics created by all users
      *             that I am following.  This call will remove the specified topic from that feed.
      *
-     * @param topicHandle Topic handle
+     * @param topicHandle Handle of following topic
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -646,5 +648,110 @@ public interface MyFollowingOperations {
      * @return the {@link ServiceCall} object
      */
     ServiceCall getActivitiesAsync(String authorization, String cursor, Integer limit, final ServiceCallback<FeedResponseActivityView> serviceCallback) throws IllegalArgumentException;
+
+    /**
+     * Get my suggestions of users to follow.
+     * This call uses the token from the Authorization header to determine the type of suggestions to provide.
+     *             In particular, the token determines which third-party to contact to obtain a list of suggested users,
+     *             such as friends (for Facebook), following users (for Twitter), and contacts (for Google and Microsoft).
+     *             We check each retrieved user to see whether they are registered with Embedded Social (this is done by checking
+     *             whether the user appears as a linked account in any Embedded Social profile).
+     *             Note that passing a token without the appropiate scopes will prevent Embedded Social from obtaining a list
+     *             of suggested users.
+     *             Support for input parameters 'cursor' and 'limit' is not implemented in the current API release.
+     *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the List&lt;UserCompactView&gt; object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<List<UserCompactView>> getSuggestionsUsers(String authorization) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Get my suggestions of users to follow.
+     * This call uses the token from the Authorization header to determine the type of suggestions to provide.
+     *             In particular, the token determines which third-party to contact to obtain a list of suggested users,
+     *             such as friends (for Facebook), following users (for Twitter), and contacts (for Google and Microsoft).
+     *             We check each retrieved user to see whether they are registered with Embedded Social (this is done by checking
+     *             whether the user appears as a linked account in any Embedded Social profile).
+     *             Note that passing a token without the appropiate scopes will prevent Embedded Social from obtaining a list
+     *             of suggested users.
+     *             Support for input parameters 'cursor' and 'limit' is not implemented in the current API release.
+     *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getSuggestionsUsersAsync(String authorization, final ServiceCallback<List<UserCompactView>> serviceCallback) throws IllegalArgumentException;
+    /**
+     * Get my suggestions of users to follow.
+     * This call uses the token from the Authorization header to determine the type of suggestions to provide.
+     *             In particular, the token determines which third-party to contact to obtain a list of suggested users,
+     *             such as friends (for Facebook), following users (for Twitter), and contacts (for Google and Microsoft).
+     *             We check each retrieved user to see whether they are registered with Embedded Social (this is done by checking
+     *             whether the user appears as a linked account in any Embedded Social profile).
+     *             Note that passing a token without the appropiate scopes will prevent Embedded Social from obtaining a list
+     *             of suggested users.
+     *             Support for input parameters 'cursor' and 'limit' is not implemented in the current API release.
+     *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
+     * @param cursor Current read cursor
+     * @param limit Number of users compact views to return
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the List&lt;UserCompactView&gt; object wrapped in {@link ServiceResponse} if successful.
+     */
+    ServiceResponse<List<UserCompactView>> getSuggestionsUsers(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException;
+
+    /**
+     * Get my suggestions of users to follow.
+     * This call uses the token from the Authorization header to determine the type of suggestions to provide.
+     *             In particular, the token determines which third-party to contact to obtain a list of suggested users,
+     *             such as friends (for Facebook), following users (for Twitter), and contacts (for Google and Microsoft).
+     *             We check each retrieved user to see whether they are registered with Embedded Social (this is done by checking
+     *             whether the user appears as a linked account in any Embedded Social profile).
+     *             Note that passing a token without the appropiate scopes will prevent Embedded Social from obtaining a list
+     *             of suggested users.
+     *             Support for input parameters 'cursor' and 'limit' is not implemented in the current API release.
+     *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
+     * @param cursor Current read cursor
+     * @param limit Number of users compact views to return
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link ServiceCall} object
+     */
+    ServiceCall getSuggestionsUsersAsync(String authorization, String cursor, Integer limit, final ServiceCallback<List<UserCompactView>> serviceCallback) throws IllegalArgumentException;
 
 }

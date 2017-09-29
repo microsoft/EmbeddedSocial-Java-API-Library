@@ -54,15 +54,15 @@ public final class ReplyLikesOperationsImpl implements ReplyLikesOperations {
      */
     interface ReplyLikesService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/replies/{replyHandle}/likes")
+        @GET("v0.7/replies/{replyHandle}/likes")
         Call<ResponseBody> getLikes(@Path("replyHandle") String replyHandle, @Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.6/replies/{replyHandle}/likes")
+        @POST("v0.7/replies/{replyHandle}/likes")
         Call<ResponseBody> postLike(@Path("replyHandle") String replyHandle, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.6/replies/{replyHandle}/likes/me", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.7/replies/{replyHandle}/likes/me", method = "DELETE", hasBody = true)
         Call<ResponseBody> deleteLike(@Path("replyHandle") String replyHandle, @Header("Authorization") String authorization);
 
     }

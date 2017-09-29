@@ -52,11 +52,11 @@ public final class RepliesOperationsImpl implements RepliesOperations {
      */
     interface RepliesService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/replies/{replyHandle}")
+        @GET("v0.7/replies/{replyHandle}")
         Call<ResponseBody> getReply(@Path("replyHandle") String replyHandle, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.6/replies/{replyHandle}", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.7/replies/{replyHandle}", method = "DELETE", hasBody = true)
         Call<ResponseBody> deleteReply(@Path("replyHandle") String replyHandle, @Header("Authorization") String authorization);
 
     }

@@ -8,7 +8,7 @@ package com.microsoft.embeddedsocial.autorest;
 
 import com.microsoft.embeddedsocial.autorest.models.DeleteTopicNameRequest;
 import com.microsoft.embeddedsocial.autorest.models.FeedResponseTopicView;
-import com.microsoft.embeddedsocial.autorest.models.GetTopicNameResponse;
+import com.microsoft.embeddedsocial.autorest.models.GetTopicByNameResponse;
 import com.microsoft.embeddedsocial.autorest.models.PostTopicNameRequest;
 import com.microsoft.embeddedsocial.autorest.models.PostTopicRequest;
 import com.microsoft.embeddedsocial.autorest.models.PostTopicResponse;
@@ -252,7 +252,7 @@ public interface TopicsOperations {
     ServiceCall deleteTopicAsync(String topicHandle, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
 
     /**
-     * Get popular topics today.
+     * Get popular topics for a time range.
      *
      * @param timeRange Time range. Possible values include: 'Today', 'ThisWeek', 'ThisMonth', 'AllTime'
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
@@ -271,7 +271,7 @@ public interface TopicsOperations {
     ServiceResponse<FeedResponseTopicView> getPopularTopics(TimeRange timeRange, String authorization) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
-     * Get popular topics today.
+     * Get popular topics for a time range.
      *
      * @param timeRange Time range. Possible values include: 'Today', 'ThisWeek', 'ThisMonth', 'AllTime'
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
@@ -288,7 +288,7 @@ public interface TopicsOperations {
      */
     ServiceCall getPopularTopicsAsync(TimeRange timeRange, String authorization, final ServiceCallback<FeedResponseTopicView> serviceCallback) throws IllegalArgumentException;
     /**
-     * Get popular topics today.
+     * Get popular topics for a time range.
      *
      * @param timeRange Time range. Possible values include: 'Today', 'ThisWeek', 'ThisMonth', 'AllTime'
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
@@ -309,7 +309,7 @@ public interface TopicsOperations {
     ServiceResponse<FeedResponseTopicView> getPopularTopics(TimeRange timeRange, String authorization, Integer cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
-     * Get popular topics today.
+     * Get popular topics for a time range.
      *
      * @param timeRange Time range. Possible values include: 'Today', 'ThisWeek', 'ThisMonth', 'AllTime'
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
@@ -439,7 +439,7 @@ public interface TopicsOperations {
     ServiceCall postTopicNameAsync(PostTopicNameRequest request, String authorization, final ServiceCallback<Object> serviceCallback) throws IllegalArgumentException;
 
     /**
-     * Get a topic name.
+     * Get a topic by topic name.
      *
      * @param topicName Topic name
      * @param publisherType Publisher type. Possible values include: 'User', 'App'
@@ -454,12 +454,12 @@ public interface TopicsOperations {
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the GetTopicNameResponse object wrapped in {@link ServiceResponse} if successful.
+     * @return the GetTopicByNameResponse object wrapped in {@link ServiceResponse} if successful.
      */
-    ServiceResponse<GetTopicNameResponse> getTopicName(String topicName, PublisherType publisherType, String authorization) throws ServiceException, IOException, IllegalArgumentException;
+    ServiceResponse<GetTopicByNameResponse> getTopicByName(String topicName, PublisherType publisherType, String authorization) throws ServiceException, IOException, IllegalArgumentException;
 
     /**
-     * Get a topic name.
+     * Get a topic by topic name.
      *
      * @param topicName Topic name
      * @param publisherType Publisher type. Possible values include: 'User', 'App'
@@ -475,7 +475,7 @@ public interface TopicsOperations {
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link ServiceCall} object
      */
-    ServiceCall getTopicNameAsync(String topicName, PublisherType publisherType, String authorization, final ServiceCallback<GetTopicNameResponse> serviceCallback) throws IllegalArgumentException;
+    ServiceCall getTopicByNameAsync(String topicName, PublisherType publisherType, String authorization, final ServiceCallback<GetTopicByNameResponse> serviceCallback) throws IllegalArgumentException;
 
     /**
      * Update a topic name.

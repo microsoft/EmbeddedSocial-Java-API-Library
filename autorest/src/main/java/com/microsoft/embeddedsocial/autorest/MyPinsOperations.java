@@ -132,7 +132,7 @@ public interface MyPinsOperations {
     /**
      * Unpin a topic.
      *
-     * @param topicHandle Topic handle
+     * @param topicHandle Handle of pinned topic
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -151,7 +151,7 @@ public interface MyPinsOperations {
     /**
      * Unpin a topic.
      *
-     * @param topicHandle Topic handle
+     * @param topicHandle Handle of pinned topic
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken

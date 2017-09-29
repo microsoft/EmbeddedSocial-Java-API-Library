@@ -51,7 +51,7 @@ public final class MyLikesOperationsImpl implements MyLikesOperations {
      */
     interface MyLikesService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/users/me/likes/topics")
+        @GET("v0.7/users/me/likes/topics")
         Call<ResponseBody> getLikedTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
     }

@@ -247,7 +247,7 @@ public interface UsersOperations {
     /**
      * Get user profile.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -266,7 +266,7 @@ public interface UsersOperations {
     /**
      * Get user profile.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken

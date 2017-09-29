@@ -52,11 +52,11 @@ public final class SearchOperationsImpl implements SearchOperations {
      */
     interface SearchService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/search/topics")
+        @GET("v0.7/search/topics")
         Call<ResponseBody> getTopics(@Query("query") String query, @Query("cursor") Integer cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/search/users")
+        @GET("v0.7/search/users")
         Call<ResponseBody> getUsers(@Query("query") String query, @Query("cursor") Integer cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
     }

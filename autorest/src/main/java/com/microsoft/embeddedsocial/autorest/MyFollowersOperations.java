@@ -132,7 +132,7 @@ public interface MyFollowersOperations {
     /**
      * Remove follower.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of follower user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -151,7 +151,7 @@ public interface MyFollowersOperations {
     /**
      * Remove follower.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of follower user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken

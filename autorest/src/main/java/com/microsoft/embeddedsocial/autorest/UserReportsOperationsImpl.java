@@ -53,7 +53,7 @@ public final class UserReportsOperationsImpl implements UserReportsOperations {
      */
     interface UserReportsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.6/users/{userHandle}/reports")
+        @POST("v0.7/users/{userHandle}/reports")
         Call<ResponseBody> postReport(@Path("userHandle") String userHandle, @Body PostReportRequest postReportRequest, @Header("Authorization") String authorization);
 
     }

@@ -57,15 +57,15 @@ public final class MyBlockedUsersOperationsImpl implements MyBlockedUsersOperati
      */
     interface MyBlockedUsersService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/users/me/blocked_users")
+        @GET("v0.7/users/me/blocked_users")
         Call<ResponseBody> getBlockedUsers(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.6/users/me/blocked_users")
+        @POST("v0.7/users/me/blocked_users")
         Call<ResponseBody> postBlockedUser(@Body PostBlockedUserRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.6/users/me/blocked_users/{userHandle}", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.7/users/me/blocked_users/{userHandle}", method = "DELETE", hasBody = true)
         Call<ResponseBody> deleteBlockedUser(@Path("userHandle") String userHandle, @Header("Authorization") String authorization);
 
     }
@@ -356,7 +356,7 @@ public final class MyBlockedUsersOperationsImpl implements MyBlockedUsersOperati
     /**
      * Unblock a user.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of blocked user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -384,7 +384,7 @@ public final class MyBlockedUsersOperationsImpl implements MyBlockedUsersOperati
     /**
      * Unblock a user.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of blocked user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken

@@ -56,15 +56,15 @@ public final class MyNotificationsOperationsImpl implements MyNotificationsOpera
      */
     interface MyNotificationsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @PUT("v0.6/users/me/notifications/status")
+        @PUT("v0.7/users/me/notifications/status")
         Call<ResponseBody> putNotificationsStatus(@Body PutNotificationsStatusRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/users/me/notifications")
+        @GET("v0.7/users/me/notifications")
         Call<ResponseBody> getNotifications(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/users/me/notifications/count")
+        @GET("v0.7/users/me/notifications/count")
         Call<ResponseBody> getNotificationsCount(@Header("Authorization") String authorization);
 
     }

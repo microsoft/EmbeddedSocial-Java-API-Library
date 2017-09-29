@@ -63,35 +63,35 @@ public final class UsersOperationsImpl implements UsersOperations {
      */
     interface UsersService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.6/users")
+        @POST("v0.7/users")
         Call<ResponseBody> postUser(@Body PostUserRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/users/me")
+        @GET("v0.7/users/me")
         Call<ResponseBody> getMyProfile(@Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.6/users/me", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.7/users/me", method = "DELETE", hasBody = true)
         Call<ResponseBody> deleteUser(@Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @PUT("v0.6/users/me/info")
+        @PUT("v0.7/users/me/info")
         Call<ResponseBody> putUserInfo(@Body PutUserInfoRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @PUT("v0.6/users/me/photo")
+        @PUT("v0.7/users/me/photo")
         Call<ResponseBody> putUserPhoto(@Body PutUserPhotoRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @PUT("v0.6/users/me/visibility")
+        @PUT("v0.7/users/me/visibility")
         Call<ResponseBody> putUserVisibility(@Body PutUserVisibilityRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/users/{userHandle}")
+        @GET("v0.7/users/{userHandle}")
         Call<ResponseBody> getUser(@Path("userHandle") String userHandle, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/users/popular")
+        @GET("v0.7/users/popular")
         Call<ResponseBody> getPopularUsers(@Query("cursor") Integer cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
     }
@@ -575,7 +575,7 @@ public final class UsersOperationsImpl implements UsersOperations {
     /**
      * Get user profile.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -603,7 +603,7 @@ public final class UsersOperationsImpl implements UsersOperations {
     /**
      * Get user profile.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
