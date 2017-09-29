@@ -58,11 +58,11 @@ public final class ImagesOperationsImpl implements ImagesOperations {
      */
     interface ImagesService {
         @Headers("Content-Type: image/gif")
-        @POST("v0.6/images/{imageType}")
+        @POST("v0.7/images/{imageType}")
         Call<ResponseBody> postImage(@Path("imageType") ImageType imageType, @Header("Authorization") String authorization, @Body RequestBody image);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/images/{blobHandle}")
+        @GET("v0.7/images/{blobHandle}")
         @Streaming
         Call<ResponseBody> getImage(@Path("blobHandle") String blobHandle, @Header("Authorization") String authorization);
 

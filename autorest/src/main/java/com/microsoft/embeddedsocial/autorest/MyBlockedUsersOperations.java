@@ -190,7 +190,7 @@ public interface MyBlockedUsersOperations {
     /**
      * Unblock a user.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of blocked user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -209,7 +209,7 @@ public interface MyBlockedUsersOperations {
     /**
      * Unblock a user.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of blocked user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken

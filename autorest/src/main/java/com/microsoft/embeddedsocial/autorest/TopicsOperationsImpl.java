@@ -9,7 +9,7 @@ package com.microsoft.embeddedsocial.autorest;
 import com.google.common.reflect.TypeToken;
 import com.microsoft.embeddedsocial.autorest.models.DeleteTopicNameRequest;
 import com.microsoft.embeddedsocial.autorest.models.FeedResponseTopicView;
-import com.microsoft.embeddedsocial.autorest.models.GetTopicNameResponse;
+import com.microsoft.embeddedsocial.autorest.models.GetTopicByNameResponse;
 import com.microsoft.embeddedsocial.autorest.models.PostTopicNameRequest;
 import com.microsoft.embeddedsocial.autorest.models.PostTopicRequest;
 import com.microsoft.embeddedsocial.autorest.models.PostTopicResponse;
@@ -67,47 +67,47 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      */
     interface TopicsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/topics")
+        @GET("v0.7/topics")
         Call<ResponseBody> getTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.6/topics")
+        @POST("v0.7/topics")
         Call<ResponseBody> postTopic(@Body PostTopicRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/topics/{topicHandle}")
+        @GET("v0.7/topics/{topicHandle}")
         Call<ResponseBody> getTopic(@Path("topicHandle") String topicHandle, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @PUT("v0.6/topics/{topicHandle}")
+        @PUT("v0.7/topics/{topicHandle}")
         Call<ResponseBody> putTopic(@Path("topicHandle") String topicHandle, @Body PutTopicRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.6/topics/{topicHandle}", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.7/topics/{topicHandle}", method = "DELETE", hasBody = true)
         Call<ResponseBody> deleteTopic(@Path("topicHandle") String topicHandle, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/topics/popular/{timeRange}")
+        @GET("v0.7/topics/popular/{timeRange}")
         Call<ResponseBody> getPopularTopics(@Path("timeRange") TimeRange timeRange, @Query("cursor") Integer cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/topics/featured")
+        @GET("v0.7/topics/featured")
         Call<ResponseBody> getFeaturedTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.6/topics/names")
+        @POST("v0.7/topics/names")
         Call<ResponseBody> postTopicName(@Body PostTopicNameRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/topics/names/{topicName}")
-        Call<ResponseBody> getTopicName(@Path("topicName") String topicName, @Query("publisherType") PublisherType publisherType, @Header("Authorization") String authorization);
+        @GET("v0.7/topics/names/{topicName}")
+        Call<ResponseBody> getTopicByName(@Path("topicName") String topicName, @Query("publisherType") PublisherType publisherType, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @PUT("v0.6/topics/names/{topicName}")
+        @PUT("v0.7/topics/names/{topicName}")
         Call<ResponseBody> putTopicName(@Path("topicName") String topicName, @Body PutTopicNameRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.6/topics/names/{topicName}", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.7/topics/names/{topicName}", method = "DELETE", hasBody = true)
         Call<ResponseBody> deleteTopicName(@Path("topicName") String topicName, @Body DeleteTopicNameRequest request, @Header("Authorization") String authorization);
 
     }
@@ -592,7 +592,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
     }
 
     /**
-     * Get popular topics today.
+     * Get popular topics for a time range.
      *
      * @param timeRange Time range. Possible values include: 'Today', 'ThisWeek', 'ThisMonth', 'AllTime'
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
@@ -622,7 +622,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
     }
 
     /**
-     * Get popular topics today.
+     * Get popular topics for a time range.
      *
      * @param timeRange Time range. Possible values include: 'Today', 'ThisWeek', 'ThisMonth', 'AllTime'
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
@@ -667,7 +667,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
     }
 
     /**
-     * Get popular topics today.
+     * Get popular topics for a time range.
      *
      * @param timeRange Time range. Possible values include: 'Today', 'ThisWeek', 'ThisMonth', 'AllTime'
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
@@ -697,7 +697,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
     }
 
     /**
-     * Get popular topics today.
+     * Get popular topics for a time range.
      *
      * @param timeRange Time range. Possible values include: 'Today', 'ThisWeek', 'ThisMonth', 'AllTime'
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
@@ -975,7 +975,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
     }
 
     /**
-     * Get a topic name.
+     * Get a topic by topic name.
      *
      * @param topicName Topic name
      * @param publisherType Publisher type. Possible values include: 'User', 'App'
@@ -990,9 +990,9 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * @throws ServiceException exception thrown from REST call
      * @throws IOException exception thrown from serialization/deserialization
      * @throws IllegalArgumentException exception thrown from invalid parameters
-     * @return the GetTopicNameResponse object wrapped in {@link ServiceResponse} if successful.
+     * @return the GetTopicByNameResponse object wrapped in {@link ServiceResponse} if successful.
      */
-    public ServiceResponse<GetTopicNameResponse> getTopicName(String topicName, PublisherType publisherType, String authorization) throws ServiceException, IOException, IllegalArgumentException {
+    public ServiceResponse<GetTopicByNameResponse> getTopicByName(String topicName, PublisherType publisherType, String authorization) throws ServiceException, IOException, IllegalArgumentException {
         if (topicName == null) {
             throw new IllegalArgumentException("Parameter topicName is required and cannot be null.");
         }
@@ -1002,12 +1002,12 @@ public final class TopicsOperationsImpl implements TopicsOperations {
         if (authorization == null) {
             throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
         }
-        Call<ResponseBody> call = service.getTopicName(topicName, publisherType, authorization);
-        return getTopicNameDelegate(call.execute());
+        Call<ResponseBody> call = service.getTopicByName(topicName, publisherType, authorization);
+        return getTopicByNameDelegate(call.execute());
     }
 
     /**
-     * Get a topic name.
+     * Get a topic by topic name.
      *
      * @param topicName Topic name
      * @param publisherType Publisher type. Possible values include: 'User', 'App'
@@ -1023,7 +1023,7 @@ public final class TopicsOperationsImpl implements TopicsOperations {
      * @throws IllegalArgumentException thrown if callback is null
      * @return the {@link Call} object
      */
-    public ServiceCall getTopicNameAsync(String topicName, PublisherType publisherType, String authorization, final ServiceCallback<GetTopicNameResponse> serviceCallback) throws IllegalArgumentException {
+    public ServiceCall getTopicByNameAsync(String topicName, PublisherType publisherType, String authorization, final ServiceCallback<GetTopicByNameResponse> serviceCallback) throws IllegalArgumentException {
         if (serviceCallback == null) {
             throw new IllegalArgumentException("ServiceCallback is required for async calls.");
         }
@@ -1039,13 +1039,13 @@ public final class TopicsOperationsImpl implements TopicsOperations {
             serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
             return null;
         }
-        Call<ResponseBody> call = service.getTopicName(topicName, publisherType, authorization);
+        Call<ResponseBody> call = service.getTopicByName(topicName, publisherType, authorization);
         final ServiceCall serviceCall = new ServiceCall(call);
-        call.enqueue(new ServiceResponseCallback<GetTopicNameResponse>(serviceCallback) {
+        call.enqueue(new ServiceResponseCallback<GetTopicByNameResponse>(serviceCallback) {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 try {
-                    serviceCallback.success(getTopicNameDelegate(response));
+                    serviceCallback.success(getTopicByNameDelegate(response));
                 } catch (ServiceException | IOException exception) {
                     serviceCallback.failure(exception);
                 }
@@ -1054,9 +1054,9 @@ public final class TopicsOperationsImpl implements TopicsOperations {
         return serviceCall;
     }
 
-    private ServiceResponse<GetTopicNameResponse> getTopicNameDelegate(Response<ResponseBody> response) throws ServiceException, IOException, IllegalArgumentException {
-        return new ServiceResponseBuilder<GetTopicNameResponse, ServiceException>(this.client.getMapperAdapter())
-                .register(200, new TypeToken<GetTopicNameResponse>() { }.getType())
+    private ServiceResponse<GetTopicByNameResponse> getTopicByNameDelegate(Response<ResponseBody> response) throws ServiceException, IOException, IllegalArgumentException {
+        return new ServiceResponseBuilder<GetTopicByNameResponse, ServiceException>(this.client.getMapperAdapter())
+                .register(200, new TypeToken<GetTopicByNameResponse>() { }.getType())
                 .register(401, new TypeToken<Void>() { }.getType())
                 .register(404, new TypeToken<Void>() { }.getType())
                 .register(501, new TypeToken<Void>() { }.getType())

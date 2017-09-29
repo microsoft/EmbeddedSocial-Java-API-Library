@@ -57,11 +57,11 @@ public final class CommentRepliesOperationsImpl implements CommentRepliesOperati
      */
     interface CommentRepliesService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/comments/{commentHandle}/replies")
+        @GET("v0.7/comments/{commentHandle}/replies")
         Call<ResponseBody> getReplies(@Path("commentHandle") String commentHandle, @Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.6/comments/{commentHandle}/replies")
+        @POST("v0.7/comments/{commentHandle}/replies")
         Call<ResponseBody> postReply(@Path("commentHandle") String commentHandle, @Body PostReplyRequest request, @Header("Authorization") String authorization);
 
     }

@@ -12,6 +12,7 @@ import com.microsoft.embeddedsocial.autorest.models.FeedResponseTopicView;
 import com.microsoft.embeddedsocial.autorest.models.FeedResponseUserCompactView;
 import com.microsoft.embeddedsocial.autorest.models.PostFollowingTopicRequest;
 import com.microsoft.embeddedsocial.autorest.models.PostFollowingUserRequest;
+import com.microsoft.embeddedsocial.autorest.models.UserCompactView;
 import com.microsoft.rest.ServiceCall;
 import com.microsoft.rest.ServiceCallback;
 import com.microsoft.rest.ServiceException;
@@ -20,6 +21,7 @@ import com.microsoft.rest.ServiceResponseBuilder;
 import com.microsoft.rest.ServiceResponseCallback;
 import com.microsoft.rest.Validator;
 import java.io.IOException;
+import java.util.List;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -60,40 +62,44 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
      */
     interface MyFollowingService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/users/me/following/users")
+        @GET("v0.7/users/me/following/users")
         Call<ResponseBody> getFollowingUsers(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.6/users/me/following/users")
+        @POST("v0.7/users/me/following/users")
         Call<ResponseBody> postFollowingUser(@Body PostFollowingUserRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/users/me/following/topics")
+        @GET("v0.7/users/me/following/topics")
         Call<ResponseBody> getFollowingTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.6/users/me/following/topics")
+        @POST("v0.7/users/me/following/topics")
         Call<ResponseBody> postFollowingTopic(@Body PostFollowingTopicRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.6/users/me/following/users/{userHandle}", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.7/users/me/following/users/{userHandle}", method = "DELETE", hasBody = true)
         Call<ResponseBody> deleteFollowingUser(@Path("userHandle") String userHandle, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.6/users/me/following/topics/{topicHandle}", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.7/users/me/following/topics/{topicHandle}", method = "DELETE", hasBody = true)
         Call<ResponseBody> deleteFollowingTopic(@Path("topicHandle") String topicHandle, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.6/users/me/following/combined/{topicHandle}", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.7/users/me/following/combined/{topicHandle}", method = "DELETE", hasBody = true)
         Call<ResponseBody> deleteTopicFromCombinedFollowingFeed(@Path("topicHandle") String topicHandle, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/users/me/following/combined")
+        @GET("v0.7/users/me/following/combined")
         Call<ResponseBody> getTopics(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/users/me/following/activities")
+        @GET("v0.7/users/me/following/activities")
         Call<ResponseBody> getActivities(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
+
+        @Headers("Content-Type: application/json; charset=utf-8")
+        @GET("v0.7/users/me/following/suggestions/users")
+        Call<ResponseBody> getSuggestionsUsers(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
     }
 
@@ -582,7 +588,7 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
      *             none of their future topics will be added to that feed.
      *             Their past and future activities will no longer appear in my following activities feed.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of following user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -614,7 +620,7 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
      *             none of their future topics will be added to that feed.
      *             Their past and future activities will no longer appear in my following activities feed.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of following user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -670,7 +676,7 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
      * After I unfollow a topic, that topic will no longer appear on my following topics feed.
      *             The past and future activities on that topic will no longer appear in my following activities feed.
      *
-     * @param topicHandle Topic handle
+     * @param topicHandle Handle of following topic
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -700,7 +706,7 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
      * After I unfollow a topic, that topic will no longer appear on my following topics feed.
      *             The past and future activities on that topic will no longer appear in my following activities feed.
      *
-     * @param topicHandle Topic handle
+     * @param topicHandle Handle of following topic
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -756,7 +762,7 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
      * My combined following topics feed is a feed of topics I am explicitly following, combined with topics created by all users
      *             that I am following.  This call will remove the specified topic from that feed.
      *
-     * @param topicHandle Topic handle
+     * @param topicHandle Handle of following topic
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -786,7 +792,7 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
      * My combined following topics feed is a feed of topics I am explicitly following, combined with topics created by all users
      *             that I am following.  This call will remove the specified topic from that feed.
      *
-     * @param topicHandle Topic handle
+     * @param topicHandle Handle of following topic
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -1219,6 +1225,179 @@ public final class MyFollowingOperationsImpl implements MyFollowingOperations {
                 .register(400, new TypeToken<Void>() { }.getType())
                 .register(401, new TypeToken<Void>() { }.getType())
                 .register(500, new TypeToken<Void>() { }.getType())
+                .build(response);
+    }
+
+    /**
+     * Get my suggestions of users to follow.
+     * This call uses the token from the Authorization header to determine the type of suggestions to provide.
+     *             In particular, the token determines which third-party to contact to obtain a list of suggested users,
+     *             such as friends (for Facebook), following users (for Twitter), and contacts (for Google and Microsoft).
+     *             We check each retrieved user to see whether they are registered with Embedded Social (this is done by checking
+     *             whether the user appears as a linked account in any Embedded Social profile).
+     *             Note that passing a token without the appropiate scopes will prevent Embedded Social from obtaining a list
+     *             of suggested users.
+     *             Support for input parameters 'cursor' and 'limit' is not implemented in the current API release.
+     *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the List&lt;UserCompactView&gt; object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<List<UserCompactView>> getSuggestionsUsers(String authorization) throws ServiceException, IOException, IllegalArgumentException {
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        final String cursor = null;
+        final Integer limit = null;
+        Call<ResponseBody> call = service.getSuggestionsUsers(cursor, limit, authorization);
+        return getSuggestionsUsersDelegate(call.execute());
+    }
+
+    /**
+     * Get my suggestions of users to follow.
+     * This call uses the token from the Authorization header to determine the type of suggestions to provide.
+     *             In particular, the token determines which third-party to contact to obtain a list of suggested users,
+     *             such as friends (for Facebook), following users (for Twitter), and contacts (for Google and Microsoft).
+     *             We check each retrieved user to see whether they are registered with Embedded Social (this is done by checking
+     *             whether the user appears as a linked account in any Embedded Social profile).
+     *             Note that passing a token without the appropiate scopes will prevent Embedded Social from obtaining a list
+     *             of suggested users.
+     *             Support for input parameters 'cursor' and 'limit' is not implemented in the current API release.
+     *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getSuggestionsUsersAsync(String authorization, final ServiceCallback<List<UserCompactView>> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        final String cursor = null;
+        final Integer limit = null;
+        Call<ResponseBody> call = service.getSuggestionsUsers(cursor, limit, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<List<UserCompactView>>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getSuggestionsUsersDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    /**
+     * Get my suggestions of users to follow.
+     * This call uses the token from the Authorization header to determine the type of suggestions to provide.
+     *             In particular, the token determines which third-party to contact to obtain a list of suggested users,
+     *             such as friends (for Facebook), following users (for Twitter), and contacts (for Google and Microsoft).
+     *             We check each retrieved user to see whether they are registered with Embedded Social (this is done by checking
+     *             whether the user appears as a linked account in any Embedded Social profile).
+     *             Note that passing a token without the appropiate scopes will prevent Embedded Social from obtaining a list
+     *             of suggested users.
+     *             Support for input parameters 'cursor' and 'limit' is not implemented in the current API release.
+     *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
+     * @param cursor Current read cursor
+     * @param limit Number of users compact views to return
+     * @throws ServiceException exception thrown from REST call
+     * @throws IOException exception thrown from serialization/deserialization
+     * @throws IllegalArgumentException exception thrown from invalid parameters
+     * @return the List&lt;UserCompactView&gt; object wrapped in {@link ServiceResponse} if successful.
+     */
+    public ServiceResponse<List<UserCompactView>> getSuggestionsUsers(String authorization, String cursor, Integer limit) throws ServiceException, IOException, IllegalArgumentException {
+        if (authorization == null) {
+            throw new IllegalArgumentException("Parameter authorization is required and cannot be null.");
+        }
+        Call<ResponseBody> call = service.getSuggestionsUsers(cursor, limit, authorization);
+        return getSuggestionsUsersDelegate(call.execute());
+    }
+
+    /**
+     * Get my suggestions of users to follow.
+     * This call uses the token from the Authorization header to determine the type of suggestions to provide.
+     *             In particular, the token determines which third-party to contact to obtain a list of suggested users,
+     *             such as friends (for Facebook), following users (for Twitter), and contacts (for Google and Microsoft).
+     *             We check each retrieved user to see whether they are registered with Embedded Social (this is done by checking
+     *             whether the user appears as a linked account in any Embedded Social profile).
+     *             Note that passing a token without the appropiate scopes will prevent Embedded Social from obtaining a list
+     *             of suggested users.
+     *             Support for input parameters 'cursor' and 'limit' is not implemented in the current API release.
+     *
+     * @param authorization Format is: "Scheme CredentialsList". Possible values are:
+     - Anon AK=AppKey
+     - SocialPlus TK=SessionToken
+     - Facebook AK=AppKey|TK=AccessToken
+     - Google AK=AppKey|TK=AccessToken
+     - Twitter AK=AppKey|RT=RequestToken|TK=AccessToken
+     - Microsoft AK=AppKey|TK=AccessToken
+     - AADS2S AK=AppKey|[UH=UserHandle]|TK=AADToken
+     * @param cursor Current read cursor
+     * @param limit Number of users compact views to return
+     * @param serviceCallback the async ServiceCallback to handle successful and failed responses.
+     * @throws IllegalArgumentException thrown if callback is null
+     * @return the {@link Call} object
+     */
+    public ServiceCall getSuggestionsUsersAsync(String authorization, String cursor, Integer limit, final ServiceCallback<List<UserCompactView>> serviceCallback) throws IllegalArgumentException {
+        if (serviceCallback == null) {
+            throw new IllegalArgumentException("ServiceCallback is required for async calls.");
+        }
+        if (authorization == null) {
+            serviceCallback.failure(new IllegalArgumentException("Parameter authorization is required and cannot be null."));
+            return null;
+        }
+        Call<ResponseBody> call = service.getSuggestionsUsers(cursor, limit, authorization);
+        final ServiceCall serviceCall = new ServiceCall(call);
+        call.enqueue(new ServiceResponseCallback<List<UserCompactView>>(serviceCallback) {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                try {
+                    serviceCallback.success(getSuggestionsUsersDelegate(response));
+                } catch (ServiceException | IOException exception) {
+                    serviceCallback.failure(exception);
+                }
+            }
+        });
+        return serviceCall;
+    }
+
+    private ServiceResponse<List<UserCompactView>> getSuggestionsUsersDelegate(Response<ResponseBody> response) throws ServiceException, IOException, IllegalArgumentException {
+        return new ServiceResponseBuilder<List<UserCompactView>, ServiceException>(this.client.getMapperAdapter())
+                .register(200, new TypeToken<List<UserCompactView>>() { }.getType())
+                .register(400, new TypeToken<Void>() { }.getType())
+                .register(500, new TypeToken<Void>() { }.getType())
+                .register(501, new TypeToken<Void>() { }.getType())
                 .build(response);
     }
 

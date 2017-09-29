@@ -57,15 +57,15 @@ public final class MyPinsOperationsImpl implements MyPinsOperations {
      */
     interface MyPinsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/users/me/pins")
+        @GET("v0.7/users/me/pins")
         Call<ResponseBody> getPins(@Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.6/users/me/pins")
+        @POST("v0.7/users/me/pins")
         Call<ResponseBody> postPin(@Body PostPinRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.6/users/me/pins/{topicHandle}", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.7/users/me/pins/{topicHandle}", method = "DELETE", hasBody = true)
         Call<ResponseBody> deletePin(@Path("topicHandle") String topicHandle, @Header("Authorization") String authorization);
 
     }
@@ -298,7 +298,7 @@ public final class MyPinsOperationsImpl implements MyPinsOperations {
     /**
      * Unpin a topic.
      *
-     * @param topicHandle Topic handle
+     * @param topicHandle Handle of pinned topic
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -326,7 +326,7 @@ public final class MyPinsOperationsImpl implements MyPinsOperations {
     /**
      * Unpin a topic.
      *
-     * @param topicHandle Topic handle
+     * @param topicHandle Handle of pinned topic
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken

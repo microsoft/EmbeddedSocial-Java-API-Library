@@ -52,7 +52,7 @@ public final class UserFollowersOperationsImpl implements UserFollowersOperation
      */
     interface UserFollowersService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/users/{userHandle}/followers")
+        @GET("v0.7/users/{userHandle}/followers")
         Call<ResponseBody> getFollowers(@Path("userHandle") String userHandle, @Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
     }
@@ -60,7 +60,7 @@ public final class UserFollowersOperationsImpl implements UserFollowersOperation
     /**
      * Get followers of a user.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -90,7 +90,7 @@ public final class UserFollowersOperationsImpl implements UserFollowersOperation
     /**
      * Get followers of a user.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -135,7 +135,7 @@ public final class UserFollowersOperationsImpl implements UserFollowersOperation
     /**
      * Get followers of a user.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken
@@ -165,7 +165,7 @@ public final class UserFollowersOperationsImpl implements UserFollowersOperation
     /**
      * Get followers of a user.
      *
-     * @param userHandle User handle
+     * @param userHandle Handle of queried user
      * @param authorization Format is: "Scheme CredentialsList". Possible values are:
      - Anon AK=AppKey
      - SocialPlus TK=SessionToken

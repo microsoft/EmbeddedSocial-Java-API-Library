@@ -54,15 +54,15 @@ public final class CommentLikesOperationsImpl implements CommentLikesOperations 
      */
     interface CommentLikesService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/comments/{commentHandle}/likes")
+        @GET("v0.7/comments/{commentHandle}/likes")
         Call<ResponseBody> getLikes(@Path("commentHandle") String commentHandle, @Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.6/comments/{commentHandle}/likes")
+        @POST("v0.7/comments/{commentHandle}/likes")
         Call<ResponseBody> postLike(@Path("commentHandle") String commentHandle, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.6/comments/{commentHandle}/likes/me", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.7/comments/{commentHandle}/likes/me", method = "DELETE", hasBody = true)
         Call<ResponseBody> deleteLike(@Path("commentHandle") String commentHandle, @Header("Authorization") String authorization);
 
     }

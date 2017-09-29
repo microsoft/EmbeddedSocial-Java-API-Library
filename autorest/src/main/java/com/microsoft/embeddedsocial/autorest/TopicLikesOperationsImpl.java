@@ -54,15 +54,15 @@ public final class TopicLikesOperationsImpl implements TopicLikesOperations {
      */
     interface TopicLikesService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/topics/{topicHandle}/likes")
+        @GET("v0.7/topics/{topicHandle}/likes")
         Call<ResponseBody> getLikes(@Path("topicHandle") String topicHandle, @Query("cursor") String cursor, @Query("limit") Integer limit, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.6/topics/{topicHandle}/likes")
+        @POST("v0.7/topics/{topicHandle}/likes")
         Call<ResponseBody> postLike(@Path("topicHandle") String topicHandle, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.6/topics/{topicHandle}/likes/me", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.7/topics/{topicHandle}/likes/me", method = "DELETE", hasBody = true)
         Call<ResponseBody> deleteLike(@Path("topicHandle") String topicHandle, @Header("Authorization") String authorization);
 
     }

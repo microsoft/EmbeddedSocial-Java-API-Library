@@ -51,11 +51,11 @@ public final class HashtagsOperationsImpl implements HashtagsOperations {
      */
     interface HashtagsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/hashtags/trending")
+        @GET("v0.7/hashtags/trending")
         Call<ResponseBody> getTrendingHashtags(@Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/hashtags/autocomplete")
+        @GET("v0.7/hashtags/autocomplete")
         Call<ResponseBody> getAutocompletedHashtags(@Query("query") String query, @Header("Authorization") String authorization);
 
     }

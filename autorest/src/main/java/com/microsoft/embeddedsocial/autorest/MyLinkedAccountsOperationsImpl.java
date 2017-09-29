@@ -58,15 +58,15 @@ public final class MyLinkedAccountsOperationsImpl implements MyLinkedAccountsOpe
      */
     interface MyLinkedAccountsService {
         @Headers("Content-Type: application/json; charset=utf-8")
-        @GET("v0.6/users/me/linked_accounts")
+        @GET("v0.7/users/me/linked_accounts")
         Call<ResponseBody> getLinkedAccounts(@Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @POST("v0.6/users/me/linked_accounts")
+        @POST("v0.7/users/me/linked_accounts")
         Call<ResponseBody> postLinkedAccount(@Body PostLinkedAccountRequest request, @Header("Authorization") String authorization);
 
         @Headers("Content-Type: application/json; charset=utf-8")
-        @HTTP(path = "v0.6/users/me/linked_accounts/{identityProvider}", method = "DELETE", hasBody = true)
+        @HTTP(path = "v0.7/users/me/linked_accounts/{identityProvider}", method = "DELETE", hasBody = true)
         Call<ResponseBody> deleteLinkedAccount(@Path("identityProvider") IdentityProvider identityProvider, @Header("Authorization") String authorization);
 
     }
