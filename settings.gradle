@@ -1,1 +1,1 @@
-include ':autorest', ':sampleapp'
+include ':autorest', ':sample'
