@@ -1,7 +1,5 @@
 package com.microsoft.test.embeddedsocial;
 
-import android.text.method.ReplacementTransformationMethod;
-
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -14,8 +12,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SyncExample {
 
-    public OkHttpClient.Builder httpClient;
-    public Retrofit retrofit;
+    public final OkHttpClient.Builder httpClient;
+    public final Retrofit retrofit;
 
     // Initializes an http client and retrofit
     public SyncExample(String ESUrl)
