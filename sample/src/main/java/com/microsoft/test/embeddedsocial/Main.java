@@ -5,9 +5,11 @@ package com.microsoft.test.embeddedsocial;
  */
 
 public class Main {
-    public static SyncExample syncExample = new SyncExample();
+    // Url to Embedded Social instance (use PPE for this example)
+    private final static String ESUrl = "https://ppe.embeddedsocial.microsoft.com";
 
     public static void main(String[] args) {
+        SyncExample syncExample = new SyncExample(ESUrl);
 
         // syncExample makes single synchronous call
         syncExample.run();
