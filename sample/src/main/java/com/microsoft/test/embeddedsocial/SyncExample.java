@@ -1,5 +1,12 @@
 package com.microsoft.test.embeddedsocial;
 
+import com.microsoft.embeddedsocial.autorest.BuildsOperationsImpl;
+import com.microsoft.embeddedsocial.autorest.EmbeddedSocialClientImpl;
+import com.microsoft.embeddedsocial.autorest.models.BuildsCurrentResponse;
+import com.microsoft.rest.ServiceResponse;
+
+import java.io.IOException;
+
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -12,10 +19,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SyncExample {
 
+    // State needed for the autorest library
+    public final EmbeddedSocialClientImpl esClient;
     public final OkHttpClient.Builder httpClient;
     public final Retrofit retrofit;
 
-    // Initializes an http client and retrofit
+    // State to make the synchronous getBuildsCurrent call
+    public final BuildsOperationsImpl buildsOperations;
+
+    // Initializes an http client, retrofit, and an ES client for autorest
     public SyncExample(String ESUrl)
     {
         httpClient = new OkHttpClient.Builder();
@@ -24,9 +36,14 @@ public class SyncExample {
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(httpClient.build())
                 .build();
+        esClient = new EmbeddedSocialClientImpl(ESUrl);
+
+        buildsOperations = new BuildsOperationsImpl(retrofit, esClient);
     }
 
-    public  void run() {
+    // Makes a single call to getBuildsCurrent
+    public  void run() throws IOException {
+        ServiceResponse<BuildsCurrentResponse> buildsCurrent = buildsOperations.getBuildsCurrent();
         System.out.println("Stefan rules.");
     }
 }
