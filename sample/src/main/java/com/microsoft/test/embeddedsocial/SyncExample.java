@@ -42,8 +42,18 @@ public class SyncExample {
     }
 
     // Makes a single call to getBuildsCurrent
-    public  void run() throws IOException {
-        ServiceResponse<BuildsCurrentResponse> buildsCurrent = buildsOperations.getBuildsCurrent();
+    public  void run()  {
+        String apiVersion = "N/A";
+
+        try {
+            BuildsCurrentResponse buildsCurrent = buildsOperations.getBuildsCurrent().getBody();
+            apiVersion = buildsCurrent.getServiceApiVersion();
+        }
+        catch(Exception e)
+        {
+            System.err.println("Call to Embedded Social failed with exception: " +  e.getMessage());
+        }
+
         System.out.println("Stefan rules.");
     }
 }
