@@ -54,6 +54,6 @@ public class SyncExample {
             System.err.println("Call to Embedded Social failed with exception: " +  e.getMessage());
         }
 
-        System.out.println("Stefan rules.");
+        System.out.println("Synchronous call to ES completed. Returned API version: " + apiVersion);
     }
 }
