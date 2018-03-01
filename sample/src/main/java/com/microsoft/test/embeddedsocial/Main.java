@@ -10,8 +10,12 @@ public class Main {
 
     public static void main(String[] args) {
         SyncExample syncExample = new SyncExample(ESUrl);
+        AsyncExample asyncExample = new AsyncExample(ESUrl);
 
         // syncExample makes single synchronous call
         syncExample.run();
+
+        // asyncExample makes single asynchronous call
+        asyncExample.run();
     }
 }
