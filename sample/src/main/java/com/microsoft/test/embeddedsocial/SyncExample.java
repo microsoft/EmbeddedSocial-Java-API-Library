@@ -1,15 +1,8 @@
 package com.microsoft.test.embeddedsocial;
 
-import com.microsoft.embeddedsocial.autorest.BuildsOperationsImpl;
+import com.microsoft.embeddedsocial.autorest.BuildsOperations;
 import com.microsoft.embeddedsocial.autorest.EmbeddedSocialClientImpl;
 import com.microsoft.embeddedsocial.autorest.models.BuildsCurrentResponse;
-import com.microsoft.rest.ServiceResponse;
-
-import java.io.IOException;
-
-import okhttp3.OkHttpClient;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by ssaroiu on 2/28/2018.
@@ -19,21 +12,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SyncExample {
 
-    // State to make the synchronous getBuildsCurrent call
-    private BuildsOperationsImpl buildsOperations;
+    // State to make the asynchronous getBuildsCurrent call
+    private BuildsOperations buildsOperations;
 
     // Initializes an http client, retrofit, and an ES client for autorest
     public SyncExample(String ESUrl)
     {
-        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(ESUrl)
-                .addConverterFactory(GsonConverterFactory.create())
-                .client(httpClient.build())
-                .build();
         EmbeddedSocialClientImpl esClient = new EmbeddedSocialClientImpl(ESUrl);
-
-        buildsOperations = new BuildsOperationsImpl(retrofit, esClient);
+        buildsOperations = esClient.getBuildsOperations();
     }
 
     // Makes a single synchronous call to getBuildsCurrent
