@@ -19,29 +19,24 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SyncExample {
 
-    // State needed for the autorest library
-    public final EmbeddedSocialClientImpl esClient;
-    public final OkHttpClient.Builder httpClient;
-    public final Retrofit retrofit;
-
     // State to make the synchronous getBuildsCurrent call
-    public final BuildsOperationsImpl buildsOperations;
+    private BuildsOperationsImpl buildsOperations;
 
     // Initializes an http client, retrofit, and an ES client for autorest
     public SyncExample(String ESUrl)
     {
-        httpClient = new OkHttpClient.Builder();
-        retrofit = new Retrofit.Builder()
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+        Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(ESUrl)
                 .addConverterFactory(GsonConverterFactory.create())
                 .client(httpClient.build())
                 .build();
-        esClient = new EmbeddedSocialClientImpl(ESUrl);
+        EmbeddedSocialClientImpl esClient = new EmbeddedSocialClientImpl(ESUrl);
 
         buildsOperations = new BuildsOperationsImpl(retrofit, esClient);
     }
 
-    // Makes a single call to getBuildsCurrent
+    // Makes a single synchronous call to getBuildsCurrent
     public  void run()  {
         String apiVersion = "N/A";
 
