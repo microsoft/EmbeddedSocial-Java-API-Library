@@ -23,7 +23,7 @@ public class SyncExample {
     }
 
     // Makes a single synchronous call to getBuildsCurrent
-    public  void run()  {
+    public void run()  {
         String apiVersion = "N/A";
 
         try {
