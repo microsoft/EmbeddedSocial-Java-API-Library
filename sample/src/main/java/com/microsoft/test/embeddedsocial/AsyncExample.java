@@ -28,18 +28,13 @@ public class AsyncExample extends ServiceCallback<BuildsCurrentResponse> {
 
     // Makes a single asynchronous call to getBuildsCurrent
     public  void run()  {
-        String apiVersion = "N/A";
-
         try {
-            BuildsCurrentResponse buildsCurrent = buildsOperations.getBuildsCurrent().getBody();
-            apiVersion = buildsCurrent.getServiceApiVersion();
+            buildsOperations.getBuildsCurrentAsync(this);
         }
         catch(Exception e)
         {
             System.err.println("Call to Embedded Social failed with exception: " +  e.getMessage());
         }
-
-        System.out.println("Synchronous call to ES completed. Returned API version: " + apiVersion);
     }
 
     // By extending the ServiceCallback abstract class, we must implement two new methods: failure and success
@@ -64,6 +59,6 @@ public class AsyncExample extends ServiceCallback<BuildsCurrentResponse> {
             System.err.println("Call to Embedded Social failed with exception: " +  e.getMessage());
         }
 
-        System.out.println("Synchronous call to ES completed. Returned API version: " + apiVersion);
+        System.out.println("Asynchronous call to ES completed. Returned API version: " + apiVersion);
     }
 }
