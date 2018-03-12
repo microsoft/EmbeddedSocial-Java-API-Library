@@ -40,31 +40,32 @@ public class AsyncExample {
             System.err.println("Call to Embedded Social failed with exception: " +  e.getMessage());
         }
     }
-}
 
-class AsyncExampleServiceCallback extends ServiceCallback<BuildsCurrentResponse> {
+    private class AsyncExampleServiceCallback extends ServiceCallback<BuildsCurrentResponse> {
 
-    // By extending the ServiceCallback abstract class, we must implement two new methods: failure and success
-    @Override
-    public void failure(Throwable t)
-    {
-        System.err.println("Call to Embedded Social failed with exception: " +  t.getMessage());
-    }
-
-    @Override
-    public void success(ServiceResponse<BuildsCurrentResponse> result)
-    {
-        String apiVersion = "N/A";
-
-        try {
-            BuildsCurrentResponse buildsCurrent = result.getBody();
-            apiVersion = buildsCurrent.getServiceApiVersion();
-        }
-        catch(Exception e)
+        // By extending the ServiceCallback abstract class, we must implement two new methods: failure and success
+        @Override
+        public void failure(Throwable t)
         {
-            System.err.println("Call to Embedded Social failed with exception: " +  e.getMessage());
+            System.err.println("Call to Embedded Social failed with exception: " +  t.getMessage());
         }
 
-        System.out.println("Asynchronous call to ES completed. Returned API version: " + apiVersion);
+        @Override
+        public void success(ServiceResponse<BuildsCurrentResponse> result)
+        {
+            String apiVersion = "N/A";
+
+            try {
+                BuildsCurrentResponse buildsCurrent = result.getBody();
+                apiVersion = buildsCurrent.getServiceApiVersion();
+            }
+            catch(Exception e)
+            {
+                System.err.println("Call to Embedded Social failed with exception: " +  e.getMessage());
+            }
+
+            System.out.println("Asynchronous call to ES completed. Returned API version: " + apiVersion);
+        }
     }
 }
+
