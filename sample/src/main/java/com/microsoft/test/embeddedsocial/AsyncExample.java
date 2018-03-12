@@ -11,10 +11,7 @@ import com.microsoft.rest.ServiceResponse;
  *
  * Simple example of making a single asynchronous call to ES
  */
-
-// Our approach is to make this example implement the service callback.
-// This is not the only approach -- you can have a separate class implementing the callback.
-public class AsyncExample extends ServiceCallback<BuildsCurrentResponse> {
+public class AsyncExample {
 
     // State to make the asynchronous getBuildsCurrent call
     private BuildsOperations buildsOperations;
@@ -28,17 +25,21 @@ public class AsyncExample extends ServiceCallback<BuildsCurrentResponse> {
 
     // Makes a single asynchronous call to getBuildsCurrent
     public  void run()  {
+        ServiceCallback<BuildsCurrentResponse> callback = new AsyncExampleServiceCallback();
+
         try {
-            buildsOperations.getBuildsCurrentAsync(this);
+            buildsOperations.getBuildsCurrentAsync(callback);
         }
         catch(Exception e)
         {
             System.err.println("Call to Embedded Social failed with exception: " +  e.getMessage());
         }
     }
+}
+
+class AsyncExampleServiceCallback extends ServiceCallback<BuildsCurrentResponse> {
 
     // By extending the ServiceCallback abstract class, we must implement two new methods: failure and success
-
     @Override
     public void failure(Throwable t)
     {
