@@ -16,15 +16,20 @@ public class AsyncExample {
     // State to make the asynchronous getBuildsCurrent call
     private BuildsOperations buildsOperations;
 
-    // Initializes an http client, retrofit, and an ES client for autorest
+    // Constructor creating a client using only the URL to the ES server
     public AsyncExample(String ESUrl)
     {
-        EmbeddedSocialClientImpl esClient = new EmbeddedSocialClientImpl(ESUrl);
+        this(new EmbeddedSocialClientImpl(ESUrl));
+    }
+
+    // Constructor receiving a pre-created client
+    public AsyncExample(EmbeddedSocialClientImpl esClient)
+    {
         buildsOperations = esClient.getBuildsOperations();
     }
 
     // Makes a single asynchronous call to getBuildsCurrent
-    public  void run()  {
+    public void run()  {
         ServiceCallback<BuildsCurrentResponse> callback = new AsyncExampleServiceCallback();
 
         try {
