@@ -29,14 +29,12 @@ import okio.Buffer;
 
 public final class EmbeddedSocialBatchedClientImpl {
     private final Object syncObject = new Object();
-    private final int batchSize;
     private final ArrayBlockingQueue<Request> queue;
     private final OkHttpClient.Builder okHttpClientBuilder;
     private final Retrofit.Builder retrofitBuilder;
     private final EmbeddedSocialClientImpl esClient;
 
     private EmbeddedSocialBatchedClientImpl(String ESUrl, int batchSize) {
-        this.batchSize = batchSize;
         this.queue = new ArrayBlockingQueue<Request>(batchSize);
 
         // Create an okhttp3 client with our own batched interceptor
@@ -47,26 +45,26 @@ public final class EmbeddedSocialBatchedClientImpl {
         retrofitBuilder = new Retrofit.Builder()
                 .baseUrl(ESUrl)
                 .client(okHttpClientBuilder.build());
-//                .addConverterFactory(GsonConverterFactory.create());
-
         esClient = new EmbeddedSocialClientImpl(ESUrl, okHttpClientBuilder, retrofitBuilder);
     }
 
     private Response addRequestToBatch(Request request) throws IOException {
         synchronized (syncObject) {
+            // Try adding the request to the queue
             if (!this.queue.offer(request)) {
-               throw new IllegalStateException("batch is already full (batchSize = " + batchSize + ")");
+               throw new IllegalStateException("batch is already full");
             }
 
             try {
-                // Calling wait() will block this thread until another thread
-                // calls notify() on the object.
+                // Calling wait() will block this thread until issueBatch calls notify() on the object.
                 syncObject.wait();
             } catch (InterruptedException e) {
                 // Happens if someone interrupts your thread. Convert this to an IOException.
                 throw new IOException(e.getMessage());
             }
         }
+
+        // Process the response....
 
         String contentType = "application/json; charset=utf-8";
         String body = "{\n" +
@@ -110,7 +108,7 @@ public final class EmbeddedSocialBatchedClientImpl {
     }
 
     public boolean isBatchReady() {
-        return (batchSize == queue.size());
+        return (queue.remainingCapacity() == 0);
     }
 
     public void issueBatch() throws InterruptedException, IOException {
@@ -119,10 +117,10 @@ public final class EmbeddedSocialBatchedClientImpl {
 
         synchronized (syncObject) {
             // Construct batch request
-            List<String> requests = new ArrayList<>(batchSize);
+            List<String> requests = new ArrayList<>(queue.size());
 
             // The body of the batch will be about 100 bytes * number of requests (aka batchSize)
-            StringBuilder batchBody = new StringBuilder(100 * batchSize);
+            StringBuilder batchBody = new StringBuilder(100 * queue.size());
 
             for (Request r : this.queue) {
                 String requestString = prepareReqPart(r);
