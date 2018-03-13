@@ -1,5 +1,7 @@
 package com.microsoft.embeddedsocial.autorest;
 
+import com.microsoft.rest.ServiceException;
+
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Collection;
@@ -33,8 +35,10 @@ public final class EmbeddedSocialBatchedClientImpl {
     private final OkHttpClient.Builder okHttpClientBuilder;
     private final Retrofit.Builder retrofitBuilder;
     private final EmbeddedSocialClientImpl esClient;
+    private final String ESUrl;
 
     private EmbeddedSocialBatchedClientImpl(String ESUrl, int batchSize) {
+        this.ESUrl = ESUrl;
         this.queue = new ArrayBlockingQueue<Request>(batchSize);
 
         // Create an okhttp3 client with our own batched interceptor
@@ -107,6 +111,63 @@ public final class EmbeddedSocialBatchedClientImpl {
         return reqString;
     }
 
+    private boolean processResponses(okhttp3.Response response) throws ServiceException, IOException {
+        String responseBody = response.body().string();
+        int actionNum = 0;
+        if (responseBody != null) {
+            String delimiter = responseBody.substring(0,responseBody.indexOf("\n")-1);
+            String[] responses = responseBody.split(delimiter);
+            for (String responsePart : responses) {
+                // ignore empty lines
+                if (responsePart.compareTo("") == 0) {
+                    continue;
+                }
+                // ignore the delimiter lines
+                if (responsePart.contains("--")) {
+                    continue;
+                }
+                // actually parse the individual response text (headers + body)
+                String[] payloadParts = responsePart.split("\r\n");
+                MediaType typ = null;
+                Response.Builder builder = new Response.Builder();
+                boolean bodyStart = false;
+                String bodyStr = "";
+                for (int j = 1; j < payloadParts.length; j++) {
+                    String part = payloadParts[j];
+                    if (part.compareTo("") == 0) {
+                        continue;
+                    }
+                    else if (part.contains(":") && !bodyStart) {
+                        if (part.contains("Content-Type")) {
+                            MediaType.parse(payloadParts[j]);
+                        }
+                        String[] headerParts = payloadParts[j].split(":");
+                        builder.addHeader(headerParts[0], headerParts[1]);
+                    }
+                    else if (part.contains("HTTP")) {
+                        String[] protoParts = part.split(" ");
+                        String code = protoParts[1];
+                        String msg = protoParts[2];
+                        builder.code(Integer.parseInt(code)).message(msg).protocol(Protocol.HTTP_1_1);
+                    }
+                    else {
+                        bodyStart = true;
+                        bodyStr += part;
+                    }
+                }
+                ResponseBody body = ResponseBody.create(typ, bodyStr);
+                System.out.println("RESPONSE: \n" + bodyStr);
+                Response resp = builder
+                        .body(body)
+                        .request(response.request())
+                        .build();
+                //actions.get(actionNum++).processResponse(resp);
+            }
+        }
+        return response.isSuccessful();
+    }
+
+
     public boolean isBatchReady() {
         return (queue.remainingCapacity() == 0);
     }
@@ -133,7 +194,7 @@ public final class EmbeddedSocialBatchedClientImpl {
             RequestBody reqBody = RequestBody.create(okhttp3.MediaType.parse("text; charset=utf-8"), batchBody.toString());
             Request req = new Request.Builder()
                     .addHeader("Content-Type", "multipart/mixed; boundary=" + boundary)
-                    .url(esClient.getBaseUrl() + "/batch")
+                    .url(this.ESUrl + "/batch")
                     .post(reqBody)
                     .build();
 
@@ -143,7 +204,12 @@ public final class EmbeddedSocialBatchedClientImpl {
             okhttp3.Call call = client.newCall(req);
 
             System.out.println("REQUEST: \n" + req.url() + "\n" + req.headers()  + "\n"+ buffer.readUtf8());
-            //processResponses(call.execute());
+            try {
+                processResponses(call.execute());
+            }
+            catch (ServiceException e) {
+                // Do nothing -- this exception should be thrown by the response parser not by us.
+            }
 
             syncObject.notify();
         }
