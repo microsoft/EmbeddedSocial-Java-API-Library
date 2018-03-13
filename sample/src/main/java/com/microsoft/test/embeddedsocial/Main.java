@@ -11,13 +11,13 @@ public class Main {
     public static void main(String[] args) {
         SyncExample syncExample = new SyncExample(ESUrl);
         AsyncExample asyncExample = new AsyncExample(ESUrl);
-        BatchedExample batchedExample = new BatchedExample(ESUrl);
+        BatchedExample batchedExample = new BatchedExample(ESUrl, 2);
 
         // syncExample makes single synchronous call
         syncExample.run();
 
         // batchedSyncExample makes single batched synchronous call
-        batchedExample.run(1);
+        batchedExample.run();
 
         // asyncExample makes single asynchronous call
         asyncExample.run();
