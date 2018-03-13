@@ -129,10 +129,55 @@ public final class EmbeddedSocialBatchedClientImpl {
         return multiFrag.toString();
     }
 
-    // Convert multipart fragment to response
-    private void convertMultiFragmentToResp(String multiFrag) throws IOException {
-        String boundary = multiFrag.substring(0, multiFrag.indexOf("\n") - 1);
-        String[] frags = multiFrag.split(boundary);
+    // Convert multipart fragment to response. Method's inputs are the fragment and its
+    // corresponding request.
+    private Response convertMultiFragmentToResp(String f, Request req) throws IOException {
+        // Extract the HTTP error code, content type, and the body of the response
+        String[] lines = f.split("\r\n");
+        int code = -1;
+        String contentType = "";
+        String respBody = "";
+        for (String l : lines) {
+            if (!respBody.isEmpty()) {
+                // If respBody is not empty, this line is part of the body
+                respBody += l;
+
+                // If the line is close curly bracket, we're done parsing the response
+                if (l.startsWith("}")) {
+                    break;
+                }
+            } else if (l.startsWith("{")) {
+                respBody += l;
+            } else if (l.startsWith("HTTP/1.1")) {
+                // Extract the code. Assume the line has format:
+                // "HTTP/1.1 code XXX
+                // The code sits in between the first space character and the second
+                int indexFirstSpaceChar = 8;
+                int indexSecondSpaceChar = l.indexOf(' ', indexFirstSpaceChar + 1);
+                String tmp = l.substring(indexFirstSpaceChar + 1, indexSecondSpaceChar);
+                code = Integer.parseInt(l.substring(indexFirstSpaceChar + 1, indexSecondSpaceChar));
+            } else if (l.startsWith("Content-Type:")) {
+                contentType = l;
+            }
+        }
+
+        // Build the corresponding response for this fragment
+        ResponseBody responseBody = ResponseBody.create(MediaType.parse(contentType), respBody);
+        Response.Builder responseBuilder = new Response.Builder();
+        return responseBuilder
+                .request(req)
+                .code(code)
+                .protocol(Protocol.HTTP_1_1)
+                .body(responseBody)
+                .build();
+    }
+
+    // Processes the response to the batch
+    private void processBatchResponse(Response batchResponse) throws IOException  {
+        String batchResponseBody = batchResponse.body().string();
+        String boundary = batchResponseBody.substring(0, batchResponseBody.indexOf("\n") - 1);
+
+        String[] frags = batchResponseBody.split(boundary);
         int fragIndex = 0;
         for (String f : frags) {
             // ignore empty fragments
@@ -144,112 +189,10 @@ public final class EmbeddedSocialBatchedClientImpl {
                 continue;
             }
 
-            // Extract the HTTP error code, content type, and the body of the response
-            String[] lines = f.split("\r\n");
-            int code = -1;
-            String contentType = "";
-            String respBody = "";
-            for (String l: lines) {
-                if (!respBody.isEmpty()) {
-                    // If respBody is not empty, this line is part of the body
-                    respBody += l;
-
-                    // If the line is close curly bracket, we're done parsing the response
-                    if (l.startsWith("}")) {
-                        break;
-                    }
-                }
-                else if (l.startsWith("{")) {
-                    respBody += l;
-                }
-                else if (l.startsWith("HTTP/1.1")) {
-                    // Extract the code. Assume the line has format:
-                    // "HTTP/1.1 code XXX
-                    // The code sits in between the first space character and the second
-                    int indexFirstSpaceChar = 8;
-                    int indexSecondSpaceChar = l.substring(indexFirstSpaceChar + 1).indexOf(' ');
-                    int lengthCode = indexSecondSpaceChar - indexFirstSpaceChar - 1;
-                    code = Integer.parseInt(l.substring(indexFirstSpaceChar + 1, lengthCode));
-                }
-                else if (l.startsWith("Content-Type:")) {
-                    contentType = l;
-                }
-            }
-
-            // Extract the corresponding request for this fragment
-            Request req = this.batchReqs[fragIndex];
-
-            // Build the corresponding response for this fragment
-            ResponseBody responseBody = ResponseBody.create(MediaType.parse(contentType), respBody);
-            Response.Builder responseBuilder = new Response.Builder();
-            Response resp = responseBuilder
-                    .request(req)
-                    .code(code)
-                    .protocol(Protocol.HTTP_1_1)
-                    .body(responseBody)
-                    .build();
-
-            this.batchResps[fragIndex] = resp;
+            this.batchResps[fragIndex] = convertMultiFragmentToResp(batchResponse.body().string());
             fragIndex += 1;
         }
     }
-
-    private boolean processResponses(okhttp3.Response response) throws ServiceException, IOException {
-        String responseBody = response.body().string();
-        int actionNum = 0;
-        if (responseBody != null) {
-            String delimiter = responseBody.substring(0,responseBody.indexOf("\n")-1);
-            String[] responses = responseBody.split(delimiter);
-            for (String responsePart : responses) {
-                // ignore empty lines
-                if (responsePart.compareTo("") == 0) {
-                    continue;
-                }
-                // ignore the delimiter lines
-                if (responsePart.contains("--")) {
-                    continue;
-                }
-                // actually parse the individual response text (headers + body)
-                String[] payloadParts = responsePart.split("\r\n");
-                MediaType typ = null;
-                Response.Builder builder = new Response.Builder();
-                boolean bodyStart = false;
-                String bodyStr = "";
-                for (int j = 1; j < payloadParts.length; j++) {
-                    String part = payloadParts[j];
-                    if (part.compareTo("") == 0) {
-                        continue;
-                    }
-                    else if (part.contains(":") && !bodyStart) {
-                        if (part.contains("Content-Type")) {
-                            MediaType.parse(payloadParts[j]);
-                        }
-                        String[] headerParts = payloadParts[j].split(":");
-                        builder.addHeader(headerParts[0], headerParts[1]);
-                    }
-                    else if (part.contains("HTTP")) {
-                        String[] protoParts = part.split(" ");
-                        String code = protoParts[1];
-                        String msg = protoParts[2];
-                        builder.code(Integer.parseInt(code)).message(msg).protocol(Protocol.HTTP_1_1);
-                    }
-                    else {
-                        bodyStart = true;
-                        bodyStr += part;
-                    }
-                }
-                ResponseBody body = ResponseBody.create(typ, bodyStr);
-                System.out.println("RESPONSE: \n" + bodyStr);
-                Response resp = builder
-                        .body(body)
-                        .request(response.request())
-                        .build();
-                //actions.get(actionNum++).processResponse(resp);
-            }
-        }
-        return response.isSuccessful();
-    }
-
 
     public boolean isBatchReady() {
         return (pendingRequests == batchSize);
@@ -279,9 +222,9 @@ public final class EmbeddedSocialBatchedClientImpl {
             okhttp3.Call call = batchClient.newCall(req);
 
             Response batchResponse = call.execute();
-//                processResponses(batchResponse);
-            convertMultiFragmentToResp(batchResponse.body().string());
+            processBatchResponse(batchResponse);
 
+            // Notify the individual interceptors to resume
             syncObject.notify();
         }
     }
