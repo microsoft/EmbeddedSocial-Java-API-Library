@@ -74,6 +74,7 @@ public final class EmbeddedSocialBatchedClientImpl {
     // Adds an individual request to a queue of requests to be batched
     private Response addRequestToBatchQueue(Request request) throws IOException {
         int requestIndex;
+        Response resp;
 
         synchronized (syncObject) {
             if (pendingRequests == batchSize) {
@@ -93,9 +94,11 @@ public final class EmbeddedSocialBatchedClientImpl {
                 // Happens if someone interrupts your thread. Convert this to an IOException.
                 throw new IOException(e.getMessage());
             }
+
+            resp = this.batchResps[requestIndex];
         }
 
-        return this.batchResps[requestIndex];
+        return resp;
     }
 
     // Converts request to a multipart fragment
