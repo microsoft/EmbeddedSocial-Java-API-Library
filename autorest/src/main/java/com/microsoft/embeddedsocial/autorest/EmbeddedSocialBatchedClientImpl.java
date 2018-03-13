@@ -27,38 +27,55 @@ import okio.Buffer;
 
 /**
  * Created by ssaroiu on 3/6/2018.
+ *
+ * This client implementation should be used for batching only. For regular non-batched requests
+ * use EmbeddedSocialClientImpl.
+ *
+ * This batched client implementation offers an esClient. Calls to esClient are not sent
+ * to the server. Instead, calls are intercepted and put on a queue of requests to be later batched.
+ * When the queue is full (the size of the queue is dictated by batchSize), a call to issueBatch
+ * should be made. This batch client parses the response to the batch and unblocks each individual
+ * esClient call with the corresponding response.
  */
 
 public final class EmbeddedSocialBatchedClientImpl {
-    private final Object syncObject = new Object();
-    private final ArrayBlockingQueue<Request> queue;
-    private final OkHttpClient.Builder okHttpClientBuilder;
-    private final Retrofit.Builder retrofitBuilder;
-    private final EmbeddedSocialClientImpl esClient;
     private final String ESUrl;
+    private final EmbeddedSocialClientImpl esClient;
+
+    // Queues of requests and responses
+    private final ArrayBlockingQueue<Request> batchReqQueue;
+    private final ArrayBlockingQueue<Response> batchRespQueue;
+    private final Object syncObject = new Object();
 
     private EmbeddedSocialBatchedClientImpl(String ESUrl, int batchSize) {
         this.ESUrl = ESUrl;
-        this.queue = new ArrayBlockingQueue<Request>(batchSize);
+        this.batchReqQueue = new ArrayBlockingQueue<Request>(batchSize);
+        this.batchRespQueue = new ArrayBlockingQueue<Response>(batchSize);
 
-        // Create an okhttp3 client with our own batched interceptor
+        // Create an okhttp3 client with our own batched interceptor. This interceptor
+        // allows us to block the outgoing call and queue it for later batching.
         BatchedInterceptor batchedInterceptor = new BatchedInterceptor(this);
-        okHttpClientBuilder = new OkHttpClient.Builder();
+        OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder();
         okHttpClientBuilder.addInterceptor(batchedInterceptor);
 
-        retrofitBuilder = new Retrofit.Builder()
+        Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
                 .baseUrl(ESUrl)
                 .client(okHttpClientBuilder.build());
+
+        // The ES client with a doctored interceptor is ready now
         esClient = new EmbeddedSocialClientImpl(ESUrl, okHttpClientBuilder, retrofitBuilder);
     }
 
-    private Response addRequestToBatch(Request request) throws IOException {
+    // Adds an individual request to a queue of requests to be batched
+    private Response addRequestToBatchQueue(Request request) throws IOException {
         synchronized (syncObject) {
             // Try adding the request to the queue
-            if (!this.queue.offer(request)) {
-               throw new IllegalStateException("batch is already full");
+            if (!this.batchReqQueue.offer(request)) {
+               throw new IllegalStateException("queue is already full");
             }
 
+            // Now that the request is in the queue, this interceptor must wait
+            // until issueBatch is called.
             try {
                 // Calling wait() will block this thread until issueBatch calls notify() on the object.
                 syncObject.wait();
@@ -89,26 +106,19 @@ public final class EmbeddedSocialBatchedClientImpl {
                 .build();
     }
 
-    private String prepareReqPart(Request req) throws IOException {
-        String headers = "Content-Type: application/http; msgtype=request";
-        String reqString = "";
-        if (req != null) {
-            String auth = req.headers().get("Authorization");
-            String url = req.url().encodedPath();
-            String host = req.url().host();
-            String method = req.method();
-            String protocol = req.isHttps() ? "HTTP/1.1" : "HTTP/1.1"; // TODO
-            String query = req.url().encodedQuery();
-            String body = "";
-            if (req.body() != null) {
-                final Buffer buffer = new Buffer();
-                req.body().writeTo(buffer);
-                body = buffer.readUtf8();
-            }
-            reqString = String.format("%s\r\n\r\n%s %s?%s %s\r\nHost: %s\r\nAuthorization: %s\r\nContent-Type: application/json\r\nAccept: application/json\r\n\r\n%s\r\n",
-                    headers, method, url, query, protocol, host, auth, body);
+    // Converts request to a multipart fragment
+    private String convertReqToMultiFragment(Request req) throws IOException {
+        StringBuilder multiFrag = new StringBuilder(100);
+        multiFrag.append("Content-Type: application/http; msgtype=request" + "\r\n\r\n");
+        multiFrag.append(req.method() + " " + req.url().encodedPath() + " HTTP/1.1\r\n");
+        multiFrag.append("Host: " + req.url().host() + "\r\n");
+        multiFrag.append("Authorization: " + req.headers().get("Authorization") + "\r\n");
+        multiFrag.append("Content-Type: application/json\r\nAccept: application/json\r\n\r\n");
+        if (req.body() != null) {
+            multiFrag.append(req.body());
         }
-        return reqString;
+        multiFrag.append("\r\n");
+        return multiFrag.toString();
     }
 
     private boolean processResponses(okhttp3.Response response) throws ServiceException, IOException {
@@ -169,27 +179,21 @@ public final class EmbeddedSocialBatchedClientImpl {
 
 
     public boolean isBatchReady() {
-        return (queue.remainingCapacity() == 0);
+        return (batchReqQueue.remainingCapacity() == 0);
     }
 
     public void issueBatch() throws InterruptedException, IOException {
-        String boundary = "batch_ebc";
-        String boundarysep = "--batch_ebc";
+        String boundary = "batch_" + java.util.UUID.randomUUID().toString();
 
         synchronized (syncObject) {
-            // Construct batch request
-            List<String> requests = new ArrayList<>(queue.size());
+            // The body of the batch will be about 100 bytes * number of requests
+            StringBuilder batchBody = new StringBuilder(100 * batchReqQueue.size());
 
-            // The body of the batch will be about 100 bytes * number of requests (aka batchSize)
-            StringBuilder batchBody = new StringBuilder(100 * queue.size());
-
-            for (Request r : this.queue) {
-                String requestString = prepareReqPart(r);
-                requests.add(requestString);
-                batchBody.append(boundarysep + "\r\n" + requestString + "\r\n");
+            for (Request r : this.batchReqQueue) {
+                String requestString = convertReqToMultiFragment(r);
+                batchBody.append("--" + boundary + "\r\n" + requestString + "\r\n");
             }
-
-            batchBody.append(boundarysep + "--\r\n");
+            batchBody.append("--" + boundary + "--\r\n");
 
             RequestBody reqBody = RequestBody.create(okhttp3.MediaType.parse("text; charset=utf-8"), batchBody.toString());
             Request req = new Request.Builder()
@@ -198,12 +202,9 @@ public final class EmbeddedSocialBatchedClientImpl {
                     .post(reqBody)
                     .build();
 
-            final Buffer buffer = new Buffer();
-            req.body().writeTo(buffer);
             OkHttpClient client = (new OkHttpClient.Builder()).build();
             okhttp3.Call call = client.newCall(req);
 
-            System.out.println("REQUEST: \n" + req.url() + "\n" + req.headers()  + "\n"+ buffer.readUtf8());
             try {
                 processResponses(call.execute());
             }
@@ -241,7 +242,7 @@ public final class EmbeddedSocialBatchedClientImpl {
     }
 
     /**
-     * BatchedInterceptor intercepts outgoing requests and batches them
+     * BatchedInterceptor intercepts outgoing requests and adds them to a queue to be batched later
      */
     private class BatchedInterceptor implements Interceptor {
         private EmbeddedSocialBatchedClientImpl esBatchedClient;
@@ -252,7 +253,8 @@ public final class EmbeddedSocialBatchedClientImpl {
 
         @Override
         public Response intercept(Chain chain) throws IOException {
-            return this.esBatchedClient.addRequestToBatch(chain.request());
+            // Intercept the request and call back into the batched client
+            return this.esBatchedClient.addRequestToBatchQueue(chain.request());
         }
     }
 }
