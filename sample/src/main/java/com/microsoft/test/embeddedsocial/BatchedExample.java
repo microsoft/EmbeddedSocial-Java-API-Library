@@ -25,16 +25,19 @@ public class BatchedExample {
         this.esBatchClient = esBatchedClientBuilder.build();
     }
 
-    // Batches k requests into a single call to Embedded Social server
     public void run() {
+        // Makes k requests using the batch client
         for (int i = 0; i < k; i += 1) {
             AsyncExample asyncExample = new AsyncExample(this.esBatchClient.getEsClient());
             asyncExample.run();
         }
 
+        // Must wait until the batch client has the batch ready
         while (!this.esBatchClient.isBatchReady());
 
+        // Issue the batch
         try {
+            System.out.println("Issuing batch request...");
             this.esBatchClient.issueBatch();
         }
         catch (Exception e) {
