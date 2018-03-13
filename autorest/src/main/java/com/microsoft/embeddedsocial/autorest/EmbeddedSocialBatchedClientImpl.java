@@ -73,12 +73,15 @@ public final class EmbeddedSocialBatchedClientImpl {
 
     // Adds an individual request to a queue of requests to be batched
     private Response addRequestToBatchQueue(Request request) throws IOException {
+        int requestIndex;
+
         synchronized (syncObject) {
             if (pendingRequests == batchSize) {
                throw new IllegalStateException("batch is already full");
             }
 
-            this.batchReqs[pendingRequests] = request;
+            requestIndex = pendingRequests;
+            this.batchReqs[requestIndex] = request;
             pendingRequests += 1;
 
             // Now that the request is in the queue, this interceptor must wait
@@ -92,25 +95,7 @@ public final class EmbeddedSocialBatchedClientImpl {
             }
         }
 
-        // Process the response....
-
-        String contentType = "application/json; charset=utf-8";
-        String body = "{\n" +
-                "  \"dateAndTime\": \"12/18/2017 4:05:04 PM\",\n" +
-                "  \"commitHash\": \"972f802c1608a8ee725fd05ff345de155004e7cd\",\n" +
-                "  \"hostname\": \"alecw@debris\",\n" +
-                "  \"serviceApiVersion\": \"v0.7\",\n" +
-                "  \"dirtyFiles\": []\n" +
-                "}";
-
-        ResponseBody responseBody = ResponseBody.create(MediaType.parse(contentType), body);
-        Response.Builder responseBuilder = new Response.Builder();
-        return responseBuilder
-                .request(request)
-                .code(200)
-                .protocol(Protocol.HTTP_1_1)
-                .body(responseBody)
-                .build();
+        return this.batchResps[requestIndex];
     }
 
     // Converts request to a multipart fragment
@@ -189,7 +174,7 @@ public final class EmbeddedSocialBatchedClientImpl {
                 continue;
             }
 
-            this.batchResps[fragIndex] = convertMultiFragmentToResp(batchResponse.body().string());
+            this.batchResps[fragIndex] = convertMultiFragmentToResp(f, this.batchReqs[fragIndex]);
             fragIndex += 1;
         }
     }
