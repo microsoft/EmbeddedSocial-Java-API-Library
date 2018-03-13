@@ -210,7 +210,7 @@ public final class EmbeddedSocialBatchedClientImpl {
             processBatchResponse(batchResponse);
 
             // Notify the individual interceptors to resume
-            syncObject.notify();
+            syncObject.notifyAll();
         }
     }
 

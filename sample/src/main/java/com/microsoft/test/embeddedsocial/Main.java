@@ -11,7 +11,7 @@ public class Main {
     public static void main(String[] args) {
         SyncExample syncExample = new SyncExample(ESUrl);
         AsyncExample asyncExample = new AsyncExample(ESUrl);
-        BatchedExample batchedExample = new BatchedExample(ESUrl, 2);
+        BatchedExample batchedExample = new BatchedExample(ESUrl, 5);
 
         // syncExample makes single synchronous call
         syncExample.run();
