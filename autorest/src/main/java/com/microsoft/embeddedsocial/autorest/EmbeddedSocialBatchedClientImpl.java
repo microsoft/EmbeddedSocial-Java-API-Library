@@ -5,6 +5,7 @@ import com.microsoft.rest.ServiceException;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.Collection;
+import java.util.PriorityQueue;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
@@ -32,8 +34,8 @@ import okio.Buffer;
  * use EmbeddedSocialClientImpl.
  *
  * This batched client implementation offers an esClient. Calls to esClient are not sent
- * to the server. Instead, calls are intercepted and put on a queue of requests to be later batched.
- * When the queue is full (the size of the queue is dictated by batchSize), a call to issueBatch
+ * to the server. Instead, calls are intercepted and placed in an array of requests to be later batched.
+ * When the array is full (the size of the array is dictated by batchSize), a call to issueBatch
  * should be made. This batch client parses the response to the batch and unblocks each individual
  * esClient call with the corresponding response.
  */
@@ -42,15 +44,18 @@ public final class EmbeddedSocialBatchedClientImpl {
     private final String ESUrl;
     private final EmbeddedSocialClientImpl esClient;
 
-    // Queues of requests and responses
-    private final ArrayBlockingQueue<Request> batchReqQueue;
-    private final ArrayBlockingQueue<Response> batchRespQueue;
+    // Arrays of requests and responses
+    private final Request[] batchReqs;
+    private final Response[] batchResps;
+    private final int batchSize;
+    private int pendingRequests = 0;
     private final Object syncObject = new Object();
 
     private EmbeddedSocialBatchedClientImpl(String ESUrl, int batchSize) {
         this.ESUrl = ESUrl;
-        this.batchReqQueue = new ArrayBlockingQueue<Request>(batchSize);
-        this.batchRespQueue = new ArrayBlockingQueue<Response>(batchSize);
+        this.batchSize = batchSize;
+        this.batchReqs = new Request[batchSize];
+        this.batchResps = new Response[batchSize];
 
         // Create an okhttp3 client with our own batched interceptor. This interceptor
         // allows us to block the outgoing call and queue it for later batching.
@@ -69,10 +74,12 @@ public final class EmbeddedSocialBatchedClientImpl {
     // Adds an individual request to a queue of requests to be batched
     private Response addRequestToBatchQueue(Request request) throws IOException {
         synchronized (syncObject) {
-            // Try adding the request to the queue
-            if (!this.batchReqQueue.offer(request)) {
-               throw new IllegalStateException("queue is already full");
+            if (pendingRequests == batchSize) {
+               throw new IllegalStateException("batch is already full");
             }
+
+            this.batchReqs[pendingRequests] = request;
+            pendingRequests += 1;
 
             // Now that the request is in the queue, this interceptor must wait
             // until issueBatch is called.
@@ -109,16 +116,82 @@ public final class EmbeddedSocialBatchedClientImpl {
     // Converts request to a multipart fragment
     private String convertReqToMultiFragment(Request req) throws IOException {
         StringBuilder multiFrag = new StringBuilder(100);
-        multiFrag.append("Content-Type: application/http; msgtype=request" + "\r\n\r\n");
-        multiFrag.append(req.method() + " " + req.url().encodedPath() + " HTTP/1.1\r\n");
-        multiFrag.append("Host: " + req.url().host() + "\r\n");
-        multiFrag.append("Authorization: " + req.headers().get("Authorization") + "\r\n");
-        multiFrag.append("Content-Type: application/json\r\nAccept: application/json\r\n\r\n");
+        multiFrag
+                .append("Content-Type: application/http; msgtype=request" + "\r\n\r\n")
+                .append(req.method() + " " + req.url().encodedPath() + " HTTP/1.1\r\n")
+                .append("Host: " + req.url().host() + "\r\n")
+                .append("Authorization: " + req.headers().get("Authorization") + "\r\n")
+                .append("Content-Type: application/json\r\nAccept: application/json\r\n\r\n");
         if (req.body() != null) {
             multiFrag.append(req.body());
         }
         multiFrag.append("\r\n");
         return multiFrag.toString();
+    }
+
+    // Convert multipart fragment to response
+    private void convertMultiFragmentToResp(String multiFrag) throws IOException {
+        String boundary = multiFrag.substring(0, multiFrag.indexOf("\n") - 1);
+        String[] frags = multiFrag.split(boundary);
+        int fragIndex = 0;
+        for (String f : frags) {
+            // ignore empty fragments
+            if (f.compareTo("") == 0) {
+                continue;
+            }
+            // ignore the delimiter lines
+            if (f.contains("--")) {
+                continue;
+            }
+
+            // Extract the HTTP error code, content type, and the body of the response
+            String[] lines = f.split("\r\n");
+            int code = -1;
+            String contentType = "";
+            String respBody = "";
+            for (String l: lines) {
+                if (!respBody.isEmpty()) {
+                    // If respBody is not empty, this line is part of the body
+                    respBody += l;
+
+                    // If the line is close curly bracket, we're done parsing the response
+                    if (l.startsWith("}")) {
+                        break;
+                    }
+                }
+                else if (l.startsWith("{")) {
+                    respBody += l;
+                }
+                else if (l.startsWith("HTTP/1.1")) {
+                    // Extract the code. Assume the line has format:
+                    // "HTTP/1.1 code XXX
+                    // The code sits in between the first space character and the second
+                    int indexFirstSpaceChar = 8;
+                    int indexSecondSpaceChar = l.substring(indexFirstSpaceChar + 1).indexOf(' ');
+                    int lengthCode = indexSecondSpaceChar - indexFirstSpaceChar - 1;
+                    code = Integer.parseInt(l.substring(indexFirstSpaceChar + 1, lengthCode));
+                }
+                else if (l.startsWith("Content-Type:")) {
+                    contentType = l;
+                }
+            }
+
+            // Extract the corresponding request for this fragment
+            Request req = this.batchReqs[fragIndex];
+
+            // Build the corresponding response for this fragment
+            ResponseBody responseBody = ResponseBody.create(MediaType.parse(contentType), respBody);
+            Response.Builder responseBuilder = new Response.Builder();
+            Response resp = responseBuilder
+                    .request(req)
+                    .code(code)
+                    .protocol(Protocol.HTTP_1_1)
+                    .body(responseBody)
+                    .build();
+
+            this.batchResps[fragIndex] = resp;
+            fragIndex += 1;
+        }
     }
 
     private boolean processResponses(okhttp3.Response response) throws ServiceException, IOException {
@@ -179,7 +252,7 @@ public final class EmbeddedSocialBatchedClientImpl {
 
 
     public boolean isBatchReady() {
-        return (batchReqQueue.remainingCapacity() == 0);
+        return (pendingRequests == batchSize);
     }
 
     public void issueBatch() throws InterruptedException, IOException {
@@ -187,9 +260,9 @@ public final class EmbeddedSocialBatchedClientImpl {
 
         synchronized (syncObject) {
             // The body of the batch will be about 100 bytes * number of requests
-            StringBuilder batchBody = new StringBuilder(100 * batchReqQueue.size());
+            StringBuilder batchBody = new StringBuilder(100 * batchSize);
 
-            for (Request r : this.batchReqQueue) {
+            for (Request r : batchReqs) {
                 String requestString = convertReqToMultiFragment(r);
                 batchBody.append("--" + boundary + "\r\n" + requestString + "\r\n");
             }
@@ -202,15 +275,12 @@ public final class EmbeddedSocialBatchedClientImpl {
                     .post(reqBody)
                     .build();
 
-            OkHttpClient client = (new OkHttpClient.Builder()).build();
-            okhttp3.Call call = client.newCall(req);
+            OkHttpClient batchClient = (new OkHttpClient.Builder()).build();
+            okhttp3.Call call = batchClient.newCall(req);
 
-            try {
-                processResponses(call.execute());
-            }
-            catch (ServiceException e) {
-                // Do nothing -- this exception should be thrown by the response parser not by us.
-            }
+            Response batchResponse = call.execute();
+//                processResponses(batchResponse);
+            convertMultiFragmentToResp(batchResponse.body().string());
 
             syncObject.notify();
         }
