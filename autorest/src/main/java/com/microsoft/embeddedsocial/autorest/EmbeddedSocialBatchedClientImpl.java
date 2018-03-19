@@ -12,6 +12,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
+import okio.Buffer;
 import retrofit2.Retrofit;
 
 /**
@@ -219,7 +220,7 @@ public final class EmbeddedSocialBatchedClientImpl {
                     .append("Authorization: " + req.headers().get("Authorization") + "\r\n")
                     .append("Content-Type: application/json\r\nAccept: application/json\r\n\r\n");
             if (req.body() != null) {
-                multiFrag.append(req.body());
+                multiFrag.append(bodyToString(req));
             }
             multiFrag.append("\r\n");
             return multiFrag.toString();
@@ -267,6 +268,14 @@ public final class EmbeddedSocialBatchedClientImpl {
                     .body(responseBody)
                     .build();
         }
+    }
+
+    // Convert body of request to string
+    private static String bodyToString(final Request request) throws IOException {
+        final Request copy = request.newBuilder().build();
+        final Buffer buffer = new Buffer();
+        copy.body().writeTo(buffer);
+        return buffer.readUtf8();
     }
 }
 
