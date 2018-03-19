@@ -5,20 +5,16 @@ import com.microsoft.embeddedsocial.autorest.EmbeddedSocialBatchedClientImpl;
 import com.microsoft.embeddedsocial.autorest.EmbeddedSocialClientImpl;
 import com.microsoft.embeddedsocial.autorest.models.BuildsCurrentResponse;
 
-import java.util.concurrent.TimeUnit;
-
-import okhttp3.Interceptor;
-
 /**
  * Created by ssaroiu on 3/6/2018.
  */
 
-public class BatchedExample {
+public class BatchTest {
     private EmbeddedSocialBatchedClientImpl esBatchClient;
     private final int k;
 
     // Initializes an ES client that supports batching
-    public BatchedExample(String ESUrl, int k)
+    public BatchTest(String ESUrl, int k)
     {
         this.k = k;
         EmbeddedSocialBatchedClientImpl.Builder esBatchedClientBuilder = new EmbeddedSocialBatchedClientImpl.Builder().baseUrl(ESUrl).batchSize(k);
@@ -28,8 +24,8 @@ public class BatchedExample {
     public void run() {
         // Makes k requests using the batch client
         for (int i = 0; i < k; i += 1) {
-            AsyncExample asyncExample = new AsyncExample(this.esBatchClient.getEsClient());
-            asyncExample.run();
+            AsyncTest asyncTest = new AsyncTest(this.esBatchClient.getEsClient());
+            asyncTest.run();
         }
 
         // Issue the batch
