@@ -1,1 +1,1 @@
-include ':autorest', ':sample'
+include ':autorest', ':test'
