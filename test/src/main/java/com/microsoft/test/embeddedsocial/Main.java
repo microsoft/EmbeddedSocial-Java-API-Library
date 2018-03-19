@@ -9,17 +9,17 @@ public class Main {
     private final static String ESUrl = "https://ppe.embeddedsocial.microsoft.com";
 
     public static void main(String[] args) {
-        SyncExample syncExample = new SyncExample(ESUrl);
-        AsyncExample asyncExample = new AsyncExample(ESUrl);
-        BatchedExample batchedExample = new BatchedExample(ESUrl, 1);
+        SyncTest syncTest = new SyncTest(ESUrl);
+        AsyncTest asyncTest = new AsyncTest(ESUrl);
+        BatchTest batchTest = new BatchTest(ESUrl, 1);
 
-        // syncExample makes single synchronous call
-//        syncExample.run();
+        // syncTest makes single synchronous call
+//        syncTest.run();
 
-        // asyncExample makes single asynchronous call
-//        asyncExample.run();
+        // asyncTest makes single asynchronous call
+//        asyncTest.run();
 
-        // batchedExample makes single batched call
-        batchedExample.run();
+        // batchTest makes single batched call
+        batchTest.run();
     }
 }

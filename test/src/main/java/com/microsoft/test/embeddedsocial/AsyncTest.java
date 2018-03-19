@@ -11,19 +11,19 @@ import com.microsoft.rest.ServiceResponse;
  *
  * Simple example of making a single asynchronous call to ES
  */
-public class AsyncExample {
+public class AsyncTest {
 
     // State to make the asynchronous getBuildsCurrent call
     private BuildsOperations buildsOperations;
 
     // Constructor creating a client using only the URL to the ES server
-    public AsyncExample(String ESUrl)
+    public AsyncTest(String ESUrl)
     {
         this(new EmbeddedSocialClientImpl(ESUrl));
     }
 
     // Constructor receiving a pre-created client
-    public AsyncExample(EmbeddedSocialClientImpl esClient)
+    public AsyncTest(EmbeddedSocialClientImpl esClient)
     {
         buildsOperations = esClient.getBuildsOperations();
     }
