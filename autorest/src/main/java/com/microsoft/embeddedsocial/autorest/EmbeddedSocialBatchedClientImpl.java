@@ -1,20 +1,8 @@
 package com.microsoft.embeddedsocial.autorest;
 
-import com.microsoft.rest.ServiceException;
-
 import java.io.IOException;
-import java.lang.reflect.Array;
-import java.util.Collection;
-import java.util.PriorityQueue;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.ArrayList;
-import java.util.List;
 
 
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
@@ -24,7 +12,6 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 import retrofit2.Retrofit;
-import okio.Buffer;
 
 
 /**
@@ -44,7 +31,7 @@ public final class EmbeddedSocialBatchedClientImpl {
     private final String ESUrl;
     private final EmbeddedSocialClientImpl esClient;
 
-    // Arrays of requests and responses
+    // Arrays of requests and responses that forms the batch
     private final Request[] batchReqs;
     private final Response[] batchResps;
     private final int batchSize;
@@ -71,16 +58,18 @@ public final class EmbeddedSocialBatchedClientImpl {
         esClient = new EmbeddedSocialClientImpl(ESUrl, okHttpClientBuilder, retrofitBuilder);
     }
 
-    // Adds an individual request to a queue of requests to be batched
-    private Response addRequestToBatchQueue(Request request) throws IOException {
+    // Adds an individual request to an array of requests to be batched
+    private Response addRequestToBatch(Request request) throws IOException {
         int requestIndex;
         Response resp;
 
         synchronized (syncObject) {
+            // caller should not insert another request into a batch already full
             if (pendingRequests == batchSize) {
                throw new IllegalStateException("batch is already full");
             }
 
+            // Insert request into batch array
             requestIndex = pendingRequests;
             this.batchReqs[requestIndex] = request;
             pendingRequests += 1;
@@ -255,7 +244,7 @@ public final class EmbeddedSocialBatchedClientImpl {
         @Override
         public Response intercept(Chain chain) throws IOException {
             // Intercept the request and call back into the batched client
-            return this.esBatchedClient.addRequestToBatchQueue(chain.request());
+            return this.esBatchedClient.addRequestToBatch(chain.request());
         }
     }
 }
