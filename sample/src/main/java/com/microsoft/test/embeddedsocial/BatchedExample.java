@@ -32,9 +32,6 @@ public class BatchedExample {
             asyncExample.run();
         }
 
-        // Must wait until the batch client has the batch ready
-        while (!this.esBatchClient.isBatchReady());
-
         // Issue the batch
         try {
             System.out.println("Issuing batch request...");
