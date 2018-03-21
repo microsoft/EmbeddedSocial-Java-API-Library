@@ -6,7 +6,7 @@ package com.microsoft.test.embeddedsocial;
 
 public class Main {
     // Url to Embedded Social instance (use PPE for this example)
-    private final static String ESUrl = "https://ppe.embeddedsocial.microsoft.com";
+    private final static String ESUrl = "https://api.embeddedsocial.microsoft.com";
 
     public static void main(String[] args) {
         SyncTest syncTest = new SyncTest(ESUrl);
@@ -14,10 +14,10 @@ public class Main {
         BatchTest batchTest = new BatchTest(ESUrl, 1);
 
         // syncTest makes single synchronous call
-//        syncTest.run();
+        syncTest.run();
 
         // asyncTest makes single asynchronous call
-//        asyncTest.run();
+        asyncTest.run();
 
         // batchTest makes single batched call
         batchTest.run();
