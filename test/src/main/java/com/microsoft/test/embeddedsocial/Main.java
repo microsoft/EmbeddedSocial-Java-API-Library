@@ -1,8 +1,9 @@
-package com.microsoft.test.embeddedsocial;
-
 /**
- * Created by ssaroiu on 2/28/2018.
+ * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under
+ * the MIT License. See LICENSE in the project root for license information.
  */
+
+package com.microsoft.test.embeddedsocial;
 
 public class Main {
     // Url to Embedded Social instance (use PPE for this example)

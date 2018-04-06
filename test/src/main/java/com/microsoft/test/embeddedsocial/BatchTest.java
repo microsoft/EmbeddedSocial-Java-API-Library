@@ -1,13 +1,13 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under
+ * the MIT License. See LICENSE in the project root for license information.
+ */
+
 package com.microsoft.test.embeddedsocial;
 
-import com.microsoft.embeddedsocial.autorest.BuildsOperations;
 import com.microsoft.embeddedsocial.autorest.EmbeddedSocialBatchedClientImpl;
 import com.microsoft.embeddedsocial.autorest.EmbeddedSocialClientImpl;
 import com.microsoft.embeddedsocial.autorest.models.BuildsCurrentResponse;
-
-/**
- * Created by ssaroiu on 3/6/2018.
- */
 
 public class BatchTest {
     private EmbeddedSocialBatchedClientImpl esBatchClient;
