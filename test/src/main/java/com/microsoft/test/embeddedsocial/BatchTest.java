@@ -6,8 +6,6 @@
 package com.microsoft.test.embeddedsocial;
 
 import com.microsoft.embeddedsocial.autorest.EmbeddedSocialBatchedClientImpl;
-import com.microsoft.embeddedsocial.autorest.EmbeddedSocialClientImpl;
-import com.microsoft.embeddedsocial.autorest.models.BuildsCurrentResponse;
 
 public class BatchTest {
     private EmbeddedSocialBatchedClientImpl esBatchClient;
