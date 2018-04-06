@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under
+ * the MIT License. See LICENSE in the project root for license information.
+ */
+
 package com.microsoft.embeddedsocial.autorest;
 
 import java.io.IOException;
@@ -16,8 +21,6 @@ import okio.Buffer;
 import retrofit2.Retrofit;
 
 /**
- * Created by ssaroiu on 3/6/2018.
- *
  * This client implementation should be used for batching only. For regular non-batched requests
  * use EmbeddedSocialClientImpl.
  *

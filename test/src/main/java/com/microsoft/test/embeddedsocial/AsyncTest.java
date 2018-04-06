@@ -1,3 +1,8 @@
+/**
+ * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under
+ * the MIT License. See LICENSE in the project root for license information.
+ */
+
 package com.microsoft.test.embeddedsocial;
 
 import com.microsoft.embeddedsocial.autorest.BuildsOperations;
@@ -7,8 +12,6 @@ import com.microsoft.rest.ServiceCallback;
 import com.microsoft.rest.ServiceResponse;
 
 /**
- * Created by ssaroiu on 2/28/2018.
- *
  * Simple example of making a single asynchronous call to ES
  */
 public class AsyncTest {
