@@ -218,7 +218,9 @@ public final class EmbeddedSocialBatchedClientImpl {
             StringBuilder multiFrag = new StringBuilder(100);
             multiFrag
                     .append("Content-Type: application/http; msgtype=request" + "\r\n\r\n")
-                    .append(req.method() + " " + req.url().encodedPath() + " HTTP/1.1\r\n")
+                    .append(req.method() + " " + req.url().encodedPath() 
+                            + "?" + req.url().encodedQuery() 
+                            + " HTTP/1.1\r\n")
                     .append("Host: " + req.url().host() + "\r\n")
                     .append("Authorization: " + req.headers().get("Authorization") + "\r\n")
                     .append("Content-Type: application/json\r\nAccept: application/json\r\n\r\n");
