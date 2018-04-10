@@ -186,6 +186,7 @@ public final class EmbeddedSocialBatchedClientImpl {
         public EmbeddedSocialBatchedClientImpl build() {
             if (baseUrl == null) new IllegalStateException("ESUrl == null");
             if (batchSize <= 0) new IllegalStateException("batchSize <= 0");
+            if (batchSize > 32) new IllegalStateException("batchSize cannot be greater than 32.");
             return new EmbeddedSocialBatchedClientImpl(baseUrl, batchSize);
         }
     }
