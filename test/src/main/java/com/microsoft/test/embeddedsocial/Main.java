@@ -7,7 +7,7 @@ package com.microsoft.test.embeddedsocial;
 
 public class Main {
     // Url to Embedded Social instance (use PPE for this example)
-    private final static String ESUrl = "https://api.embeddedsocial.microsoft.com";
+    private final static String ESUrl = "https://ppe.embeddedsocial.microsoft.com";
 
     public static void main(String[] args) {
         SyncTest syncTest = new SyncTest(ESUrl);
