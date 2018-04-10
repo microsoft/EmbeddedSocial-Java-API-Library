@@ -188,10 +188,10 @@ public final class EmbeddedSocialBatchedClientImpl {
             return this;
         }
 
-        public EmbeddedSocialBatchedClientImpl build() {
-            if (baseUrl == null) new IllegalStateException("ESUrl == null");
-            if (batchSize <= 0) new IllegalStateException("batchSize <= 0");
-            if (batchSize > 32) new IllegalStateException("batchSize cannot be greater than 32.");
+        public EmbeddedSocialBatchedClientImpl build() throws IllegalStateException {
+            if (baseUrl == null) throw new IllegalStateException("ESUrl == null");
+            if (batchSize <= 0) throw new IllegalStateException("batchSize <= 0");
+            if (batchSize > 32) throw new IllegalStateException("batchSize cannot be greater than 32.");
             return new EmbeddedSocialBatchedClientImpl(baseUrl, batchSize);
         }
     }
