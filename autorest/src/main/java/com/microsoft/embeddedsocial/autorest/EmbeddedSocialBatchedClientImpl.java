@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
+import okhttp3.Dispatcher;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -52,9 +53,13 @@ public final class EmbeddedSocialBatchedClientImpl {
 
         // Create an okhttp3 client with our own batched interceptor. This interceptor
         // allows us to block the outgoing call and queue it for later batching.
+        // We also increase the default maxRequestsPerHost to 32 (our limit to the size of a batch)
         BatchedInterceptor batchedInterceptor = new BatchedInterceptor(this);
-        OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder();
-        okHttpClientBuilder.addInterceptor(batchedInterceptor);
+        Dispatcher dispatcher = new Dispatcher();
+        dispatcher.setMaxRequestsPerHost(32);
+        OkHttpClient.Builder okHttpClientBuilder = new OkHttpClient.Builder()
+                .dispatcher(dispatcher)
+                .addInterceptor(batchedInterceptor);
 
         Retrofit.Builder retrofitBuilder = new Retrofit.Builder()
                 .baseUrl(ESUrl)
