@@ -37,7 +37,7 @@ ext {
 
 def siteUrl = 'https://github.com/Microsoft/EmbeddedSocial-Java-API-Library'
 def gitUrl = 'https://github.com/Microsoft/EmbeddedSocial-Java-API-Library.git'
-def versionNum = '0.0.8'
+def versionNum = '0.7.1'
 
 group = "com.acrowntest.test"
 version = versionNum
