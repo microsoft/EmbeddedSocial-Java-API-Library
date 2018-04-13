@@ -162,6 +162,9 @@ public final class EmbeddedSocialBatchedClientImpl {
         okhttp3.Call call = batchClient.newCall(batchReq);
 
         Response batchResponse = call.execute();
+        if (!batchResponse.isSuccessful()) {
+            throw new IOException("Batch request failed with code " + batchResponse.code());
+        }
         processBatchResponse(batchResponse);
 
         // Notify the individual interceptors to resume
