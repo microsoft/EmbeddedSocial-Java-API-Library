@@ -1,43 +1,19 @@
-apply plugin: 'com.android.library'
+apply plugin: 'java-library'
 apply plugin: 'com.jfrog.bintray'
 apply plugin: 'com.github.dcendents.android-maven'
 
-android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.1"
-
-    defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-
-    libraryVariants.all { variant ->
-        variant.outputs.each { output ->
-            output.outputFile = new File((File) outputFolder, "EmbeddedSocial_Autorest_$variant.buildType.name" + '.aar')
-        }
-    }
-}
-
 dependencies {
-    compile 'com.microsoft.rest:client-runtime:1.0.0-beta1'
+    implementation 'com.microsoft.rest:client-runtime:1.0.0-beta1'
 }
 
 ext {
-    outputFolder = new File((File) project.getProjectDir(), "aar")
+    outputFolder = new File((File) project.getProjectDir(), "jar")
 }
 
 
 def siteUrl = 'https://github.com/Microsoft/EmbeddedSocial-Java-API-Library'
 def gitUrl = 'https://github.com/Microsoft/EmbeddedSocial-Java-API-Library.git'
-def versionNum = '0.0.8'
+def versionNum = '0.7.2'
 
 group = "com.acrowntest.test"
 version = versionNum
@@ -46,7 +22,7 @@ install {
     repositories.mavenInstaller {
         pom {
             project {
-                packaging 'aar'
+                packaging 'jar'
                 groupId "com.acrowntest.test"
                 artifactId 'autorest'
 
@@ -77,26 +53,19 @@ install {
     }
 }
 
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
+task sourcesJar(type: Jar, dependsOn: classes) {
     classifier = 'sources'
+    from sourceSets.main.java.srcDirs
 }
-//
-//task javadoc(type: Javadoc) {
-//    source = android.sourceSets.main.java.srcDirs
-//    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-//    destinationDir = file("../javadoc")
-//    failOnError false
-//}
-//
-//task javadocJar(type: Jar, dependsOn: javadoc) {
-//    classifier = 'javadoc'
-//    from javadoc.destinationDir
-//}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
 
 artifacts {
-//    archives javadocJar
     archives sourcesJar
+    archives javadocJar
 }
 
 Properties properties = new Properties()
