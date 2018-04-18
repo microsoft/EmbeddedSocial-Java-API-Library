@@ -1,6 +1,11 @@
 apply plugin: 'java-library'
+apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
-apply plugin: 'com.github.dcendents.android-maven'
+
+// Update versionNum when releasing a new version
+def versionNum = '0.7.3'
+def siteUrl = 'https://github.com/Microsoft/EmbeddedSocial-Java-API-Library'
+def gitUrl = 'https://github.com/Microsoft/EmbeddedSocial-Java-API-Library.git'
 
 dependencies {
     implementation 'com.microsoft.rest:client-runtime:1.0.0-beta1'
@@ -8,49 +13,6 @@ dependencies {
 
 ext {
     outputFolder = new File((File) project.getProjectDir(), "jar")
-}
-
-
-def siteUrl = 'https://github.com/Microsoft/EmbeddedSocial-Java-API-Library'
-def gitUrl = 'https://github.com/Microsoft/EmbeddedSocial-Java-API-Library.git'
-def versionNum = '0.7.2'
-
-group = "com.acrowntest.test"
-version = versionNum
-
-install {
-    repositories.mavenInstaller {
-        pom {
-            project {
-                packaging 'jar'
-                groupId "com.acrowntest.test"
-                artifactId 'autorest'
-
-                name = 'autorest'
-                description = 'test library'
-                url siteUrl
-
-                licenses {
-                    license {
-                        name 'MIT'
-                        url 'https://opensource.org/licenses/MIT'
-                    }
-                }
-                developers {
-                    developer {
-                        id 'acrown-msft'
-                        name 'Alex Crown'
-                        email 'acrown@microsoft.com'
-                    }
-                }
-                scm {
-                    connection gitUrl
-                    developerConnection gitUrl
-                    url siteUrl
-                }
-            }
-        }
-    }
 }
 
 task sourcesJar(type: Jar, dependsOn: classes) {
@@ -63,18 +25,53 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     from javadoc.destinationDir
 }
 
-artifacts {
-    archives sourcesJar
-    archives javadocJar
+def pomConfig = {
+    licenses {
+        license {
+            name 'MIT'
+            url 'https://opensource.org/licenses/MIT'
+        }
+    }
+    developers {
+        developer {
+            id 'acrown-msft'
+            name 'Alex Crown'
+            email 'acrown@microsoft.com'
+        }
+    }
+    scm {
+        url siteUrl
+    }
 }
 
+publishing {
+    publications {
+        autorest(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId 'com.acrowntest.test'
+            artifactId 'autorest'
+            version versionNum
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('name', 'autorest')
+                root.appendNode('description', 'test library')
+                root.appendNode('url', siteUrl)
+                root.children().last() + pomConfig
+            }
+        }
+    }
+}
+
+// Use properties to load bintray credentials
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 bintray {
     user = properties.getProperty('bintray.user')
     key = properties.getProperty('bintray.apikey')
-    configurations = ['archives']
+    publications = ['autorest']
     pkg {
         repo = 'test'
         name = 'autorest'
