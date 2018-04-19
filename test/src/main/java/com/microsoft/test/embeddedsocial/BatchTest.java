@@ -7,6 +7,8 @@ package com.microsoft.test.embeddedsocial;
 
 import com.microsoft.embeddedsocial.autorest.EmbeddedSocialBatchedClientImpl;
 
+import okhttp3.Response;
+
 public class BatchTest {
     private EmbeddedSocialBatchedClientImpl esBatchClient;
     private final int k;
@@ -29,7 +31,11 @@ public class BatchTest {
         // Issue the batch
         try {
             System.out.println("Issuing batch request...");
-            this.esBatchClient.issueBatch();
+            Response batchResponse = this.esBatchClient.issueBatch();
+
+            if (!batchResponse.isSuccessful()) {
+                System.err.println("Batched call failed with status code: " +  batchResponse.code());
+            }
         }
         catch (Exception e) {
             System.err.println("Batched call failed with exception: " +  e.getMessage());

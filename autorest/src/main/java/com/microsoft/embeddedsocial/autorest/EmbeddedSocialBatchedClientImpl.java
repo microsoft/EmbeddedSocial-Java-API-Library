@@ -125,13 +125,13 @@ public final class EmbeddedSocialBatchedClientImpl {
     }
 
     // Caller must call issue batch to send the batch to ES. This code is not thread-safe,
-    // and is assumed that is called exactly once.
-    public void issueBatch() throws InterruptedException, IOException {
+    // and is assumed that is called exactly once. Returns the HTTP response of the batch call.
+    public Response issueBatch() throws InterruptedException, IOException {
 
-        // Check if the issueBatch called aready
+        // Check if the issueBatch called already
         synchronized (this.issueBatchAlreadyCalled) {
             if (this.issueBatchAlreadyCalled) {
-                return;
+                throw new IllegalStateException("Batch Already Issued");
             }
             this.issueBatchAlreadyCalled = true;
         }
@@ -162,15 +162,17 @@ public final class EmbeddedSocialBatchedClientImpl {
         okhttp3.Call call = batchClient.newCall(batchReq);
 
         Response batchResponse = call.execute();
-        if (!batchResponse.isSuccessful()) {
-            throw new IOException("Batch request failed with code " + batchResponse.code());
-        }
-        processBatchResponse(batchResponse);
 
-        // Notify the individual interceptors to resume
-        synchronized (syncObject) {
-            syncObject.notifyAll();
+        if (batchResponse.isSuccessful()) {
+            processBatchResponse(batchResponse);
+
+            // Notify the individual interceptors to resume
+            synchronized (syncObject) {
+                syncObject.notifyAll();
+            }
         }
+
+        return batchResponse;
     }
 
     public EmbeddedSocialClientImpl getEsClient() {
