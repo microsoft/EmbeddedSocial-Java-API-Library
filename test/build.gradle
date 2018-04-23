@@ -1,7 +1,6 @@
 apply plugin: 'application'
 
 dependencies {
+    implementation 'com.microsoft.rest:client-runtime:1.0.0-beta1'
     implementation project(':autorest')
 }
-
-mainClassName = System.getProperty("mainClass")
