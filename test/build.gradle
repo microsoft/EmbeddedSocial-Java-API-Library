@@ -4,3 +4,5 @@ dependencies {
     implementation 'com.microsoft.rest:client-runtime:1.0.0-beta1'
     implementation project(':autorest')
 }
+
+mainClassName = 'com.microsoft.test.embeddedsocial.Main'
