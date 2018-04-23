@@ -1,27 +1,8 @@
-apply plugin: 'com.android.library'
-
-android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.1"
-
-
-    defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
-    }
-
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-
-}
+apply plugin: 'application'
 
 dependencies {
-    compile 'com.microsoft.rest:client-runtime:1.0.0-beta1'
-    compile project(':autorest')
+    implementation 'com.microsoft.rest:client-runtime:1.0.0-beta1'
+    implementation project(':autorest')
 }
+
+mainClassName = 'com.microsoft.test.embeddedsocial.Main'
