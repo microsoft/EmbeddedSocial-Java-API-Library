@@ -1,111 +1,77 @@
-apply plugin: 'com.android.library'
+apply plugin: 'java-library'
+apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
-apply plugin: 'com.github.dcendents.android-maven'
 
-android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.1"
-
-    defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 23
-        versionCode 1
-        versionName "1.0"
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-
-    libraryVariants.all { variant ->
-        variant.outputs.each { output ->
-            output.outputFile = new File((File) outputFolder, "EmbeddedSocial_Autorest_$variant.buildType.name" + '.aar')
-        }
-    }
-}
+// Update versionNum when releasing a new version
+def versionNum = '0.7.4'
+def siteUrl = 'https://github.com/Microsoft/EmbeddedSocial-Java-API-Library'
+def gitUrl = 'https://github.com/Microsoft/EmbeddedSocial-Java-API-Library.git'
 
 dependencies {
-    compile 'com.microsoft.rest:client-runtime:1.0.0-beta1'
+    implementation 'com.microsoft.rest:client-runtime:1.0.0-beta1'
 }
 
 ext {
-    outputFolder = new File((File) project.getProjectDir(), "aar")
+    outputFolder = new File((File) project.getProjectDir(), "jar")
 }
 
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.java.srcDirs
+}
 
-def siteUrl = 'https://github.com/Microsoft/EmbeddedSocial-Java-API-Library'
-def gitUrl = 'https://github.com/Microsoft/EmbeddedSocial-Java-API-Library.git'
-def versionNum = '0.0.8'
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
 
-group = "com.acrowntest.test"
-version = versionNum
+def pomConfig = {
+    licenses {
+        license {
+            name 'MIT'
+            url 'https://opensource.org/licenses/MIT'
+        }
+    }
+    developers {
+        developer {
+            id 'acrown-msft'
+            name 'Alex Crown'
+            email 'acrown@microsoft.com'
+        }
+    }
+    scm {
+        url siteUrl
+    }
+}
 
-install {
-    repositories.mavenInstaller {
-        pom {
-            project {
-                packaging 'aar'
-                groupId "com.acrowntest.test"
-                artifactId 'autorest'
-
-                name = 'autorest'
-                description = 'test library'
-                url siteUrl
-
-                licenses {
-                    license {
-                        name 'MIT'
-                        url 'https://opensource.org/licenses/MIT'
-                    }
-                }
-                developers {
-                    developer {
-                        id 'acrown-msft'
-                        name 'Alex Crown'
-                        email 'acrown@microsoft.com'
-                    }
-                }
-                scm {
-                    connection gitUrl
-                    developerConnection gitUrl
-                    url siteUrl
-                }
+publishing {
+    publications {
+        autorest(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId 'com.acrowntest.test'
+            artifactId 'autorest'
+            version versionNum
+            pom.withXml {
+                def root = asNode()
+                root.appendNode('name', 'autorest')
+                root.appendNode('description', 'test library')
+                root.appendNode('url', siteUrl)
+                root.children().last() + pomConfig
             }
         }
     }
 }
 
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
-//
-//task javadoc(type: Javadoc) {
-//    source = android.sourceSets.main.java.srcDirs
-//    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-//    destinationDir = file("../javadoc")
-//    failOnError false
-//}
-//
-//task javadocJar(type: Jar, dependsOn: javadoc) {
-//    classifier = 'javadoc'
-//    from javadoc.destinationDir
-//}
-
-artifacts {
-//    archives javadocJar
-    archives sourcesJar
-}
-
+// Use properties to load bintray credentials
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
 bintray {
     user = properties.getProperty('bintray.user')
     key = properties.getProperty('bintray.apikey')
-    configurations = ['archives']
+    publications = ['autorest']
     pkg {
         repo = 'test'
         name = 'autorest'
