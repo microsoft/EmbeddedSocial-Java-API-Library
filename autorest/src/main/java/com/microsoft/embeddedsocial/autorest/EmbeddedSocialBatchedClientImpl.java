@@ -43,6 +43,7 @@ public final class EmbeddedSocialBatchedClientImpl {
     private final CountDownLatch latch;
     private final Object syncObject = new Object();
     private Boolean issueBatchAlreadyCalled = false;
+    private boolean batchSuccessful;
 
     private EmbeddedSocialBatchedClientImpl(String ESUrl, int batchSize) {
         this.ESUrl = ESUrl;
@@ -50,6 +51,7 @@ public final class EmbeddedSocialBatchedClientImpl {
         this.batchReqs = new ArrayList<>(batchSize);
         this.batchResps = new ArrayList<>(batchSize);
         latch = new CountDownLatch(batchSize);
+        this.batchSuccessful = false;
 
         // Create an okhttp3 client with our own batched interceptor. This interceptor
         // allows us to block the outgoing call and queue it for later batching.
@@ -96,6 +98,11 @@ public final class EmbeddedSocialBatchedClientImpl {
                 // Happens if someone interrupts your thread. Convert this to an IOException.
                 throw new IOException(e.getMessage());
             }
+        }
+
+        // Notify the caller if the batch failed
+        if (!this.batchSuccessful) {
+            throw new IOException("Batch Request Failed");
         }
 
         // At this time, all insertions in batchResps are done. No need to lock anymore.
@@ -165,11 +172,12 @@ public final class EmbeddedSocialBatchedClientImpl {
 
         if (batchResponse.isSuccessful()) {
             processBatchResponse(batchResponse);
+            this.batchSuccessful = true;
+        }
 
-            // Notify the individual interceptors to resume
-            synchronized (syncObject) {
-                syncObject.notifyAll();
-            }
+        // Notify the individual interceptors to resume
+        synchronized (syncObject) {
+            syncObject.notifyAll();
         }
 
         return batchResponse;
