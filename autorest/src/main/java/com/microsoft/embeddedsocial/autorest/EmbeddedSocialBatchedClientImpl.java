@@ -41,8 +41,8 @@ public final class EmbeddedSocialBatchedClientImpl {
     private final ArrayList<Response> batchResps;
     private final int batchSize;
     private final CountDownLatch latch;
-    private final Object syncObject = new Object();
-    private Boolean issueBatchAlreadyCalled = false;
+    private final Object syncObject;
+    private Boolean issueBatchAlreadyCalled;
     private boolean batchSuccessful;
 
     private EmbeddedSocialBatchedClientImpl(String ESUrl, int batchSize) {
@@ -50,7 +50,9 @@ public final class EmbeddedSocialBatchedClientImpl {
         this.batchSize = batchSize;
         this.batchReqs = new ArrayList<>(batchSize);
         this.batchResps = new ArrayList<>(batchSize);
-        latch = new CountDownLatch(batchSize);
+        this.latch = new CountDownLatch(batchSize);
+        this.syncObject = new Object();
+        this.issueBatchAlreadyCalled = false;
         this.batchSuccessful = false;
 
         // Create an okhttp3 client with our own batched interceptor. This interceptor
@@ -78,7 +80,7 @@ public final class EmbeddedSocialBatchedClientImpl {
         // Thread-safe way of inserting request in batch if room
         synchronized(this.batchReqs) {
             // caller should not insert another request into a batch already full
-            if (this.batchReqs.size() == batchSize) {
+            if (this.batchReqs.size() == this.batchSize) {
                 throw new IllegalStateException("batch is already full");
             }
 
@@ -90,10 +92,10 @@ public final class EmbeddedSocialBatchedClientImpl {
 
         // Now that the request is in the queue, this interceptor must wait
         // until issueBatch is called.
-        synchronized (syncObject) {
+        synchronized (this.syncObject) {
             try {
                 // Calling wait() will block this thread until issueBatch calls notify() on the object.
-                syncObject.wait();
+                this.syncObject.wait();
             } catch (InterruptedException e) {
                 // Happens if someone interrupts your thread. Convert this to an IOException.
                 throw new IOException(e.getMessage());
@@ -152,7 +154,7 @@ public final class EmbeddedSocialBatchedClientImpl {
         // The body of the batch will be about 100 bytes * number of requests
         StringBuilder batchBody = new StringBuilder(100 * this.batchSize);
 
-        for (Request r : batchReqs) {
+        for (Request r : this.batchReqs) {
             String requestString = MultipartHelper.convertReqToMultiFragment(r);
             batchBody.append("--" + boundary + "\r\n" + requestString + "\r\n");
         }
@@ -176,8 +178,8 @@ public final class EmbeddedSocialBatchedClientImpl {
         }
 
         // Notify the individual interceptors to resume
-        synchronized (syncObject) {
-            syncObject.notifyAll();
+        synchronized (this.syncObject) {
+            this.syncObject.notifyAll();
         }
 
         return batchResponse;
