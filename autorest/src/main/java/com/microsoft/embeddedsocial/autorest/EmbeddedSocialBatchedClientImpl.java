@@ -41,9 +41,9 @@ public final class EmbeddedSocialBatchedClientImpl {
     private final ArrayList<Response> batchResps;
     private final int batchSize;
     private final CountDownLatch latch;
-    private final Object syncObject;
-    private Boolean issueBatchAlreadyCalled;
-    private boolean batchSuccessful;
+    private final Object syncObject = new Object();
+    private Boolean issueBatchAlreadyCalled = false;
+    private boolean batchSuccessful = false;
 
     private EmbeddedSocialBatchedClientImpl(String ESUrl, int batchSize) {
         this.ESUrl = ESUrl;
@@ -51,9 +51,6 @@ public final class EmbeddedSocialBatchedClientImpl {
         this.batchReqs = new ArrayList<>(batchSize);
         this.batchResps = new ArrayList<>(batchSize);
         this.latch = new CountDownLatch(batchSize);
-        this.syncObject = new Object();
-        this.issueBatchAlreadyCalled = false;
-        this.batchSuccessful = false;
 
         // Create an okhttp3 client with our own batched interceptor. This interceptor
         // allows us to block the outgoing call and queue it for later batching.
@@ -81,7 +78,7 @@ public final class EmbeddedSocialBatchedClientImpl {
         synchronized(this.batchReqs) {
             // caller should not insert another request into a batch already full
             if (this.batchReqs.size() == this.batchSize) {
-                throw new IllegalStateException("batch is already full");
+                throw new IllegalStateException("Batch is already full");
             }
 
             // Insert request into batch array, and save its index
@@ -102,9 +99,9 @@ public final class EmbeddedSocialBatchedClientImpl {
             }
         }
 
-        // Notify the caller if the batch failed
+        // Throw exception the batch failed
         if (!this.batchSuccessful) {
-            throw new IOException("Batch Request Failed");
+            throw new IOException("Batch request failed");
         }
 
         // At this time, all insertions in batchResps are done. No need to lock anymore.
@@ -140,7 +137,7 @@ public final class EmbeddedSocialBatchedClientImpl {
         // Check if the issueBatch called already
         synchronized (this.issueBatchAlreadyCalled) {
             if (this.issueBatchAlreadyCalled) {
-                throw new IllegalStateException("Batch Already Issued");
+                throw new IllegalStateException("Batch already issued");
             }
             this.issueBatchAlreadyCalled = true;
         }
