@@ -7,12 +7,14 @@ package com.microsoft.test.embeddedsocial;
 
 public class Main {
     // Url to Embedded Social instance (use PPE for this example)
-    private final static String ESUrl = "https://ppe.embeddedsocial.microsoft.com";
+    private final static String esUrl = "https://ppe.embeddedsocial.microsoft.com";
+    private final static String auth = "_FILL_WITH_AUTH_";
 
     public static void main(String[] args) {
-        SyncTest syncTest = new SyncTest(ESUrl);
-        AsyncTest asyncTest = new AsyncTest(ESUrl);
-        BatchTest batchTest = new BatchTest(ESUrl, 1);
+        SyncTest syncTest = new SyncTest(esUrl);
+        AsyncTest asyncTest = new AsyncTest(esUrl);
+        BatchTest batchTest = new BatchTest(esUrl, 1);
+        PostUserAsyncTest postUserAsyncTest = new PostUserAsyncTest(esUrl, auth);
 
         // syncTest makes single synchronous call
         syncTest.run();
@@ -22,5 +24,8 @@ public class Main {
 
         // batchTest makes single batched call
         batchTest.run();
+
+        // All calls made from this point request a proper auth
+        postUserAsyncTest.run();
     }
 }
