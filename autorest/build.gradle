@@ -2,13 +2,28 @@ apply plugin: 'java-library'
 apply plugin: 'maven-publish'
 apply plugin: 'com.jfrog.bintray'
 
+repositories {
+    maven {
+        url "http://dl.bintray.com/acrowntest/ES_SDK"
+    }
+}
+
 // Update versionNum when releasing a new version
-def versionNum = '0.7.4'
+def versionNum = '0.7.5'
 def siteUrl = 'https://github.com/Microsoft/EmbeddedSocial-Java-API-Library'
 def gitUrl = 'https://github.com/Microsoft/EmbeddedSocial-Java-API-Library.git'
 
 dependencies {
-    implementation 'com.microsoft.rest:client-runtime:1.0.0-beta1'
+    implementation 'com.squareup.retrofit2:retrofit:2.0.0-beta4'
+    implementation 'com.squareup.okhttp3:okhttp:3.1.2'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.1.1'
+    implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.1.1'
+    implementation 'com.squareup.retrofit2:converter-jackson:2.0.0-beta4'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.7.1'
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-joda:2.7.1'
+    implementation 'org.apache.commons:commons-lang3:3.4'
+//    implementation 'com.microsoft.rest:client-runtime:1.0.0-beta1'
+    implementation 'com.acrowntest.ES_SDK:private_autorest_runtime:0.0.2'
 }
 
 ext {
@@ -50,13 +65,13 @@ publishing {
             from components.java
             artifact sourcesJar
             artifact javadocJar
-            groupId 'com.acrowntest.test'
+            groupId 'com.acrowntest.ES_SDK'
             artifactId 'autorest'
             version versionNum
             pom.withXml {
                 def root = asNode()
                 root.appendNode('name', 'autorest')
-                root.appendNode('description', 'test library')
+                root.appendNode('description', 'Java API library')
                 root.appendNode('url', siteUrl)
                 root.children().last() + pomConfig
             }
@@ -73,7 +88,7 @@ bintray {
     key = properties.getProperty('bintray.apikey')
     publications = ['autorest']
     pkg {
-        repo = 'test'
+        repo = 'ES_SDK'
         name = 'autorest'
         userOrg = 'acrowntest'
         licenses = ['MIT']
@@ -84,7 +99,7 @@ bintray {
             desc = 'AutorestLib ' + versionNum
             released = new Date()
             vcsTag = versionNum
-            attributes = ['gradle-plugin': 'com.acrowntest.test:autorest']
+            attributes = ['gradle-plugin': 'com.acrowntest.ES_SDK:autorest']
             gpg {
                 sign = true
             }

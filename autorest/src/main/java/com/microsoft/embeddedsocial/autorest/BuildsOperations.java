@@ -7,10 +7,10 @@
 package com.microsoft.embeddedsocial.autorest;
 
 import com.microsoft.embeddedsocial.autorest.models.BuildsCurrentResponse;
-import com.microsoft.rest.ServiceCall;
-import com.microsoft.rest.ServiceCallback;
-import com.microsoft.rest.ServiceException;
-import com.microsoft.rest.ServiceResponse;
+import es_private.com.microsoft.rest.ServiceCall;
+import es_private.com.microsoft.rest.ServiceCallback;
+import es_private.com.microsoft.rest.ServiceException;
+import es_private.com.microsoft.rest.ServiceResponse;
 import java.io.IOException;
 
 /**

@@ -9,8 +9,8 @@ package com.microsoft.embeddedsocial.autorest;
 import java.util.List;
 import okhttp3.Interceptor;
 import okhttp3.logging.HttpLoggingInterceptor.Level;
-import com.microsoft.rest.AutoRestBaseUrl;
-import com.microsoft.rest.serializer.JacksonMapperAdapter;
+import es_private.com.microsoft.rest.AutoRestBaseUrl;
+import es_private.com.microsoft.rest.serializer.JacksonMapperAdapter;
 
 /**
  * The interface for EmbeddedSocialClient class.

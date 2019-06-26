@@ -6,8 +6,8 @@
 
 package com.microsoft.embeddedsocial.autorest;
 
-import com.microsoft.rest.ServiceClient;
-import com.microsoft.rest.AutoRestBaseUrl;
+import es_private.com.microsoft.rest.ServiceClient;
+import es_private.com.microsoft.rest.AutoRestBaseUrl;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 

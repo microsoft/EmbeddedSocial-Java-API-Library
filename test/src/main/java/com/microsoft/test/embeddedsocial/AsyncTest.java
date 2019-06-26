@@ -8,8 +8,8 @@ package com.microsoft.test.embeddedsocial;
 import com.microsoft.embeddedsocial.autorest.BuildsOperations;
 import com.microsoft.embeddedsocial.autorest.EmbeddedSocialClientImpl;
 import com.microsoft.embeddedsocial.autorest.models.BuildsCurrentResponse;
-import com.microsoft.rest.ServiceCallback;
-import com.microsoft.rest.ServiceResponse;
+import es_private.com.microsoft.rest.ServiceCallback;
+import es_private.com.microsoft.rest.ServiceResponse;
 
 /**
  * Simple example of making a single asynchronous call to ES
